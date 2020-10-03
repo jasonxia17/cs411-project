@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev-frontend": "next dev ./frontend",
-    "build-frontend": "next build ./frontend",
-    "start-frontend": "next start ./frontend"
+    "dev": "next dev ./web-app",
+    "build": "next build ./web-app",
+    "start": "next start ./web-app"
   },
   "dependencies": {
     "next": "9.5.3",
