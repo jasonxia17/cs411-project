@@ -1,1 +1,2 @@
-# cs411-project
+# struggle-session
+CS 411 Project

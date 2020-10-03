@@ -1,0 +1,23 @@
+{
+  "name": "struggle-session",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev-frontend": "next dev ./frontend",
+    "build-frontend": "next build ./frontend",
+    "start-frontend": "next start ./frontend"
+  },
+  "dependencies": {
+    "next": "9.5.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.0.4",
+    "@testing-library/user-event": "^12.1.7",
+    "@types/node": "^14.11.2",
+    "@types/react": "^16.9.50",
+    "typescript": "^4.0.3"
+  }
+}
