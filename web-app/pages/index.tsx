@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import React from "react";
 import App from "../components/example/App";
 
@@ -13,9 +14,16 @@ export default class Index extends React.Component {
 
         <main>
           <App />
+          <Link href="/example_posts">
+            <a className="posts_link">Go see posts!</a>
+          </Link>
         </main>
 
         <style jsx>{`
+          .posts_link {
+            text-decoration: underline;
+          }
+
           .container {
             min-height: 100vh;
             padding: 0 0.5rem;
