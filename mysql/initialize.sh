@@ -7,7 +7,7 @@ fi
 DB_NAME=cs411_project
 echo "Creating database $DB_NAME..."
 
-echo "CREATE DATABASE IF NOT EXISTS $DB_NAME;" | mysql -u $1 -p
+cat create_database.sql | mysql -u $1 -p
 
 echo "Creating tables and running scripts..."
 cat ./schemas/*.sql ./scripts/*.sql | mysql -u $1 -p $DB_NAME
