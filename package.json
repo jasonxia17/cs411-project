@@ -10,6 +10,8 @@
     "start": "npm run lint:fix && next start ./web-app"
   },
   "dependencies": {
+    "@types/mysql": "^2.15.15",
+    "mysql": "^2.18.1",
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
