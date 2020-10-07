@@ -14,7 +14,7 @@ connection.connect(err => {
   }
 });
 
-async function examplePostsHandler(
+async function viewPostsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -34,4 +34,4 @@ async function examplePostsHandler(
   }
 }
 
-export default examplePostsHandler;
+export default viewPostsHandler;

@@ -1,12 +1,12 @@
 import React from "react";
 
-class ExampleAllPosts extends React.Component {
+class ViewPostsPage extends React.Component {
   state = {
     posts: []
   };
 
   componentDidMount(): void {
-    fetch("/api/example_posts")
+    fetch("/api/view_posts")
       .then(res => res.json())
       .then(data => {
         this.setState({ posts: data.posts });
@@ -30,4 +30,4 @@ class ExampleAllPosts extends React.Component {
   }
 }
 
-export default ExampleAllPosts;
+export default ViewPostsPage;

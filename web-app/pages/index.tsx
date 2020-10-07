@@ -14,8 +14,11 @@ export default class Index extends React.Component {
 
         <main>
           <App />
-          <Link href="/example_posts">
+          <Link href="/view_posts">
             <a className="posts_link">Go see posts!</a>
+          </Link>
+          <Link href="/make_post">
+            <a className="posts_link">Make a post!</a>
           </Link>
         </main>
 
