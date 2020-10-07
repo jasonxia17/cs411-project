@@ -22,7 +22,7 @@ class ExampleAllPosts extends React.Component {
             <h2>
               Post {post.PostId} by User {post.UserId}
             </h2>
-            <p>{post.TextBody}</p>
+            <p>{post.Body}</p>
           </li>
         ))}
       </ul>

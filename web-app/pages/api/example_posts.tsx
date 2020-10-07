@@ -20,7 +20,7 @@ async function examplePostsHandler(
 ): Promise<void> {
   if (req.method === "GET") {
     return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM ExamplePost", (err, rows) => {
+      connection.query("SELECT * FROM Posts", (err, rows) => {
         if (err) {
           throw err;
         }
