@@ -20,7 +20,7 @@ class ViewPostsPage extends React.Component {
         {this.state.posts.map(post => (
           <li key={post.PostId}>
             <h2>
-              Post {post.PostId} by User {post.UserId}
+              Post {post.PostId} by User {post.UserId}: {post.Title}
             </h2>
             <p>{post.Body}</p>
           </li>

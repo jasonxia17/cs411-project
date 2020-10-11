@@ -18,7 +18,11 @@ async function makePostHandler(
     return;
   }
 
-  await connection.execute("INSERT INTO Posts(Body) VALUES (?)", [req.body]);
+  await connection.execute("INSERT INTO Posts(Title, Body) VALUES (?, ?)", [
+    req.body.postTitle,
+    req.body.postBody
+  ]);
+
   res.status(200).end();
 }
 
