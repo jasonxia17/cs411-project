@@ -1,33 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-class ViewPostsPage extends React.Component {
-  state = {
-    posts: []
-  };
+export default function ViewPostsPage(): JSX.Element {
+  const [posts, setPosts] = useState([]);
 
-  componentDidMount(): void {
+  useEffect(() => {
     fetch("/api/view_posts")
       .then(res => res.json())
       .then(data => {
-        this.setState({ posts: data.posts });
+        setPosts(data.posts);
       })
       .catch(reason => console.log(reason));
-  }
+  }, []); // empty array => effect never needs to re-run.
 
-  render(): JSX.Element {
-    return (
-      <ul>
-        {this.state.posts.map(post => (
-          <li key={post.PostId}>
-            <h2>
-              Post {post.PostId} by User {post.UserId}: {post.Title}
-            </h2>
-            <p>{post.Body}</p>
-          </li>
-        ))}
-      </ul>
-    );
-  }
+  return (
+    <ul>
+      {posts.map(post => (
+        <li key={post.PostId}>
+          <h2>
+            Post {post.PostId} by User {post.UserId}: {post.Title}
+          </h2>
+          <p>{post.Body}</p>
+        </li>
+      ))}
+    </ul>
+  );
 }
-
-export default ViewPostsPage;
