@@ -14,8 +14,14 @@ export default async function searchPostKeywordsHandler(
   // TODO: this should probably be a static global variable, not sure where to put it though.
 
   if (req.method === "GET") {
-    const query = `SELECT * FROM Posts WHERE Body LIKE '%${req.headers.keywords}%' OR Title LIKE '%${req.headers.keywords}%'`;
-    const [rows, _] = await connection.query(query);
+    const [
+      rows,
+      _
+    ] = await connection.execute(
+      "SELECT * FROM Posts WHERE Body LIKE ? OR Title LIKE ?",
+      [`%${req.headers.keywords}%`, `%${req.headers.keywords}%`]
+    );
+
     res.status(200).json({ posts: rows });
   } else {
     res.status(405).end(`Method ${req.method} not allowed.`);
