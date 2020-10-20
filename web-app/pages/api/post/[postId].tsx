@@ -14,14 +14,17 @@ async function viewPostsHandler(
     return;
   }
 
-  const [
-    rows,
-    fields
-  ] = await connection.query("SELECT * FROM Posts WHERE PostId = ?", [
-    req.query.postId
-  ]);
+  const [posts] = await connection.query(
+    "SELECT * FROM Posts WHERE PostId = ?",
+    [req.query.postId]
+  );
 
-  res.status(200).json({ posts: rows });
+  const [comments] = await connection.query(
+    "SELECT * FROM Comments WHERE PostId = ?",
+    [req.query.postId]
+  );
+
+  res.status(200).json({ posts, comments });
 }
 
 export default viewPostsHandler;
