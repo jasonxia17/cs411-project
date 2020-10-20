@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+
   const { query } = useRouter();
 
   useEffect(() => {
@@ -19,7 +21,24 @@ export default function SinglePostPage(): JSX.Element {
         setComments(data.comments);
       })
       .catch(reason => console.log(reason));
-  }, [query]); // empty array => effect never needs to re-run.
+  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+
+  async function submitComment(): Promise<void> {
+    const postId = query.postId;
+    if (postId === undefined) {
+      alert("Failed to submit comment");
+      return;
+    }
+
+    await fetch("/api/make_comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ postId, newComment })
+    });
+    location.reload();
+  }
 
   return (
     <div>
@@ -39,13 +58,29 @@ export default function SinglePostPage(): JSX.Element {
       <ul>
         {comments.map(comment => (
           <li key={comment.CommentId}>
-            <h2>
+            <h3>
               Comment {comment.CommentId} by User {comment.UserId}
-            </h2>
+            </h3>
             <p>{comment.Body}</p>
           </li>
         ))}
       </ul>
+      <h3 style={{ marginTop: 50 }}>Make a comment:</h3>
+      <textarea
+        style={{
+          width: 750,
+          height: 150,
+          padding: 10,
+          resize: "none"
+        }}
+        value={newComment}
+        onChange={e => setNewComment(e.target.value)}
+      />
+      <div>
+        <button style={{ cursor: "pointer" }} onClick={submitComment}>
+          Comment!
+        </button>
+      </div>
     </div>
   );
 }
