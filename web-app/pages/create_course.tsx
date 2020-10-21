@@ -3,9 +3,23 @@ import React, { useState } from "react";
 let courseId = 0;
 
 export default function MakePostPage(): JSX.Element {
-  const [courseTitle, setCourseTitle] = useState("");
-  const [semester, setSemester] = useState(""); // TODO: Default value should be current semester
-  const [courseYear, setCourseYear] = useState(new Date().getFullYear());
+  const [title, setTitle] = useState("");
+  const [season, setSeason] = useState(""); // TODO: Default value should be current semester
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  async function createNewCourse(): Promise<void> {
+    const semester = season + " " + String(year);
+
+    await fetch("/api/create_course", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ courseId, title, semester })
+    });
+    window.location.href = "/"; // go back to home page
+    courseId++;
+  }
 
   return (
     <div>
@@ -13,10 +27,7 @@ export default function MakePostPage(): JSX.Element {
       <h2>Course Title</h2>
       <div>
         Title:
-        <input
-          value={courseTitle}
-          onChange={e => setCourseTitle(e.target.value)}
-        />
+        <input value={title} onChange={e => setTitle(e.target.value)} />
       </div>
       <div
         style={{
@@ -25,9 +36,9 @@ export default function MakePostPage(): JSX.Element {
       >
         <h2>Course Semester</h2>
         <select
-          value={semester}
+          value={season}
           onChange={e => {
-            setSemester(e.target.value);
+            setSeason(e.target.value);
           }}
         >
           <option value="Spring">Spring</option>
@@ -38,24 +49,28 @@ export default function MakePostPage(): JSX.Element {
       </div>
       <div
         style={{
-          marginTop: 10
+          marginTop: 5
         }}
       >
         <h2>Course Year</h2>
         <input
-          value={courseYear}
-          onChange={e => setCourseYear(parseInt(e.target.value))}
+          value={year}
+          onChange={e => setYear(parseInt(e.target.value))}
           type="number"
           min="1900"
           max="2099"
           step="1"
         />
       </div>
-      <div>
+      <div
+        style={{
+          marginTop: 20
+        }}
+      >
         <button
-          disabled={courseTitle.length == 0}
+          disabled={title.length == 0}
           style={{ cursor: "pointer" }}
-          onClick={() => ({})}
+          onClick={createNewCourse}
         >
           Create my course!
         </button>
