@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS Courses (
-    CourseId INT,
+    CourseId INT PRIMARY KEY AUTO_INCREMENT,
     Title VARCHAR(256),
     Semester VARCHAR(256)
 );
