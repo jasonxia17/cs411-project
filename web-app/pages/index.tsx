@@ -14,22 +14,16 @@ export default class Index extends React.Component {
 
         <main>
           <App />
-          <Link href="/view_posts">
-            <a className="posts_link">Go see posts!</a>
+          <Link href="/create_course">
+            <a className="page_link">Create a course!</a>
           </Link>
-          <Link href="/make_post">
-            <a className="posts_link">Make a post!</a>
-          </Link>
-          <Link href="/search_post_keywords">
-            <a className="posts_link">Search for posts based on keywords!</a>
-          </Link>
-          <Link href="/view_topics">
-            <a className="posts_link">Go see topics!</a>
+          <Link href="view_courses">
+            <a className="page_link">View courses!</a>
           </Link>
         </main>
 
         <style jsx>{`
-          .posts_link {
+          .page_link {
             text-decoration: underline;
           }
 
