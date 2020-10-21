@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createConnection } from "mysql2/promise";
 
-async function createCourseHandler(
+export default async function createCourseHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -25,5 +25,3 @@ async function createCourseHandler(
 
   res.status(200).end();
 }
-
-export default makePostHandler;
