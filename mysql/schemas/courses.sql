@@ -5,3 +5,4 @@ CREATE TABLE IF NOT EXISTS Courses (
 );
 
 INSERT IGNORE INTO Courses(CourseId, Title, Semester) VALUES (1, "CS 900", "FA2020");
+INSERT IGNORE INTO Courses(CourseId, Title, Semester) VALUES (2, "CS 126", "FA2021");
