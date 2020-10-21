@@ -1,1 +1,1 @@
-INSERT IGNORE INTO Posts(PostId, UserId, Title, Body) VALUES (2, 3, "Hello World! (c-style)", 'puts("Hello world!")');
+INSERT IGNORE INTO Posts(PostId, UserId, TopicId, Title, Body) VALUES (2, 3, 2, "Hello World! (c-style)", 'puts("Hello world!")');
