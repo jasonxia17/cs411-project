@@ -19,8 +19,8 @@ async function createCourseHandler(
   }
 
   await connection.execute(
-    "INSERT INTO Courses(CourseId, Title, Semester) VALUES (?, ?, ?)",
-    [req.body.courseId, req.body.title, req.body.semester]
+    "INSERT INTO Courses(Title, Semester) VALUES (?, ?)",
+    [req.body.title, req.body.semester]
   );
 
   res.status(200).end();
