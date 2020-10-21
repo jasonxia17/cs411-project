@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
-let courseId = 0;
-
 export default function MakePostPage(): JSX.Element {
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(""); // TODO: Default value should be current semester
   const [year, setYear] = useState(new Date().getFullYear());
 
   async function createNewCourse(): Promise<void> {
+    // Build semester from season and course year
     const semester = season + " " + String(year);
 
     await fetch("/api/create_course", {
@@ -15,10 +14,9 @@ export default function MakePostPage(): JSX.Element {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ courseId, title, semester })
+      body: JSON.stringify({ title, semester })
     });
     window.location.href = "/"; // go back to home page
-    courseId++;
   }
 
   return (
