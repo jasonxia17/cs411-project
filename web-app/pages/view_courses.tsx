@@ -27,6 +27,15 @@ export default function ViewCourses(): JSX.Element {
           </div>
         </li>
       ))}
+      <div
+        style={{
+          marginTop: 50
+        }}
+      >
+        <Link href="/create_course">
+          <a className="page_link">Create a course!</a>
+        </Link>
+      </div>
     </ul>
   );
 }
