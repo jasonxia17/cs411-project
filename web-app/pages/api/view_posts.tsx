@@ -14,7 +14,10 @@ async function viewPostsHandler(
     }
     const courseIdAsInt = parseInt(courseId);
 
-    const [rows, fields] = await connection.query(
+    const [
+      rows,
+      fields
+    ] = await connection.query(
       "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?)",
       [courseIdAsInt]
     );
