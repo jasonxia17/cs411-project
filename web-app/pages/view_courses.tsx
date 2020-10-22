@@ -23,6 +23,11 @@ export default function ViewCourses(): JSX.Element {
           <h2>
             Title: {course.Title}, Semester: {course.Semester}
           </h2>
+          <div>
+            <Link href={`/course/${course.CourseId}`}>
+              <a className="posts_link">Go to {course.Title} forum!</a>
+            </Link>
+          </div>
         </li>
       ))}
       <div
