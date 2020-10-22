@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
 export default function MakePostPage(): JSX.Element {
-  
-  function getCurrentSemester(): {year: int, season: string} {
+  function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
     const date = new Date();
     const day = date.getUTCDate();
