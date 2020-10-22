@@ -1,14 +1,21 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { convertCourseIdToString } from "./shared/helper_utilities";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
   const [matchingPosts, setMatchingPosts] = useState([]);
   const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
 
+  const { query } = useRouter();
+
   async function searchForPosts(): Promise<void> {
+    const courseId = convertCourseIdToString(query.courseId);
+
     await fetch("/api/search_post_keywords", {
       method: "GET",
       headers: {
+        courseId,
         keywords: keywords
       }
     })
