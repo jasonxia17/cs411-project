@@ -8,7 +8,16 @@ async function viewPostsHandler(
   const connection = await getConnection();
 
   if (req.method === "GET") {
-    const [rows, fields] = await connection.query("SELECT * FROM Posts");
+    let courseId = req.headers.courseid as string;
+    if (Array.isArray(courseId)) {
+      courseId = courseId[0];
+    }
+    const courseIdAsInt = parseInt(courseId);
+
+    const [rows, fields] = await connection.query(
+      "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?)",
+      [courseIdAsInt]
+    );
     res.status(200).json({ posts: rows });
   } else {
     res.status(405).end(`Method ${req.method} not allowed.`);
