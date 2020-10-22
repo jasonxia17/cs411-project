@@ -19,10 +19,11 @@ async function viewPostsHandler(
     [req.query.postId]
   );
 
-  const [comments] = await connection.query(
-    "SELECT * FROM Comments WHERE PostId = ?",
-    [req.query.postId]
-  );
+  const [
+    comments
+  ] = await connection.query("SELECT * FROM Comments WHERE PostId = ?", [
+    req.query.postId
+  ]);
 
   res.status(200).json({ posts, comments });
 }
