@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createConnection } from "mysql2/promise";
+import { getConnection } from "../shared/sql_connection";
 
 export default async function createCourseHandler(
   req: NextApiRequest,
