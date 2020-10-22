@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../shared/sql_connection";
+import { convertCourseIdToString } from "../shared/helper_utilities";
 
 async function viewPostsHandler(
   req: NextApiRequest,
@@ -8,11 +9,9 @@ async function viewPostsHandler(
   const connection = await getConnection();
 
   if (req.method === "GET") {
-    let courseId = req.headers.courseid as string;
-    if (Array.isArray(courseId)) {
-      courseId = courseId[0];
-    }
-    const courseIdAsInt = parseInt(courseId);
+    const courseIdAsInt = parseInt(
+      convertCourseIdToString(req.headers.courseid)
+    );
 
     const [
       rows,
