@@ -5,6 +5,7 @@ import App from "../components/example/App";
 
 export default class Index extends React.Component {
   render(): JSX.Element {
+    // TODO refactor to log in page
     return (
       <div className="container">
         <Head>
@@ -14,9 +15,6 @@ export default class Index extends React.Component {
 
         <main>
           <App />
-          <Link href="/create_course">
-            <a className="page_link">Create a course!</a>
-          </Link>
           <Link href="view_courses">
             <a className="page_link">View courses!</a>
           </Link>
