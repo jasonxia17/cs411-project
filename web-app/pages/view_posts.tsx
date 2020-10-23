@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function ViewPostsPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
@@ -16,9 +17,13 @@ export default function ViewPostsPage(): JSX.Element {
     <ul>
       {posts.map(post => (
         <li key={post.PostId}>
-          <h2>
-            Post {post.PostId} by User {post.UserId}: {post.Title}
-          </h2>
+          <Link href={`/post/${post.PostId}`}>
+            <a style={{ color: "chocolate" }}>
+              <h2>
+                Post {post.PostId} by User {post.UserId}: {post.Title}
+              </h2>
+            </a>
+          </Link>
           <p>{post.Body}</p>
         </li>
       ))}

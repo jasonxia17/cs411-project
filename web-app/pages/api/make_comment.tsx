@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../shared/sql_connection";
 
-async function makePostHandler(
+async function makeCommentHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -12,12 +12,12 @@ async function makePostHandler(
     return;
   }
 
-  await connection.execute("INSERT INTO Posts(Title, Body) VALUES (?, ?)", [
-    req.body.postTitle,
-    req.body.postBody
+  await connection.execute("INSERT INTO Comments(PostId, Body) VALUES (?, ?)", [
+    req.body.postId,
+    req.body.newComment
   ]);
 
   res.status(200).end();
 }
 
-export default makePostHandler;
+export default makeCommentHandler;
