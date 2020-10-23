@@ -1,15 +1,15 @@
-import { createConnection, Connection } from "mysql2/promise";
+import { createPool, Pool } from "mysql2/promise";
 
-let connection: Connection | null = null;
+const pool = createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
-export async function getConnection(): Promise<Connection> {
-  if (connection === null) {
-    connection = await createConnection({
-      host: "localhost",
-      user: "nodejs",
-      password: "password",
-      database: "cs411_project"
-    });
-  }
-  return connection;
+export async function getConnection(): Promise<Pool> {
+  return pool;
 }
