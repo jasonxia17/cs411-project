@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
+import { Session } from "next-auth/client";
 import Providers from "next-auth/providers";
 
 const options = {
@@ -22,6 +23,12 @@ const options = {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
+  },
+  callbacks: {
+    session: async (session: Session, user: User) => {
+      session.user = user;
+      return Promise.resolve(session);
+    }
   }
 };
 
