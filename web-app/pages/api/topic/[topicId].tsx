@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../../../shared/sql_connection";
-import assert from "assert";
-import { RowDataPacket } from "mysql2";
 
 async function viewTopicPostsHandler(
   req: NextApiRequest,

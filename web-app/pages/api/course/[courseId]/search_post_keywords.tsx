@@ -12,8 +12,7 @@ export default async function searchPostKeywordsHandler(
     const keywords = req.query.keywords;
 
     const [
-      rows,
-      _
+      rows
     ] = await connection.execute(
       "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?) AND (Body LIKE ? OR Title LIKE ?)",
       [courseId, `%${keywords}%`, `%${keywords}%`]

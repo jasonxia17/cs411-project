@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../../../shared/sql_connection";
-import assert from "assert";
-import { RowDataPacket } from "mysql2";
 
 async function viewPostsHandler(
   req: NextApiRequest,
@@ -16,14 +14,13 @@ async function viewPostsHandler(
 
   const [posts] = await connection.query(
     "SELECT * FROM Posts WHERE PostId = ?",
-    [req.query.postId]
+    req.query.postId
   );
 
-  const [
-    comments
-  ] = await connection.query("SELECT * FROM Comments WHERE PostId = ?", [
+  const [comments] = await connection.query(
+    "SELECT * FROM Comments WHERE PostId = ?",
     req.query.postId
-  ]);
+  );
 
   res.status(200).json({ posts, comments });
 }

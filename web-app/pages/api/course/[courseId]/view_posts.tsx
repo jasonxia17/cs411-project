@@ -11,8 +11,7 @@ async function viewPostsHandler(
     const courseId = parseInt(req.query.courseId as string);
 
     const [
-      rows,
-      fields
+      rows
     ] = await connection.query(
       "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?)",
       [courseId]
