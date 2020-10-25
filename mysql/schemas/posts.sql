@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Posts (
     PostId INT PRIMARY KEY AUTO_INCREMENT,
-    UserId INT, /* todo, foreign key */
+    UserId INT REFERENCES users.id,
     TopicId INT, /* todo, foreign key, don't need CourseId because we can get that from TopicId */
     Title VARCHAR(256),
     PostTime DATETIME DEFAULT CURRENT_TIMESTAMP,
