@@ -9,8 +9,7 @@ export default async function searchPostKeywordsHandler(
 
   if (req.method === "GET") {
     const [
-      rows,
-      _
+      rows
     ] = await connection.execute(
       "SELECT * FROM Posts WHERE Body LIKE ? OR Title LIKE ?",
       [`%${req.headers.keywords}%`, `%${req.headers.keywords}%`]

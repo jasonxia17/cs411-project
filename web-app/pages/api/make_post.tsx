@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/client";
 import verifyAuthentication from "../shared/authentication_middleware";
 import { getConnection } from "../shared/sql_connection";
 

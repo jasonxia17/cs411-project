@@ -8,7 +8,7 @@ async function viewPostsHandler(
   const connection = await getConnection();
 
   if (req.method === "GET") {
-    const [rows, fields] = await connection.query("SELECT * FROM Posts");
+    const [rows] = await connection.query("SELECT * FROM Posts");
     res.status(200).json({ posts: rows });
   } else {
     res.status(405).end(`Method ${req.method} not allowed.`);
