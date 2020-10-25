@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import Loader from "react-loader-spinner";
+import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function MakePostPage(): JSX.Element {
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
+  useProtectedRoute();
 
   async function submitPost(): Promise<void> {
     await fetch("/api/make_post", {

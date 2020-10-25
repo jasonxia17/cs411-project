@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../hooks/protected_route_hook";
 
 export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  useProtectedRoute();
 
   const { query } = useRouter();
 
