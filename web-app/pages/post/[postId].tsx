@@ -6,11 +6,14 @@ export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  useProtectedRoute();
-
+  const [session, loading] = useProtectedRoute();
   const { query } = useRouter();
 
   useEffect(() => {
+    fetchPost();
+  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+
+  async function fetchPost(): Promise<void> {
     const postId = query.postId;
     if (postId === undefined) {
       return;
@@ -23,7 +26,7 @@ export default function SinglePostPage(): JSX.Element {
         setComments(data.comments);
       })
       .catch(reason => console.log(reason));
-  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+  }
 
   async function submitComment(): Promise<void> {
     const postId = query.postId;
@@ -39,7 +42,14 @@ export default function SinglePostPage(): JSX.Element {
       },
       body: JSON.stringify({ postId, newComment })
     });
-    location.reload();
+    setNewComment("");
+    fetchPost();
+  }
+
+  if (loading) {
+    return <div> Loading... </div>;
+  } else if (!session) {
+    return <div> Redirecting to signin... </div>;
   }
 
   return (
