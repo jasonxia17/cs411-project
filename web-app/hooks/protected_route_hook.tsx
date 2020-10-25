@@ -7,7 +7,7 @@ export default function useProtectedRoute(): [Session, boolean] {
   const router = useRouter();
 
   useEffect(() => {
-    if (session) return;
+    if (session || loading) return;
     router.push("/api/auth/signin");
   }, [session]);
 
