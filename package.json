@@ -7,7 +7,7 @@
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "dev": "npm run lint:fix && next dev ./web-app",
     "build": "next build ./web-app",
-    "start": "next start ./web-app"
+    "start": "next start ./web-app -p $PORT"
   },
   "dependencies": {
     "@types/mysql": "^2.15.15",
