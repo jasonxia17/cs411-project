@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getConnection } from "../shared/sql_connection";
+import { getConnection } from "../../shared/sql_connection";
 
 async function viewPostsHandler(
   req: NextApiRequest,
