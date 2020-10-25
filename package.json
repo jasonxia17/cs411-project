@@ -6,8 +6,8 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "dev": "npm run lint:fix && next dev ./web-app",
-    "build": "npm run lint:fix && next build ./web-app",
-    "start": "npm run lint:fix && next start ./web-app"
+    "build": "next build ./web-app",
+    "start": "next start ./web-app"
   },
   "dependencies": {
     "@types/mysql": "^2.15.15",
