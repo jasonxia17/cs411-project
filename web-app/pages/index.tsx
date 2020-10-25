@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import App from "../components/example/App";
+import Header from "../components/user-profile/Header";
 
 export default class Index extends React.Component {
   render(): JSX.Element {
@@ -13,6 +14,7 @@ export default class Index extends React.Component {
         </Head>
 
         <main>
+          <Header />
           <App />
           <Link href="/view_posts">
             <a className="posts_link">Go see posts!</a>
