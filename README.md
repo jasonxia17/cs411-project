@@ -50,4 +50,21 @@ The "default" (or "index" page) that you see when you visit `https://localhost:3
 The <b>relational database</b> code resides in `mysql`. This is divided into `schemas` for data definition and `scripts` for data manipulation.
 
 ## Deployment to staging server
-Coming soon...
+We are hosting our staging server on Heroku, [click here to see it](https://struggle-session.herokuapp.com).
+
+Existing setup:
+1. JawsDB MySQL (remote database) has been configured as an add-on to our server. 
+2. Database environment/config variables have been set to work with this remote database.
+
+To deploy to the staging server for the first time:
+1. Make sure you have collaborator access to the app on Heroku (ask Estelle)
+2. [Install the Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
+3. [Add the Heroku git repository as remote](https://devcenter.heroku.com/articles/git#for-an-existing-heroku-app)
+4. Update config variables and/or build/deploy script (if necessary)
+5. [Push to the Heroku remote](https://devcenter.heroku.com/articles/git#deploying-from-a-branch-besides-master)
+6. Check the build logs and ensure deployment was successful. Then go to the link and see our project in all its glory!
+
+Whenever you want to redeploy:
+1. Update config variables and/or build/deploy script (if necessary)
+2. [Push to the Heroku remote](https://devcenter.heroku.com/articles/git#deploying-from-a-branch-besides-master)
+3. Check the build logs and ensure deployment was successful. Then go to the link and see our project in all its glory!
