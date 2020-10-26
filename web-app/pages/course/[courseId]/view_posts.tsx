@@ -26,7 +26,7 @@ export default function ViewPostsPage(): JSX.Element {
         setPosts(data.posts);
       })
       .catch(reason => console.log(reason));
-  }, []); // empty array => effect never needs to re-run.
+  }, [query]);
 
   return (
     <ul>
