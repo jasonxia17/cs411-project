@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { convertCourseIdToString } from "./shared/helper_utilities";
 
 export default function ViewPostsPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const { query } = useRouter();
 
-  const courseId = convertCourseIdToString(query.courseId);
-
   useEffect(() => {
+    const courseId = query.courseId as string;
+    if (courseId == undefined) {
+      return;
+    }
+
     fetch("/api/view_posts", {
       method: "GET",
       headers: {

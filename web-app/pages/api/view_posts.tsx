@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../shared/sql_connection";
-import { convertCourseIdToString } from "../shared/helper_utilities";
 
 async function viewPostsHandler(
   req: NextApiRequest,
@@ -9,16 +8,14 @@ async function viewPostsHandler(
   const connection = await getConnection();
 
   if (req.method === "GET") {
-    const courseIdAsInt = parseInt(
-      convertCourseIdToString(req.headers.courseid)
-    );
+    const courseId = parseInt(req.headers.courseid as string);
 
     const [
       rows,
       fields
     ] = await connection.query(
       "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?)",
-      [courseIdAsInt]
+      [courseId]
     );
     res.status(200).json({ posts: rows });
   } else {
