@@ -23,6 +23,9 @@ export default class Index extends React.Component {
           <Link href="/search_post_keywords">
             <a className="posts_link">Search for posts based on keywords!</a>
           </Link>
+          <Link href="/view_topics">
+            <a className="posts_link">Go see topics!</a>
+          </Link>
         </main>
 
         <style jsx>{`
