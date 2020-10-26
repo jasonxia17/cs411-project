@@ -1,22 +1,24 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
-  console.log("query", query);
+  const [courseId, setCourseId] = useState(query.courseId as string);
 
-  // CourseID can either be a string or an array of strings
-  // Let's always make it a string
-  let courseId = query.courseId;
-  if (Array.isArray(courseId)) {
-    courseId = courseId[0];
-  }
+  // Wrap courseId in hook to handle case where user refreshes
+  useEffect(() => {
+    const courseId = query.courseId as string;
+    if (courseId == undefined) {
+      return;
+    }
+    setCourseId(courseId);
+  }, [query]);
 
-  const viewPostsLink = `/view_posts?courseId=${query.courseId}`;
-  const makePostsLink = `/make_post?courseId=${query.courseId}`;
-  const searchPostsLink = `/search_post_keywords?courseId=${query.courseId}`;
-  const viewTopicsLink = `/view_topics?courseId=${query.courseId}`;
+  const viewPostsLink = `/course/${courseId}/view_posts`;
+  const makePostsLink = `/course/${courseId}/make_post`;
+  const searchPostsLink = `/course/${courseId}/search_post_keywords`;
+  const viewTopicsLink = `/course/${courseId}/view_topics`;
 
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
