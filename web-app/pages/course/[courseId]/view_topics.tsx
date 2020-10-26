@@ -23,7 +23,7 @@ export default function ViewTopicsPage(): JSX.Element {
         setTopics(data.topics);
       })
       .catch(reason => console.log(reason));
-  }, []); // empty array => effect never needs to re-run.
+  }, [query]);
 
   return (
     <ul>
