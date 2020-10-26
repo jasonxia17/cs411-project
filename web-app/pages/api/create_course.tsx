@@ -5,13 +5,7 @@ export default async function createCourseHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const connection = await createConnection({
-    host: "localhost",
-    user: "nodejs",
-    password: "password",
-    database: "cs411_project"
-  });
-  // TODO: this should probably be a static global variable, not sure where to put it though.
+  const connection = await getConnection();
 
   if (req.method !== "POST") {
     res.status(405).end(`Method ${req.method} not allowed.`);

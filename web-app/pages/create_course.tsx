@@ -1,9 +1,41 @@
 import React, { useState } from "react";
 
 export default function MakePostPage(): JSX.Element {
+  function getCurrentSemester(): { year: number; season: string } {
+    // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
+    const date = new Date();
+    const day = date.getUTCDate();
+    const month = date.getUTCMonth() + 1; // Months from 1 - 12
+
+    const FALL_START_DATE = 15;
+    const WINTER_START_DATE = 15;
+
+    let season;
+    if (month <= 5) {
+      season = "Spring";
+    } else if (month <= 8 && day <= FALL_START_DATE) {
+      season = "Summer";
+    } else if (month <= 11) {
+      season = "Fall";
+    } else {
+      if (day <= WINTER_START_DATE) {
+        season = "Fall";
+      } else {
+        season = "Winter";
+      }
+    }
+    console.log(day, month, season, date.getUTCFullYear());
+    return {
+      year: date.getUTCFullYear(),
+      season
+    };
+  }
+
+  const currentSemester = getCurrentSemester();
+
   const [title, setTitle] = useState("");
-  const [season, setSeason] = useState(""); // TODO: Default value should be current semester
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [season, setSeason] = useState(currentSemester.season);
+  const [year, setYear] = useState(currentSemester.year);
 
   async function createNewCourse(): Promise<void> {
     // Build semester from season and course year
