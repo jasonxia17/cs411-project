@@ -12,11 +12,8 @@ export default function ViewTopicsPage(): JSX.Element {
       return;
     }
 
-    fetch("/api/view_topics", {
-      method: "GET",
-      headers: {
-        courseId
-      }
+    fetch(`/api/course/${courseId}/view_topics?`, {
+      method: "GET"
     })
       .then(res => res.json())
       .then(data => {
