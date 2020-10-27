@@ -12,16 +12,10 @@ export default function ViewPostsPage(): JSX.Element {
       return;
     }
 
-    fetch("/api/view_posts", {
-      method: "GET",
-      headers: {
-        courseId
-      }
+    fetch(`/api/course/${courseId}/view_posts?`, {
+      method: "GET"
     })
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
         setPosts(data.posts);
       })

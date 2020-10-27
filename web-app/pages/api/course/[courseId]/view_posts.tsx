@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getConnection } from "../shared/sql_connection";
+import { getConnection } from "../../../shared/sql_connection";
 
 async function viewPostsHandler(
   req: NextApiRequest,
@@ -8,7 +8,7 @@ async function viewPostsHandler(
   const connection = await getConnection();
 
   if (req.method === "GET") {
-    const courseId = parseInt(req.headers.courseid as string);
+    const courseId = parseInt(req.query.courseId as string);
 
     const [
       rows,
