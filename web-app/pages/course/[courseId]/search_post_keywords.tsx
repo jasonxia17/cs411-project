@@ -11,13 +11,13 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
   async function searchForPosts(): Promise<void> {
     const courseId = query.courseId as string;
 
-    await fetch("/api/search_post_keywords", {
-      method: "GET",
-      headers: {
-        courseId,
-        keywords: keywords
+    await fetch(
+      `/api/course/${courseId}/search_post_keywords?` +
+        new URLSearchParams({ keywords: keywords }),
+      {
+        method: "GET"
       }
-    })
+    )
       .then(res => res.json())
       .then(data => {
         setMatchingPosts(data.posts);
