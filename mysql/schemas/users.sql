@@ -2,7 +2,7 @@
 Schemas are taken directly from the NextAuth documentation.
 */
 
-CREATE TABLE sessions
+CREATE TABLE IF NOT EXISTS sessions
   (
     id            INT NOT NULL AUTO_INCREMENT,
     user_id       INTEGER NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE sessions
     PRIMARY KEY (id)
   );
 
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
   (
     id             INT NOT NULL AUTO_INCREMENT,
     name           VARCHAR(255),
@@ -26,7 +26,7 @@ CREATE TABLE users
     PRIMARY KEY (id)
   );
 
-CREATE TABLE verification_requests
+CREATE TABLE IF NOT EXISTS verification_requests
   (
     id         INT NOT NULL AUTO_INCREMENT,
     identifier VARCHAR(255) NOT NULL,
@@ -49,4 +49,5 @@ CREATE UNIQUE INDEX email
 CREATE UNIQUE INDEX token
   ON verification_requests(token);
 
-INSERT INTO users(id, name) VALUES (1, "Sock Cat");
+INSERT IGNORE INTO users(id, name) VALUES (1, "Sock Cat");
+INSERT IGNORE INTO users(id, name) VALUES (2, "Avery");
