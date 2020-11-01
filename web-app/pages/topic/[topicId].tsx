@@ -6,11 +6,6 @@ export default function SingleTopicPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const { query } = useRouter();
 
-  const [session, loading] = useProtectedRoute();
-  if (loading || !session) {
-    return <div> Loading... </div>;
-  }
-
   useEffect(() => {
     const topicId = query.topicId;
     if (topicId === undefined) {
@@ -24,6 +19,11 @@ export default function SingleTopicPage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <div style={{ border: "1px solid black", marginBottom: 30 }}>

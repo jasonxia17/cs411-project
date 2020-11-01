@@ -23,12 +23,6 @@ export default function ViewCourses(): JSX.Element {
     router.back();
   }
 
-  if (loading) {
-    return <div> Loading... </div>;
-  } else if (!session) {
-    return <div> Redirecting to signin... </div>;
-  }
-
   return (
     <div>
       <p>Your user name:</p>

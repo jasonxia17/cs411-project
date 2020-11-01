@@ -8,14 +8,14 @@ export default function SinglePostPage(): JSX.Element {
   const [newComment, setNewComment] = useState("");
   const { query } = useRouter();
 
+  useEffect(() => {
+    fetchPost();
+  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
     return <div> Loading... </div>;
   }
-
-  useEffect(() => {
-    fetchPost();
-  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
 
   async function fetchPost(): Promise<void> {
     const postId = query.postId;
@@ -48,12 +48,6 @@ export default function SinglePostPage(): JSX.Element {
     });
     setNewComment("");
     fetchPost();
-  }
-
-  if (loading) {
-    return <div> Loading... </div>;
-  } else if (!session) {
-    return <div> Redirecting to signin... </div>;
   }
 
   return (

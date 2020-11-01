@@ -7,11 +7,6 @@ export default function ViewTopicsPage(): JSX.Element {
   const [topics, setTopics] = useState([]);
   const { query } = useRouter();
 
-  const [session, loading] = useProtectedRoute();
-  if (loading || !session) {
-    return <div> Loading... </div>;
-  }
-
   useEffect(() => {
     const courseId = query.courseId as string;
     if (courseId == undefined) {
@@ -27,6 +22,11 @@ export default function ViewTopicsPage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <ul>

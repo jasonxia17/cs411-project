@@ -10,6 +10,7 @@ export default function useProtectedRoute(): [Session, boolean] {
   const SET_USER_NAME_PATH = "/set_user_name";
 
   useEffect(() => {
+    console.log(session, loading, router.pathname);
     if (loading) return;
     if (!session) {
       router.push(SIGNIN_PATH);
@@ -19,7 +20,7 @@ export default function useProtectedRoute(): [Session, boolean] {
     if (session.user.name === null && router.pathname != SET_USER_NAME_PATH) {
       router.push(SET_USER_NAME_PATH);
     }
-  }, [session]);
+  }, [session, loading]);
 
   return [session, loading];
 }

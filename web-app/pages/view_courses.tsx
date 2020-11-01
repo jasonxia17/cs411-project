@@ -4,10 +4,6 @@ import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function ViewCourses(): JSX.Element {
   const [courses, setCourses] = useState([]);
-  const [session, loading] = useProtectedRoute();
-  if (loading || !session) {
-    return <div> Loading... </div>;
-  }
 
   useEffect(() => {
     fetch("/api/view_courses")
@@ -17,6 +13,11 @@ export default function ViewCourses(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, []); // empty array => effect never needs to re-run.
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <ul>

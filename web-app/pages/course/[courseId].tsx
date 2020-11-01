@@ -7,11 +7,6 @@ export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
 
-  const [session, loading] = useProtectedRoute();
-  if (loading || !session) {
-    return <div> Loading... </div>;
-  }
-
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
     const courseId = query.courseId as string;
@@ -20,6 +15,11 @@ export default function ViewCourseHomepage(): JSX.Element {
     }
     setCourseId(courseId);
   }, [query]);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   const viewPostsLink = `/course/${courseId}/view_posts`;
   const makePostsLink = `/course/${courseId}/make_post`;
