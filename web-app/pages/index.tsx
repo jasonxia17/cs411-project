@@ -5,6 +5,7 @@ import App from "../components/example/App";
 
 export default class Index extends React.Component {
   render(): JSX.Element {
+    // TODO refactor to log in page
     return (
       <div className="container">
         <Head>
@@ -14,13 +15,13 @@ export default class Index extends React.Component {
 
         <main>
           <App />
-          <Link href="/example_posts">
-            <a className="posts_link">Go see posts!</a>
+          <Link href="view_courses">
+            <a className="page_link">View courses!</a>
           </Link>
         </main>
 
         <style jsx>{`
-          .posts_link {
+          .page_link {
             text-decoration: underline;
           }
 
