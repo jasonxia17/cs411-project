@@ -12,14 +12,25 @@ export default async function searchPostKeywordsHandler(
     const keywords = req.query.keywords;
 
     const [
-      rows,
-      _
+      directly_matched_posts, // Posts that contain keywords in title/body
+      directly_matched_posts_fields
     ] = await connection.execute(
       "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?) AND (Body LIKE ? OR Title LIKE ?)",
       [courseId, `%${keywords}%`, `%${keywords}%`]
     );
 
-    res.status(200).json({ posts: rows });
+    const [
+      matching_comments_posts,
+      matching_comments_posts_fields
+    ] = await connection.execute(
+      "SELECT DISTINCT Posts.PostId, Posts.UserId, Title, Posts.Body FROM Posts JOIN Comments ON Posts.PostId = Comments.PostId WHERE Comments.Body LIKE ?",
+      [`%${keywords}%`]
+    );
+
+    res.status(200).json({
+      directly_matched_posts,
+      matching_comments_posts
+    });
   } else {
     res.status(405).end(`Method ${req.method} not allowed.`);
   }
