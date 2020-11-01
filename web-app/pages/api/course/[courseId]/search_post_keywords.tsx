@@ -15,7 +15,7 @@ export default async function searchPostKeywordsHandler(
       directly_matched_posts, // Posts that contain keywords in title/body
       directly_matched_posts_fields
     ] = await connection.execute(
-      "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?) AND (Body LIKE ? OR Title LIKE ?)",
+      "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)",
       [courseId, `%${keywords}%`, `%${keywords}%`]
     );
 
@@ -23,8 +23,8 @@ export default async function searchPostKeywordsHandler(
       matching_comments_posts,
       matching_comments_posts_fields
     ] = await connection.execute(
-      "SELECT DISTINCT Posts.PostId, Posts.UserId, Title, Posts.Body FROM Posts JOIN Comments ON Posts.PostId = Comments.PostId WHERE Comments.Body LIKE ?",
-      [`%${keywords}%`]
+      "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
+      [courseId, `%${keywords}%`]
     );
 
     res.status(200).json({
