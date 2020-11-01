@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import App from "../components/example/App";
 import Header from "../components/user-profile/Header";
 
 export default function Index(): JSX.Element {
@@ -14,7 +13,7 @@ export default function Index(): JSX.Element {
 
       <main>
         <Header />
-        <App />
+        <p className="welcome">Time to struggle together.</p>
         <Link href="view_courses">
           <a className="page_link">View courses!</a>
         </Link>
@@ -32,6 +31,10 @@ export default function Index(): JSX.Element {
           flex-direction: column;
           justify-content: center;
           align-items: center;
+        }
+
+        .welcome {
+          color: blue;
         }
 
         main {
