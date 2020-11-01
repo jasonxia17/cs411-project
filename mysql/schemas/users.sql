@@ -48,3 +48,5 @@ CREATE UNIQUE INDEX email
 
 CREATE UNIQUE INDEX token
   ON verification_requests(token);
+
+INSERT INTO users(id, name) VALUES (1, "Sock Cat");
