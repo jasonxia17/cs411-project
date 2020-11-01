@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useProtectedRoute from "../hooks/protected_route_hook";
+import useProtectedRoute from "../../../hooks/protected_route_hook";
 
 export default function MakePostPage(): JSX.Element {
   const [postTitle, setPostTitle] = useState("");
