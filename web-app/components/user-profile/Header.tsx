@@ -8,10 +8,11 @@ export default function Header(): JSX.Element {
   return (
     <header className={styles.Header}>
       {session && (
-        <p>
-          Signed in as {session.user.email}
+        <div>
+          <p>Signed in as {session.user.email}</p>
+          <p>Your display name is {session.user.name}</p>
           <button onClick={() => signOut()}>Sign out</button>
-        </p>
+        </div>
       )}
       {!session && (
         <p>
