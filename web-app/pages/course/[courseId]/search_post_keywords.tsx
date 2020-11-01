@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Post from "../../../components/Post";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
@@ -52,10 +53,12 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
       <ul>
         {matchingPosts.map(post => (
           <li key={post.PostId}>
-            <h2>
-              Post {post.PostId} by User {post.UserId}
-            </h2>
-            <p>{post.Body}</p>
+            <Post
+              PostId={post.PostId as string}
+              UserId={post.UserId as string}
+              Title={post.Title as string}
+              Body={post.Body as string}
+            />
           </li>
         ))}
       </ul>
