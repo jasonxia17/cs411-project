@@ -4,7 +4,11 @@ import useProtectedRoute from "../../../hooks/protected_route_hook";
 export default function MakePostPage(): JSX.Element {
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
+
   const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   async function submitPost(): Promise<void> {
     await fetch("/api/make_post", {
@@ -15,12 +19,6 @@ export default function MakePostPage(): JSX.Element {
       body: JSON.stringify({ postTitle, postBody })
     });
     window.location.href = "/"; // go back to home page
-  }
-
-  if (loading) {
-    return <div> Loading... </div>;
-  } else if (!session) {
-    return <div> Redirecting to signin... </div>;
   }
 
   return (

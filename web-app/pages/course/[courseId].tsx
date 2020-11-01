@@ -1,10 +1,16 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../hooks/protected_route_hook";
 
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {

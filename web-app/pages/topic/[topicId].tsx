@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../hooks/protected_route_hook";
 
 export default function SingleTopicPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
-
   const { query } = useRouter();
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   useEffect(() => {
     const topicId = query.topicId;

@@ -6,8 +6,12 @@ export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [session, loading] = useProtectedRoute();
   const { query } = useRouter();
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   useEffect(() => {
     fetchPost();

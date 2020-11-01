@@ -1,8 +1,13 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function ViewCourses(): JSX.Element {
   const [courses, setCourses] = useState([]);
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   useEffect(() => {
     fetch("/api/view_courses")

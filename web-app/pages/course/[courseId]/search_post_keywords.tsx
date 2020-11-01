@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../../hooks/protected_route_hook";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
@@ -7,6 +8,11 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
   const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
 
   const { query } = useRouter();
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   async function searchForPosts(): Promise<void> {
     const courseId = query.courseId as string;

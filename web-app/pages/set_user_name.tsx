@@ -3,9 +3,13 @@ import React, { useState } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function ViewCourses(): JSX.Element {
-  const [session, loading] = useProtectedRoute();
   const [newUserName, setNewUserName] = useState("");
   const router = useRouter();
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   async function submitUserName(): Promise<void> {
     await fetch("/api/auth/set_user_name", {
