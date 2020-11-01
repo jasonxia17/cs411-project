@@ -21,7 +21,6 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
     )
       .then(res => res.json())
       .then(data => {
-        console.log("data: ", data);
         setMatchingPosts(
           data.directly_matched_posts.concat(data.matching_comments_posts)
         );
