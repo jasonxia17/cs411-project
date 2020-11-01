@@ -32,11 +32,7 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
 
   const searchTextbox = (
     <div>
-      <h1>Search for matching posts!</h1>
-      <h2>
-        Usage: enter keywords to find posts that contain or have comments
-        containing these keywords
-      </h2>
+      <h1>Search for matching posts and comments!</h1>
       <textarea
         style={{ width: 250, height: 50, padding: 10, resize: "none" }}
         value={keywords}
