@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Topics (
     TopicId INT PRIMARY KEY AUTO_INCREMENT, 
-    CourseId INT,
+    CourseId INT REFERENCES Courses(CourseId),
     Title VARCHAR(256)
 );
 

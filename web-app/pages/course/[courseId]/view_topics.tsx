@@ -4,15 +4,23 @@ import { useRouter } from "next/router";
 
 export default function ViewTopicsPage(): JSX.Element {
   const [topics, setTopics] = useState([]);
+  const { query } = useRouter();
 
   useEffect(() => {
-    fetch("/api/view_topics")
+    const courseId = query.courseId as string;
+    if (courseId == undefined) {
+      return;
+    }
+
+    fetch(`/api/course/${courseId}/view_topics?`, {
+      method: "GET"
+    })
       .then(res => res.json())
       .then(data => {
         setTopics(data.topics);
       })
       .catch(reason => console.log(reason));
-  }, []); // empty array => effect never needs to re-run.
+  }, [query]);
 
   return (
     <ul>

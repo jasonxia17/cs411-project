@@ -1,17 +1,23 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
   const [matchingPosts, setMatchingPosts] = useState([]);
   const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
 
+  const { query } = useRouter();
+
   async function searchForPosts(): Promise<void> {
-    await fetch("/api/search_post_keywords", {
-      method: "GET",
-      headers: {
-        keywords: keywords
+    const courseId = query.courseId as string;
+
+    await fetch(
+      `/api/course/${courseId}/search_post_keywords?` +
+        new URLSearchParams({ keywords: keywords }),
+      {
+        method: "GET"
       }
-    })
+    )
       .then(res => res.json())
       .then(data => {
         setMatchingPosts(data.posts);

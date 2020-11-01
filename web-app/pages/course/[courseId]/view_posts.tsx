@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function ViewPostsPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
+  const { query } = useRouter();
 
   useEffect(() => {
-    fetch("/api/view_posts")
+    const courseId = query.courseId as string;
+    if (courseId == undefined) {
+      return;
+    }
+
+    fetch(`/api/course/${courseId}/view_posts?`, {
+      method: "GET"
+    })
       .then(res => res.json())
       .then(data => {
         setPosts(data.posts);
       })
       .catch(reason => console.log(reason));
-  }, []); // empty array => effect never needs to re-run.
+  }, [query]);
 
   return (
     <ul>
