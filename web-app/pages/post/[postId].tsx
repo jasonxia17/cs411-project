@@ -40,6 +40,23 @@ export default function SinglePostPage(): JSX.Element {
     location.reload();
   }
 
+  async function submitEdit(): Promise<void> {
+    const postId = query.postId;
+    if (postId === undefined) {
+      alert("Failed to edit post");
+      return;
+    }
+
+    await fetch("/api/edit_post", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ postId, newComment })
+    });
+    location.reload();
+  }
+
   return (
     <div>
       <div style={{ border: "1px solid black", marginBottom: 30 }}>
@@ -53,6 +70,11 @@ export default function SinglePostPage(): JSX.Element {
             </li>
           ))}
         </ul>
+      </div>
+      <div>
+        <button style={{ cursor: "pointer" }} onClick={submitEdit}>
+          Edit!
+        </button>
       </div>
       <h2>Comments</h2>
       <ul>
