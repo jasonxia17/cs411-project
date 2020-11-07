@@ -12,10 +12,10 @@ async function editPostHandler(
     return;
   }
 
-  await connection.execute(
-    "UPDATE Posts SET PostId = ?, Body = ? WHERE PostId = ?",
-    [req.body.postId, req.body.postBody, req.body.postId]
-  );
+  await connection.execute("UPDATE Posts SET Body = ? WHERE PostId = ?", [
+    req.body.postBody,
+    req.body.postId
+  ]);
 
   res.status(200).end();
 }
