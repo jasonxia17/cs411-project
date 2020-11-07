@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -5,7 +6,6 @@ export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-
   const { query } = useRouter();
 
   useEffect(() => {
@@ -50,6 +50,11 @@ export default function SinglePostPage(): JSX.Element {
                 Post {post.PostId} by User {post.UserId}: {post.Title}
               </h2>
               <p>{post.Body}</p>
+              <div>
+                <Link href={`/post/${post.PostId}/edit_post`}>
+                  <a className="edit_link">Edit post!</a>
+                </Link>
+              </div>
             </li>
           ))}
         </ul>
