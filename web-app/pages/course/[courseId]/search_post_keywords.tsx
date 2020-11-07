@@ -20,11 +20,7 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
       }
     )
       .then(res => res.json())
-      .then(data => {
-        setMatchingPosts(
-          data.directly_matched_posts.concat(data.matching_comments_posts)
-        );
-      })
+      .then(data => setMatchingPosts(data.matched_posts))
       .catch(reason => console.log(reason));
     setShouldDisplayResults(true);
   }

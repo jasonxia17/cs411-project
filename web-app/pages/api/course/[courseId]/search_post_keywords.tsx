@@ -12,24 +12,13 @@ export default async function searchPostKeywordsHandler(
     const keywords = req.query.keywords;
 
     const [
-      directly_matched_posts, // Posts that contain keywords in title/body
-      directly_matched_posts_fields
+      matched_posts
     ] = await connection.execute(
-      "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)",
-      [courseId, `%${keywords}%`, `%${keywords}%`]
+      "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
+      [courseId, `%${keywords}%`, `%${keywords}%`, courseId, `%${keywords}%`]
     );
-
-    const [
-      matching_comments_posts,
-      matching_comments_posts_fields
-    ] = await connection.execute(
-      "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
-      [courseId, `%${keywords}%`]
-    );
-
     res.status(200).json({
-      directly_matched_posts,
-      matching_comments_posts
+      matched_posts
     });
   } else {
     res.status(405).end(`Method ${req.method} not allowed.`);
