@@ -15,23 +15,53 @@ export default async function joinCourseHandler(
   const connection = await getConnection();
 
   const [
-    course_to_join
+    courseToJoin
   ] = await connection.execute(
     "SELECT CourseId from Courses WHERE JoinCode = ?",
     [req.body.joinCode]
   );
-  console.log(course_to_join);
-  if (course_to_join[0] == undefined) {
+  if (courseToJoin[0] == undefined) {
     res.status(404).end("Course ID not found");
     return;
   }
-  const new_course_id = course_to_join[0].CourseId;
+  const newCourseId = courseToJoin[0].CourseId;
 
-  const shouldJoinAsStudent = true; // req.body.shouldJoinAsStudent as boolean;
+  const shouldJoinAsStudent = req.body.shouldJoinAsStudent as boolean;
+  const userId = session.user["id"];
+
+  async function hasJoinedAsRole(role: string) {
+    const [
+      joinedAsInstructor
+    ] = await connection.execute("SELECT * from ?s WHERE ?Id = ?", [
+      role,
+      role,
+      userId
+    ]);
+    return joinedAsInstructor[0] != undefined;
+  }
+
   if (shouldJoinAsStudent) {
+    if (hasJoinedAsRole("Instructor")) {
+      res
+        .status(401)
+        .end("User has already joined this course as an instructor");
+      return;
+    }
     await connection.execute(
       "INSERT IGNORE INTO Students(StudentId, CourseId) VALUES (?, ?)",
-      [session.user["id"], new_course_id as number]
+      [userId, newCourseId as number]
+    );
+  } else {
+    if (hasJoinedAsRole("Student")) {
+      res
+        .status(401)
+        .end("User has already joined this course as an instructor");
+      return;
+    }
+
+    await connection.execute(
+      "INSERT IGNORE INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
+      [userId, newCourseId as number]
     );
   }
 
