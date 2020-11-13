@@ -20,13 +20,13 @@ export default async function createCourseHandler(
   );
 
   // TODO This is a hacky approach that only works when we auto-incr the course id
-  const [new_course] = await connection.query(
+  const [newCourse] = await connection.query(
     "SELECT MAX(CourseId) as NewCourseId FROM Courses"
   );
-  const new_course_id = new_course[0].NewCourseId;
+  const newCourseId = newCourse[0].NewCourseId;
   await connection.execute(
     "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
-    [session.user["id"], new_course_id as number]
+    [session.user["id"], newCourseId as number]
   );
 
   res.status(200).end();
