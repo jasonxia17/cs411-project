@@ -6,6 +6,7 @@ import useProtectedRoute from "../../hooks/protected_route_hook";
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
+  const [joinCode, setJoinCode] = useState("");
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -14,6 +15,13 @@ export default function ViewCourseHomepage(): JSX.Element {
       return;
     }
     setCourseId(courseId);
+
+    fetch(`/api/course/${courseId}`)
+      .then(res => res.json())
+      .then(data => {
+        setJoinCode(data.courseData.JoinCode as string);
+      })
+      .catch(reason => console.log(reason));
   }, [query]);
 
   const [session, loading] = useProtectedRoute();
@@ -49,6 +57,7 @@ export default function ViewCourseHomepage(): JSX.Element {
           <a className="page_link">Go see topics!</a>
         </Link>
       </div>
+      <div>Join Code: {joinCode}</div>
     </div>
   );
 }
