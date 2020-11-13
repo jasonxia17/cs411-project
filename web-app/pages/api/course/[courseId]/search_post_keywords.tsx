@@ -16,12 +16,24 @@ export default async function searchPostKeywordsHandler(
   const courseId = parseInt(req.query.courseId as string);
   const keywords = req.query.keywords;
 
+  // Find posts where the keywords are substrings of the post text
+  // or where the keywords are substrings of the comments text (where the comments are made in the post)
+  // or where the keywords match the users who created the posts
   const [
     matched_posts
   ] = await connection.execute(
-    "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
-    [courseId, `%${keywords}%`, `%${keywords}%`, courseId, `%${keywords}%`]
+    "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)",
+    [
+      courseId,
+      `%${keywords}%`,
+      `%${keywords}%`,
+      courseId,
+      `%${keywords}%`,
+      courseId,
+      `%${keywords}%`
+    ]
   );
+  console.log(matched_posts);
   res.status(200).json({
     matched_posts
   });
