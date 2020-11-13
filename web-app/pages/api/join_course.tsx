@@ -53,11 +53,10 @@ export default async function joinCourseHandler(
   if (shouldJoinAsStudent) {
     if (await hasJoinedAsInstructor()) {
       res
-        .status(404)
+        .status(401)
         .end("User has already joined this course as an instructor");
       return;
     }
-    console.log("here out");
     await connection.execute(
       "INSERT IGNORE INTO Students(StudentId, CourseId) VALUES (?, ?)",
       [userId, courseToJoinId as number]
@@ -65,11 +64,10 @@ export default async function joinCourseHandler(
   } else {
     if (await hasJoinedAsStudent()) {
       res
-        .status(404)
+        .status(401)
         .end("User has already joined this course as an instructor");
       return;
     }
-
     await connection.execute(
       "INSERT IGNORE INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
       [userId, courseToJoinId as number]
