@@ -22,7 +22,9 @@ export default async function searchPostKeywordsHandler(
   const [
     matched_posts
   ] = await connection.execute(
-    "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)",
+    "SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)\
+     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)\
+     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)",
     [
       courseId,
       `%${keywords}%`,
@@ -33,6 +35,7 @@ export default async function searchPostKeywordsHandler(
       `%${keywords}%`
     ]
   );
+
   console.log(matched_posts);
   res.status(200).json({
     matched_posts
