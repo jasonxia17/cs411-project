@@ -23,7 +23,7 @@ export default async function createCourseHandler(
   const [newCourse] = await connection.query(
     "SELECT MAX(CourseId) as NewCourseId FROM Courses"
   );
-  const newCourseId = newCourse[0].NewCourseId;
+  const newCourseId = JSON.parse(JSON.stringify(newCourse))[0].NewCourseId;
   await connection.execute(
     "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
     [session.user["id"], newCourseId as number]
