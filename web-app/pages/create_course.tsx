@@ -5,9 +5,10 @@ export default function CreateCoursePage(): JSX.Element {
   function generateRandomJoinCode(joinCodeLength: number) {
     // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
     const asciiBase = 36;
+    // Note: First 2 chars will always be 0. -- we want to avoid them
     return Math.random()
       .toString(asciiBase)
-      .substring(0, joinCodeLength);
+      .substring(2, joinCodeLength + 2);
   }
 
   function getCurrentSemester(): { year: number; season: string } {
