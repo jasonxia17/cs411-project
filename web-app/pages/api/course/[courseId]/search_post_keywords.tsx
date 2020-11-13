@@ -16,7 +16,7 @@ export default async function searchPostKeywordsHandler(
   const courseId = parseInt(req.query.courseId as string);
   const keywords = req.query.keywords;
 
-   const [
+  const [
     matched_posts
   ] = await connection.execute(
     "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
