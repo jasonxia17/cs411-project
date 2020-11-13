@@ -20,48 +20,59 @@ export default async function joinCourseHandler(
     "SELECT CourseId from Courses WHERE JoinCode = ?",
     [req.body.joinCode]
   );
-  if (courseToJoin[0] == undefined) {
+  const courseArr = JSON.parse(JSON.stringify(courseToJoin));
+  if (courseArr.length == 0) {
     res.status(404).end("Course ID not found");
     return;
   }
-  const newCourseId = courseToJoin[0].CourseId;
+  const courseToJoinId = courseArr[0].CourseId;
 
   const shouldJoinAsStudent = req.body.shouldJoinAsStudent as boolean;
   const userId = session.user["id"];
 
-  async function hasJoinedAsRole(role: string) {
+  async function hasJoinedAsInstructor() {
     const [
       joinedAsInstructor
-    ] = await connection.execute("SELECT * from ?s WHERE ?Id = ?", [
-      role,
-      role,
-      userId
-    ]);
-    return joinedAsInstructor[0] != undefined;
+    ] = await connection.execute(
+      "SELECT * from Instructors WHERE InstructorId = ? and CourseId = ?",
+      [userId, courseToJoinId]
+    );
+    return JSON.parse(JSON.stringify(joinedAsInstructor)).length > 0;
+  }
+
+  async function hasJoinedAsStudent() {
+    const [
+      joinedAsStudent
+    ] = await connection.execute(
+      "SELECT * from Students WHERE StudentId = ? and CourseId = ?",
+      [userId, courseToJoinId]
+    );
+    return JSON.parse(JSON.stringify(joinedAsStudent)).length > 0;
   }
 
   if (shouldJoinAsStudent) {
-    if (hasJoinedAsRole("Instructor")) {
+    if (await hasJoinedAsInstructor()) {
       res
-        .status(401)
+        .status(404)
         .end("User has already joined this course as an instructor");
       return;
     }
+    console.log("here out");
     await connection.execute(
       "INSERT IGNORE INTO Students(StudentId, CourseId) VALUES (?, ?)",
-      [userId, newCourseId as number]
+      [userId, courseToJoinId as number]
     );
   } else {
-    if (hasJoinedAsRole("Student")) {
+    if (await hasJoinedAsStudent()) {
       res
-        .status(401)
+        .status(404)
         .end("User has already joined this course as an instructor");
       return;
     }
 
     await connection.execute(
       "INSERT IGNORE INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
-      [userId, newCourseId as number]
+      [userId, courseToJoinId as number]
     );
   }
 
