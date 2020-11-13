@@ -23,7 +23,7 @@ export default async function viewCoursesHandler(
   const [
     instructor_courses
   ] = await connection.query(
-    "SELECT * FROM Courses WHERE Courses.CourseId = Instructor.CourseId and Instructor.InstructorId = ?",
+    "SELECT * FROM Courses WHERE Courses.CourseId = Instructors.CourseId and Instructors.InstructorId = ?",
     [session.user["id"]]
   );
   res.status(200).json({ student_courses, instructor_courses });
