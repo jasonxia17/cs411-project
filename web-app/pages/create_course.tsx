@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function CreateCoursePage(): JSX.Element {
+  function generateRandomJoinCode(joinCodeLength: number) {
+    // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+    const asciiBase = 36;
+    return Math.random()
+      .toString(asciiBase)
+      .substring(joinCodeLength);
+  }
+
   function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
     const date = new Date();
@@ -32,10 +40,15 @@ export default function CreateCoursePage(): JSX.Element {
   }
 
   const currentSemester = getCurrentSemester();
-
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(currentSemester.season);
   const [year, setYear] = useState(currentSemester.year);
+
+  const JOIN_CODE_LENGTH = 5;
+  const [joinCode, setJoinCode] = useState(
+    generateRandomJoinCode(JOIN_CODE_LENGTH)
+  );
+
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
     return <div> Loading... </div>;
@@ -50,7 +63,7 @@ export default function CreateCoursePage(): JSX.Element {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ title, semester })
+      body: JSON.stringify({ title, semester, joinCode })
     });
     window.location.href = "/view_courses";
   }
@@ -94,6 +107,23 @@ export default function CreateCoursePage(): JSX.Element {
           min="1900"
           max="2099"
           step="1"
+        />
+      </div>
+      <h2>(Optional) Customized Join Code</h2>
+      Note: If you choose not to input a custom join code, one will be generated
+      for you. Maximum length: {JOIN_CODE_LENGTH}
+      <div
+        style={{
+          marginTop: 5
+        }}
+      >
+        Join Code:
+        <input
+          value={joinCode}
+          onChange={e => {
+            const code = e.target.value;
+            setJoinCode(code.substr(0, JOIN_CODE_LENGTH));
+          }}
         />
       </div>
       <div

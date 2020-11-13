@@ -15,18 +15,15 @@ export default async function createCourseHandler(
   const connection = await getConnection();
 
   await connection.execute(
-    "INSERT INTO Courses(Title, Semester) VALUES (?, ?)",
-    [req.body.title, req.body.semester]
+    "INSERT INTO Courses(Title, Semester, JoinCode) VALUES (?, ?, ?)",
+    [req.body.title, req.body.semester, req.body.joinCode]
   );
 
-  const [
-    new_course
-  ] = await connection.query(
-    "SELECT CourseId FROM Courses WHERE Courses.Title = ? and Courses.Semester = ?",
-    [req.body.title, req.body.semester]
+  // TODO This is a hacky approach that only works when we auto-incr the course id
+  const [new_course] = await connection.query(
+    "SELECT MAX(CourseId) as NewCourseId FROM Courses"
   );
-  const new_course_id = new_course[0].CourseId;
-
+  const new_course_id = new_course[0].NewCourseId;
   await connection.execute(
     "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
     [session.user["id"], new_course_id as number]
