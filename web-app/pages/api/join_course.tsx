@@ -30,7 +30,7 @@ export default async function joinCourseHandler(
   const shouldJoinAsStudent = true; // req.body.shouldJoinAsStudent as boolean;
   if (shouldJoinAsStudent) {
     await connection.execute(
-      "INSERT INTO Students(StudentId, CourseId) VALUES (?, ?)",
+      "INSERT IGNORE INTO Students(StudentId, CourseId) VALUES (?, ?)",
       [session.user["id"], new_course_id as number]
     );
   }
