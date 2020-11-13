@@ -52,7 +52,7 @@ export default function JoinCourse(): JSX.Element {
             </h2>
           ) : errorCode == 401 ? (
             <h2>
-              Warning: You're already a student/instructor for this course.
+              Warning: You are already a student/instructor for this course.
             </h2>
           ) : null}
         </div>
