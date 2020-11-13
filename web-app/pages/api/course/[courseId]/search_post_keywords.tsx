@@ -16,12 +16,13 @@ export default async function searchPostKeywordsHandler(
   const courseId = parseInt(req.query.courseId as string);
   const keywords = req.query.keywords;
 
-  const [
-    rows
+   const [
+    matched_posts
   ] = await connection.execute(
-    "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?) AND (Body LIKE ? OR Title LIKE ?)",
-    [courseId, `%${keywords}%`, `%${keywords}%`]
+    "SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?) UNION SELECT * FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)",
+    [courseId, `%${keywords}%`, `%${keywords}%`, courseId, `%${keywords}%`]
   );
-
-  res.status(200).json({ posts: rows });
+  res.status(200).json({
+    matched_posts
+  });
 }

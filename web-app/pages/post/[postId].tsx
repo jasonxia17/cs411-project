@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
@@ -50,6 +51,17 @@ export default function SinglePostPage(): JSX.Element {
     fetchPost();
   }
 
+  async function deleteComment(commentId: string): Promise<void> {
+    await fetch("/api/delete_comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ commentId })
+    });
+    location.reload();
+  }
+
   return (
     <div>
       <div style={{ border: "1px solid black", marginBottom: 30 }}>
@@ -60,6 +72,11 @@ export default function SinglePostPage(): JSX.Element {
                 Post {post.PostId} by User {post.UserId}: {post.Title}
               </h2>
               <p>{post.Body}</p>
+              <div>
+                <Link href={`/post/${post.PostId}/edit_post`}>
+                  <a className="edit_link">Edit post!</a>
+                </Link>
+              </div>
             </li>
           ))}
         </ul>
@@ -72,6 +89,16 @@ export default function SinglePostPage(): JSX.Element {
               Comment {comment.CommentId} by User {comment.UserId}
             </h3>
             <p>{comment.Body}</p>
+            <div>
+              <button
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  deleteComment(comment.CommentId);
+                }}
+              >
+                Delete comment!
+              </button>
+            </div>
           </li>
         ))}
       </ul>
