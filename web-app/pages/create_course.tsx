@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
-export default function MakePostPage(): JSX.Element {
+export default function CreateCoursePage(): JSX.Element {
   function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
     const date = new Date();
@@ -25,7 +25,6 @@ export default function MakePostPage(): JSX.Element {
         season = "Winter";
       }
     }
-    console.log(day, month, season, date.getUTCFullYear());
     return {
       year: date.getUTCFullYear(),
       season
