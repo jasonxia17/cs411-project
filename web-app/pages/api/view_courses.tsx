@@ -17,13 +17,13 @@ export default async function viewCoursesHandler(
   const [
     student_courses
   ] = await connection.query(
-    "SELECT * FROM Courses WHERE Courses.CourseId = Students.CourseId and Students.StudentId = ?",
+    "SELECT * FROM Courses, Students WHERE Courses.CourseId = Students.CourseId and Students.StudentId = ?",
     [session.user["id"]]
   );
   const [
     instructor_courses
   ] = await connection.query(
-    "SELECT * FROM Courses WHERE Courses.CourseId = Instructors.CourseId and Instructors.InstructorId = ?",
+    "SELECT * FROM Courses, Instructors WHERE Courses.CourseId = Instructors.CourseId and Instructors.InstructorId = ?",
     [session.user["id"]]
   );
   res.status(200).json({ student_courses, instructor_courses });

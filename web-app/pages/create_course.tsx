@@ -52,7 +52,7 @@ export default function CreateCoursePage(): JSX.Element {
       },
       body: JSON.stringify({ title, semester })
     });
-    window.location.href = "/"; // go back to home page
+    window.location.href = "/view_courses";
   }
 
   return (
