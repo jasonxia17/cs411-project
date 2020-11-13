@@ -11,9 +11,20 @@ export default async function viewCoursesHandler(
     return;
   }
 
-  await verifyAuthentication(req, res);
+  const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  const [rows] = await connection.query("SELECT * FROM Courses");
-  res.status(200).json({ courses: rows });
+  const [
+    student_courses
+  ] = await connection.query(
+    "SELECT * FROM Courses WHERE Courses.CourseId = Students.CourseId and Students.StudentId = ?",
+    [session.user["id"]]
+  );
+  const [
+    instructor_courses
+  ] = await connection.query(
+    "SELECT * FROM Courses WHERE Courses.CourseId = Instructor.CourseId and Instructor.InstructorId = ?",
+    [session.user["id"]]
+  );
+  res.status(200).json({ student_courses, instructor_courses });
 }
