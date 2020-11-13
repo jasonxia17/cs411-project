@@ -7,7 +7,7 @@ export default function CreateCoursePage(): JSX.Element {
     const asciiBase = 36;
     return Math.random()
       .toString(asciiBase)
-      .substring(joinCodeLength);
+      .substring(0, joinCodeLength);
   }
 
   function getCurrentSemester(): { year: number; season: string } {
