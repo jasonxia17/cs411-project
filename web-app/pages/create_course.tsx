@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function MakePostPage(): JSX.Element {
   function getCurrentSemester(): { year: number; season: string } {
@@ -36,6 +37,10 @@ export default function MakePostPage(): JSX.Element {
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(currentSemester.season);
   const [year, setYear] = useState(currentSemester.year);
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   async function createNewCourse(): Promise<void> {
     // Build semester from season and course year
