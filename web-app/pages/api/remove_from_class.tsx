@@ -11,11 +11,11 @@ export default async function dropClassHandler(
     return;
   }
 
-  const session = await verifyAuthentication(req, res);
+  await verifyAuthentication(req, res);
   const connection = await getConnection();
 
   await connection.execute("DELETE FROM Students WHERE StudentId = ?", [
-    session.user["id"]
+    req.body.studentId
   ]);
   res.status(200).end();
 }
