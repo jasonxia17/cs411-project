@@ -4,15 +4,18 @@ import useProtectedRoute from "../../../hooks/protected_route_hook";
 
 export default function ViewRoster(): JSX.Element {
   const [students, setStudents] = useState([]);
+  const [courseId, setCourseId] = useState("");
   const { query } = useRouter();
 
   useEffect(() => {
-    const courseId = query.courseId as string;
-    if (courseId == undefined) {
-      return;
+    const courseIdLocal = query.courseId as string;
+    if (courseIdLocal != undefined) {
+      setCourseId(courseIdLocal);
     }
 
-    fetch(`/api/course/${courseId}/view_roster?`, {
+    // Use local version of course ID because useState doesn't
+    // guarantee synchronous updates
+    fetch(`/api/course/${courseIdLocal}/view_roster?`, {
       method: "GET"
     })
       .then(res => res.json())
@@ -35,32 +38,48 @@ export default function ViewRoster(): JSX.Element {
       },
       body: JSON.stringify({ studentId })
     });
-    window.location.href = "/view_courses";
+    location.reload();
   }
 
   return (
-    <ul>
-      {students.map(student => (
-        <li key={student.id}>
-          <div>
-            <h2>Name: {student.name}</h2>
-          </div>
-          <div
-            style={{
-              marginTop: 10
-            }}
-          >
-            <button
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                removeStudentFromRoster(student.id);
+    <div>
+      <ul>
+        {students.map(student => (
+          <li key={student.id}>
+            <div>
+              <h2>Name: {student.name}</h2>
+            </div>
+            <div
+              style={{
+                marginTop: 10
               }}
             >
-              Remove student from course
-            </button>
-          </div>
-        </li>
-      ))}
-    </ul>
+              <button
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  removeStudentFromRoster(student.id);
+                }}
+              >
+                Remove student from course
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            window.location.href = `/course/${courseId}`;
+          }}
+        >
+          Go back to course forum
+        </button>
+      </div>
+    </div>
   );
 }
