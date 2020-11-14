@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
+import Post from "../../../components/Post";
 
 export default function ViewPostsPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
@@ -32,14 +33,12 @@ export default function ViewPostsPage(): JSX.Element {
     <ul>
       {posts.map(post => (
         <li key={post.PostId}>
-          <Link href={`/post/${post.PostId}`}>
-            <a style={{ color: "chocolate" }}>
-              <h2>
-                Post {post.PostId} by User {post.UserId}: {post.Title}
-              </h2>
-            </a>
-          </Link>
-          <p>{post.Body}</p>
+          <Post
+            PostId={post.PostId as string}
+            UserId={post.UserId as string}
+            Title={post.Title as string}
+            Body={post.Body as string}
+          />
         </li>
       ))}
     </ul>
