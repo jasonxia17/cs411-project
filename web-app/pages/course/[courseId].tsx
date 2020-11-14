@@ -57,8 +57,8 @@ export default function ViewCourseHomepage(): JSX.Element {
   const makePostsLink = `/course/${courseId}/make_post`;
   const searchPostsLink = `/course/${courseId}/search_post_keywords`;
   const viewTopicsLink = `/course/${courseId}/view_topics`;
+  const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
 
-  console.log(userRole)
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
     <div>
@@ -91,6 +91,19 @@ export default function ViewCourseHomepage(): JSX.Element {
           <button style={{ cursor: "pointer" }} onClick={dropClassAsStudent}>
             Drop class
           </button>
+        </div>
+      )}
+      {userRole == UserRole.Instructor && (
+        <div
+          style={{
+            marginTop: 10
+          }}
+        >
+          <Link href={viewRosterAsInstructorLink}>
+            <a className="page_link">
+              See roster (to remove students from course)!
+            </a>
+          </Link>
         </div>
       )}
       <div
