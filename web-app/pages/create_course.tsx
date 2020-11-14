@@ -1,14 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
+import { useRouter } from "next/router";
 
 export default function CreateCoursePage(): JSX.Element {
+  const [existingJoinCodes, setExistingJoinCodes] = useState(new Set());
+
+  const { query } = useRouter();
+
+  useEffect(() => {
+    fetch("/api/find_preexisting_join_codes", {
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(data => {
+        setExistingJoinCodes(data.joinCodes);
+      })
+      .catch(reason => console.log(reason));
+  }, []);
+
   function generateRandomJoinCode(joinCodeLength: number) {
-    // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
-    const asciiBase = 36;
-    // Note: First 2 chars will always be 0. -- we want to avoid them
-    return Math.random()
-      .toString(asciiBase)
-      .substring(2, joinCodeLength + 2);
+    function getJoinCode(): string {
+      // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+      // Note: First 2 chars will always be 0. -- we want to avoid them
+      const asciiBase = 36;
+      return Math.random()
+        .toString(asciiBase)
+        .substring(2, joinCodeLength + 2);
+    }
+    let currJoinCode = getJoinCode();
+    while (currJoinCode in existingJoinCodes) {
+      currJoinCode = getJoinCode();
+    }
+    return currJoinCode;
   }
 
   function getCurrentSemester(): { year: number; season: string } {
@@ -49,6 +72,8 @@ export default function CreateCoursePage(): JSX.Element {
   const [joinCode, setJoinCode] = useState(
     generateRandomJoinCode(JOIN_CODE_LENGTH)
   );
+  const [isJoinCodeColliding, setIsJoinCodeColliding] = useState(false);
+  const SUCCESS = 200;
 
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
@@ -58,15 +83,22 @@ export default function CreateCoursePage(): JSX.Element {
   async function createNewCourse(): Promise<void> {
     // Build semester from season and course year
     const semester = season + " " + String(year);
-
+    let courseReturnCode;
     await fetch("/api/create_course", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ title, semester, joinCode })
+    }).then(data => {
+      courseReturnCode = data.status;
+      setIsJoinCodeColliding(courseReturnCode !== SUCCESS);
     });
-    window.location.href = "/view_courses";
+
+    if (courseReturnCode === SUCCESS) {
+      window.location.href = "/view_courses";
+    }
+    setJoinCode(generateRandomJoinCode(JOIN_CODE_LENGTH));
   }
 
   return (
@@ -118,6 +150,9 @@ export default function CreateCoursePage(): JSX.Element {
           marginTop: 5
         }}
       >
+        {isJoinCodeColliding && (
+          <h3>Join code already exists. Please select another one</h3>
+        )}
         Join Code:
         <input
           value={joinCode}
