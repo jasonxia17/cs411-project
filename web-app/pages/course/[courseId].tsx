@@ -15,6 +15,10 @@ export default function ViewCourseHomepage(): JSX.Element {
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
 
+  // So we can use the same API endpoint for dropping a class and removing someone
+  // else from a class
+  const [userId, setUserId] = useState("");
+
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
     const courseId = query.courseId as string;
@@ -27,6 +31,8 @@ export default function ViewCourseHomepage(): JSX.Element {
       .then(res => res.json())
       .then(data => {
         setJoinCode(data.courseData.JoinCode as string);
+        setUserId(data.userId);
+
         assert(data.isStudent || data.isInstructor);
         if (data.isStudent) {
           setUserRole(UserRole.Student);
@@ -37,13 +43,16 @@ export default function ViewCourseHomepage(): JSX.Element {
       .catch(reason => console.log(reason));
   }, [query]);
 
+  console.log(userId);
+
   async function dropClassAsStudent(): Promise<void> {
     assert(userRole == UserRole.Student);
-    await fetch("/api/drop_class", {
+    await fetch("/api/remove_from_class", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify({ studentId: userId })
     });
     window.location.href = "/view_courses";
   }
