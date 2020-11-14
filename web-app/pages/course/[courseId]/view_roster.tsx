@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
-import Post from "../../../components/Post";
-import Student from "../../../components/Student";
 
 export default function ViewRoster(): JSX.Element {
   const [students, setStudents] = useState([]);
@@ -33,11 +31,9 @@ export default function ViewRoster(): JSX.Element {
     <ul>
       {students.map(student => (
         <li key={student.id}>
-          <Student
-            UserId={student.id as string}
-            Name={student.name as string}
-            Email={student.email_verified as string}
-          />
+          <div>
+            <h2>Name: {student.name}</h2>
+          </div>
         </li>
       ))}
     </ul>
