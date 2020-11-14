@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function JoinCourse(): JSX.Element {
   const [joinCode, setJoinCode] = useState("");
@@ -39,6 +40,11 @@ export default function JoinCourse(): JSX.Element {
       window.location.href = "/view_courses";
     }
     setJoinCode("");
+  }
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
   }
 
   return (
