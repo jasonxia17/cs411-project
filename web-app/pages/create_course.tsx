@@ -49,6 +49,8 @@ export default function CreateCoursePage(): JSX.Element {
   const [joinCode, setJoinCode] = useState(
     generateRandomJoinCode(JOIN_CODE_LENGTH)
   );
+  const [isJoinCodeColliding, setIsJoinCodeColliding] = useState(false);
+  const SUCCESS = 200;
 
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
@@ -58,15 +60,22 @@ export default function CreateCoursePage(): JSX.Element {
   async function createNewCourse(): Promise<void> {
     // Build semester from season and course year
     const semester = season + " " + String(year);
-
+    let courseReturnCode;
     await fetch("/api/create_course", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ title, semester, joinCode })
+    }).then(data => {
+      courseReturnCode = data.status;
+      setIsJoinCodeColliding(courseReturnCode !== SUCCESS);
     });
-    window.location.href = "/view_courses";
+
+    if (courseReturnCode === SUCCESS) {
+      window.location.href = "/view_courses";
+    }
+    setJoinCode(generateRandomJoinCode(JOIN_CODE_LENGTH));
   }
 
   return (
@@ -118,6 +127,9 @@ export default function CreateCoursePage(): JSX.Element {
           marginTop: 5
         }}
       >
+        {isJoinCodeColliding && (
+          <h3>Join code already exists. Please select another one</h3>
+        )}
         Join Code:
         <input
           value={joinCode}
