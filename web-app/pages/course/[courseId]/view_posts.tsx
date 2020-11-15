@@ -38,6 +38,7 @@ export default function ViewPostsPage(): JSX.Element {
             UserId={post.UserId as string}
             Title={post.Title as string}
             Body={post.Body as string}
+            NumComments={post.NumComments as number}
           />
         </li>
       ))}
