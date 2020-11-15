@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
@@ -6,7 +6,7 @@ import useProtectedRoute from "../../../hooks/protected_route_hook";
 export default function ViewTopicsPage(): JSX.Element {
   const [topics, setTopics] = useState([]);
   const { query } = useRouter();
-
+  const makeTopicsLink = `/course/${query.courseId}/make_topic`;
   useEffect(() => {
     const courseId = query.courseId as string;
     if (courseId == undefined) {
@@ -29,18 +29,25 @@ export default function ViewTopicsPage(): JSX.Element {
   }
 
   return (
-    <ul>
-      {topics.map(topic => (
-        <li key={topic.TopicId}>
-          <Link href={`/topic/${topic.TopicId}`}>
-            <a style={{ color: "chocolate" }}>
-              <h2>
-                Topic {topic.TopicId} : {topic.Title}
-              </h2>
-            </a>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <Fragment>
+      <ul>
+        {topics.map(topic => (
+          <li key={topic.TopicId}>
+            <Link href={`/topic/${topic.TopicId}`}>
+              <a style={{ color: "chocolate" }}>
+                <h2>
+                  Topic {topic.TopicId} : {topic.Title}
+                </h2>
+              </a>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div>
+        <Link href={makeTopicsLink}>
+          <a className="page_link">Make a new topic!</a>
+        </Link>
+      </div>
+    </Fragment>
   );
 }
