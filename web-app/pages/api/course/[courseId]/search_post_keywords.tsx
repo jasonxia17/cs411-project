@@ -19,26 +19,22 @@ export default async function searchPostKeywordsHandler(
   // Find posts where the keywords are substrings of the post text
   // or where the keywords are substrings of the comments text (where the comments are made in the post)
   // or where the keywords match the users who created the posts
-  const [
-    matched_posts
-  ] = await connection.execute(
-    "SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics\
-    ON Topics.TopicId = Posts.TopicId\
-    WHERE CourseId = ? AND ((Body LIKE ? OR Posts.Title LIKE ?)\
-    OR EXISTS \
-      (SELECT CommentId as id\
-        FROM Comments\
-        WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?\
-        UNION\
-        SELECT id\
-        FROM users\
-        WHERE users.id = Posts.UserId AND users.Name LIKE ?))",
+  // or where the keywords match the users who wrote a comment underneath the post
+  const [matched_posts] = await connection.execute(
+    "SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)\
+     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)\
+     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)\
+     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users, Comments WHERE Comments.PostId = Posts.PostId AND users.id = Comments.UserId AND users.Name LIKE ?)",
     [
-      courseId,
-      `%${keywords}%`,
-      `%${keywords}%`,
-      `%${keywords}%`,
-      `%${keywords}%`
+      courseId, // Post query
+      `%${keywords}%`, // Post query
+      `%${keywords}%`, // Post query
+      courseId, // Comment query
+      `%${keywords}%`, // Comment query
+      courseId, // User post query
+      `%${keywords}%`, // User post query
+      courseId, // User comment query
+      `%${keywords}%` // User comment query
     ]
   );
   res.status(200).json({
