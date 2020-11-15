@@ -17,14 +17,14 @@ async function makePostHandler(
   // TODO: Add topic ID for insertion (important bc we figure out which post belongs)
   // to which class by going thru topic IDs. Added dummy value for now to demonstrate
   // course separation
-  const topicId = 1; // // TODO Replace me: dummy value!!!
+  //const topicId = 1; // // TODO Replace me: dummy value!!!
   await connection.execute(
     "INSERT INTO Posts(UserId, Title, Body, TopicId) VALUES (?, ?, ?, ?)",
     [
       session.user["id"],
       req.body.postTitle,
       req.body.postBody,
-      topicId // TODO Replace me: dummy value!!!
+      req.body.topicId // TODO Replace me: dummy value!!!
     ]
   );
 

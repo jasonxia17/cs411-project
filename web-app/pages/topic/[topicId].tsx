@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
+import Link from "next/link";
 
 export default function SingleTopicPage(): JSX.Element {
-  const [posts, setPosts] = useState([]);
   const { query } = useRouter();
-
+  const [posts, setPosts] = useState([]);
+  const makePostsLink = `/topic/${query.topicId}/make_post`;
   useEffect(() => {
     const topicId = query.topicId;
     if (topicId === undefined) {
@@ -37,6 +38,9 @@ export default function SingleTopicPage(): JSX.Element {
           </li>
         ))}
       </ul>
+      <Link href={makePostsLink}>
+        <a className="page_link">Make a post!</a>
+      </Link>
     </div>
   );
 }
