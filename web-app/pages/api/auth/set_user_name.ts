@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../../../shared/sql_connection";
 import verifyAuthentication from "../../../shared/authentication_middleware";
 
-async function editPostHandler(
+async function setUserNameHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -11,15 +11,15 @@ async function editPostHandler(
     return;
   }
 
-  await verifyAuthentication(req, res);
+  const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  await connection.execute("UPDATE Posts SET Body = ? WHERE PostId = ?", [
-    req.body.postBody,
-    req.body.postId
+  await connection.execute("UPDATE users SET name = ? WHERE id = ?", [
+    req.body.name,
+    session.user["id"]
   ]);
 
   res.status(200).end();
 }
 
-export default editPostHandler;
+export default setUserNameHandler;

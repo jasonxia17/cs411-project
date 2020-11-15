@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../hooks/protected_route_hook";
 
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
@@ -14,6 +15,11 @@ export default function ViewCourseHomepage(): JSX.Element {
     }
     setCourseId(courseId);
   }, [query]);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   const viewPostsLink = `/course/${courseId}/view_posts`;
   const makePostsLink = `/course/${courseId}/make_post`;

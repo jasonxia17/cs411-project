@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function ViewCourses(): JSX.Element {
   const [courses, setCourses] = useState([]);
@@ -12,6 +13,11 @@ export default function ViewCourses(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, []); // empty array => effect never needs to re-run.
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <ul>

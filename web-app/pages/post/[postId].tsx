@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../hooks/protected_route_hook";
 
 export default function SinglePostPage(): JSX.Element {
   const [posts, setPosts] = useState([]);
@@ -9,6 +10,15 @@ export default function SinglePostPage(): JSX.Element {
   const { query } = useRouter();
 
   useEffect(() => {
+    fetchPost();
+  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
+
+  async function fetchPost(): Promise<void> {
     const postId = query.postId;
     if (postId === undefined) {
       return;
@@ -21,7 +31,7 @@ export default function SinglePostPage(): JSX.Element {
         setComments(data.comments);
       })
       .catch(reason => console.log(reason));
-  }, [query]); // query is an empty object initially; need to rerun effect when it's populated
+  }
 
   async function submitComment(): Promise<void> {
     const postId = query.postId;
@@ -37,7 +47,8 @@ export default function SinglePostPage(): JSX.Element {
       },
       body: JSON.stringify({ postId, newComment })
     });
-    location.reload();
+    setNewComment("");
+    fetchPost();
   }
 
   async function deleteComment(commentId: string): Promise<void> {

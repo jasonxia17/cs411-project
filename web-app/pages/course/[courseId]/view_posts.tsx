@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../../hooks/protected_route_hook";
 import Post from "../../../components/Post";
 
 export default function ViewPostsPage(): JSX.Element {
@@ -22,6 +23,11 @@ export default function ViewPostsPage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <ul>

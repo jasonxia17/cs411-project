@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import useProtectedRoute from "../../../hooks/protected_route_hook";
 
 export default function ViewTopicsPage(): JSX.Element {
   const [topics, setTopics] = useState([]);
@@ -21,6 +22,11 @@ export default function ViewTopicsPage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  const [session, loading] = useProtectedRoute();
+  if (loading || !session) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <ul>

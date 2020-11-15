@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Comments (
     CommentId INT PRIMARY KEY AUTO_INCREMENT,
-    UserId INT, /* todo, foreign key */
+    UserId INT FOREIGN KEY REFERENCES users.id,
     PostId INT REFERENCES Posts(PostId),
     PostTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     Body TEXT
