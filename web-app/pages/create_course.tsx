@@ -1,38 +1,25 @@
 import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
-import { useRouter } from "next/router";
 
 export default function CreateCoursePage(): JSX.Element {
-  const [existingJoinCodes, setExistingJoinCodes] = useState(new Set());
-
-  const { query } = useRouter();
+  const [generatedJoinCode, setGeneratedJoinCode] = useState("");
+  const [customJoinCode, setCustomJoinCode] = useState("");
+  const [joinCodeLength, setJoinCodeLength] = useState(-1);
 
   useEffect(() => {
-    fetch("/api/find_preexisting_join_codes", {
-      method: "GET"
-    })
-      .then(res => res.json())
-      .then(data => {
-        setExistingJoinCodes(data.joinCodes);
+    async function fetchJoinCode() {
+      fetch("/api/build_join_code", {
+        method: "GET"
       })
-      .catch(reason => console.log(reason));
+        .then(res => res.json())
+        .then(data => {
+          setGeneratedJoinCode(data.joinCode);
+          setJoinCodeLength(data.joinCode.length);
+        })
+        .catch(reason => console.log(reason));
+    }
+    fetchJoinCode();
   }, []);
-
-  function generateRandomJoinCode(joinCodeLength: number) {
-    function getJoinCode(): string {
-      // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
-      // Note: First 2 chars will always be 0. -- we want to avoid them
-      const asciiBase = 36;
-      return Math.random()
-        .toString(asciiBase)
-        .substring(2, joinCodeLength + 2);
-    }
-    let currJoinCode = getJoinCode();
-    while (currJoinCode in existingJoinCodes) {
-      currJoinCode = getJoinCode();
-    }
-    return currJoinCode;
-  }
 
   function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
@@ -67,11 +54,6 @@ export default function CreateCoursePage(): JSX.Element {
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(currentSemester.season);
   const [year, setYear] = useState(currentSemester.year);
-
-  const JOIN_CODE_LENGTH = 5;
-  const [joinCode, setJoinCode] = useState(
-    generateRandomJoinCode(JOIN_CODE_LENGTH)
-  );
   const [isJoinCodeColliding, setIsJoinCodeColliding] = useState(false);
   const SUCCESS = 200;
 
@@ -81,6 +63,12 @@ export default function CreateCoursePage(): JSX.Element {
   }
 
   async function createNewCourse(): Promise<void> {
+    let joinCode;
+    if (joinCode.length < joinCodeLength) {
+      joinCode = generatedJoinCode;
+    } else {
+      joinCode = customJoinCode;
+    }
     // Build semester from season and course year
     const semester = season + " " + String(year);
     let courseReturnCode;
@@ -98,7 +86,7 @@ export default function CreateCoursePage(): JSX.Element {
     if (courseReturnCode === SUCCESS) {
       window.location.href = "/view_courses";
     }
-    setJoinCode(generateRandomJoinCode(JOIN_CODE_LENGTH));
+    setCustomJoinCode(generatedJoinCode);
   }
 
   return (
@@ -144,7 +132,7 @@ export default function CreateCoursePage(): JSX.Element {
       </div>
       <h2>(Optional) Customized Join Code</h2>
       Note: If you choose not to input a custom join code, one will be generated
-      for you. Maximum length: {JOIN_CODE_LENGTH}
+      for you. Maximum length: {joinCodeLength}
       <div
         style={{
           marginTop: 5
@@ -155,10 +143,12 @@ export default function CreateCoursePage(): JSX.Element {
         )}
         Join Code:
         <input
-          value={joinCode}
+          value={
+            customJoinCode.length == 0 ? generatedJoinCode : customJoinCode
+          }
           onChange={e => {
             const code = e.target.value;
-            setJoinCode(code.substr(0, JOIN_CODE_LENGTH));
+            setCustomJoinCode(code.substr(0, joinCodeLength));
           }}
         />
       </div>
