@@ -14,11 +14,6 @@ export default async function createCourseHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  await connection.execute(
-    "INSERT INTO Courses(Title, Semester, JoinCode) VALUES (?, ?, ?)",
-    [req.body.title, req.body.semester, req.body.joinCode]
-  );
-
   const [
     courseCollidingJoinCode
   ] = await connection.query(
@@ -27,7 +22,13 @@ export default async function createCourseHandler(
   );
   if (JSON.parse(JSON.stringify(courseCollidingJoinCode)).length > 0) {
     res.status(401).end("Join code already belongs to a preexisting course");
+    return;
   }
+
+  await connection.execute(
+    "INSERT INTO Courses(Title, Semester, JoinCode) VALUES (?, ?, ?)",
+    [req.body.title, req.body.semester, req.body.joinCode]
+  );
 
   // TODO This is a hacky approach that only works when we auto-incr the course id
   const [newCourse] = await connection.query(
