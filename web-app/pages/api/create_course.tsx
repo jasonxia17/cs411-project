@@ -46,13 +46,9 @@ export default async function createCourseHandler(
     [req.body.title, req.body.semester, joinCode]
   );
 
-  const [newCourse] = await connection.query(
-    "SELECT LAST_INSERT_ID() as newCourseId"
-  );
-  const newCourseId = JSON.parse(JSON.stringify(newCourse))[0].newCourseId;
   await connection.execute(
-    "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
-    [session.user["id"], newCourseId as number]
+    "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, LAST_INSERT_ID())",
+    [session.user["id"]]
   );
 
   res.status(200).end();
