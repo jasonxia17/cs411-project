@@ -46,11 +46,10 @@ export default async function createCourseHandler(
     [req.body.title, req.body.semester, joinCode]
   );
 
-  // TODO This is a hacky approach that only works when we auto-incr the course id
   const [newCourse] = await connection.query(
-    "SELECT MAX(CourseId) as NewCourseId FROM Courses"
+    "SELECT LAST_INSERT_ID() as newCourseId"
   );
-  const newCourseId = JSON.parse(JSON.stringify(newCourse))[0].NewCourseId;
+  const newCourseId = JSON.parse(JSON.stringify(newCourse))[0].newCourseId;
   await connection.execute(
     "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, ?)",
     [session.user["id"], newCourseId as number]
