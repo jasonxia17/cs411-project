@@ -14,20 +14,20 @@ export default async function dropClassHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
   const userId = session.user["id"];
+  const courseId = parseInt(req.query.courseId as string);
 
   if (userId !== req.body.studentId) {
     const [
       instructorRow
     ] = await connection.execute(
-      "SELECT * FROM Instructors WHERE InstructorId = ?",
-      [userId]
+      "SELECT * FROM Instructors WHERE InstructorId = ? and CourseId = ?",
+      [userId, courseId]
     );
     if (JSON.parse(JSON.stringify(instructorRow)).length == 0) {
       res.status(401).end("User is unauthorized to remove from course");
       return;
     }
   }
-  const courseId = parseInt(req.query.courseId as string);
   await connection.execute(
     "DELETE FROM Students WHERE StudentId = ? and CourseId = ?",
     [req.body.studentId, courseId]
