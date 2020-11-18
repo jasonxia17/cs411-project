@@ -1,0 +1,1 @@
+ALTER TABLE Courses ADD JoinCode VARCHAR(256);

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
-export default function MakePostPage(): JSX.Element {
+export default function CreateCoursePage(): JSX.Element {
   function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
     const date = new Date();
@@ -25,7 +25,6 @@ export default function MakePostPage(): JSX.Element {
         season = "Winter";
       }
     }
-    console.log(day, month, season, date.getUTCFullYear());
     return {
       year: date.getUTCFullYear(),
       season
@@ -33,10 +32,11 @@ export default function MakePostPage(): JSX.Element {
   }
 
   const currentSemester = getCurrentSemester();
-
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(currentSemester.season);
   const [year, setYear] = useState(currentSemester.year);
+  const SUCCESS = 200;
+
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
     return <div> Loading... </div>;
@@ -45,7 +45,6 @@ export default function MakePostPage(): JSX.Element {
   async function createNewCourse(): Promise<void> {
     // Build semester from season and course year
     const semester = season + " " + String(year);
-
     await fetch("/api/create_course", {
       method: "POST",
       headers: {
@@ -53,7 +52,7 @@ export default function MakePostPage(): JSX.Element {
       },
       body: JSON.stringify({ title, semester })
     });
-    window.location.href = "/"; // go back to home page
+    window.location.href = "/view_courses";
   }
 
   return (

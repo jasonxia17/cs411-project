@@ -1,15 +1,18 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
+import Course from "../components/Course";
 
 export default function ViewCourses(): JSX.Element {
-  const [courses, setCourses] = useState([]);
+  const [studentCourses, setStudentCourses] = useState([]);
+  const [instructorCourses, setInstructorCourses] = useState([]);
 
   useEffect(() => {
     fetch("/api/view_courses")
       .then(res => res.json())
       .then(data => {
-        setCourses(data.courses);
+        setStudentCourses(data.student_courses);
+        setInstructorCourses(data.instructor_courses);
       })
       .catch(reason => console.log(reason));
   }, []); // empty array => effect never needs to re-run.
@@ -21,25 +24,71 @@ export default function ViewCourses(): JSX.Element {
 
   return (
     <ul>
-      {courses.map(course => (
-        <li key={course.CourseId}>
-          <h2>
-            Title: {course.Title}, Semester: {course.Semester}
-          </h2>
-          <div>
-            <Link href={`/course/${course.CourseId}`}>
-              <a className="posts_link">Go to {course.Title} forum!</a>
-            </Link>
-          </div>
-        </li>
-      ))}
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        <h1>Courses where you are a student:</h1>
+        {studentCourses.length == 0 ? (
+          <h2>No courses available</h2>
+        ) : (
+          studentCourses.map(course => (
+            <li key={course.CourseId}>
+              <Course
+                CourseId={course.CourseId as string}
+                Title={course.Title as string}
+                Semester={course.Semester as string}
+              />
+            </li>
+          ))
+        )}
+      </div>
+      <div
+        style={{
+          marginTop: 50
+        }}
+      >
+        <Link href="/join_course?join_type=student">
+          <a className="page_link">Join a course as a student!</a>
+        </Link>
+      </div>
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        <h1>Courses where you are an instructor:</h1>
+        {instructorCourses.length == 0 ? (
+          <h2>No courses available</h2>
+        ) : (
+          instructorCourses.map(course => (
+            <li key={course.CourseId}>
+              <Course
+                CourseId={course.CourseId as string}
+                Title={course.Title as string}
+                Semester={course.Semester as string}
+              />
+            </li>
+          ))
+        )}
+      </div>
       <div
         style={{
           marginTop: 50
         }}
       >
         <Link href="/create_course">
-          <a className="page_link">Create a course!</a>
+          <a className="page_link">Create a course as an instructor!</a>
+        </Link>
+      </div>
+      <div
+        style={{
+          marginTop: 50
+        }}
+      >
+        <Link href="/join_course?join_type=instructor">
+          <a className="page_link">Join a course as an instructor!</a>
         </Link>
       </div>
     </ul>
