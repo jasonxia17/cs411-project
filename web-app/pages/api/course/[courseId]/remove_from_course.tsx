@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getConnection } from "../../../shared/sql_connection";
-import verifyAuthentication from "../../../shared/authentication_middleware";
+import { getConnection } from "../../../../shared/sql_connection";
+import verifyAuthentication from "../../../../shared/authentication_middleware";
 
 export default async function dropClassHandler(
   req: NextApiRequest,
