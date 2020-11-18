@@ -38,9 +38,7 @@ async function courseInformationHandler(
   );
   const isStudent = JSON.parse(JSON.stringify(joinedAsStudent)).length !== 0;
 
-  res
-    .status(200)
-    .json({ userId, courseData: courseData[0], isStudent, isInstructor });
+  res.status(200).json({ courseData: courseData[0], isStudent, isInstructor });
 }
 
 export default courseInformationHandler;
