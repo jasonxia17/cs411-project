@@ -27,9 +27,10 @@ export default async function dropClassHandler(
       return;
     }
   }
-
-  await connection.execute("DELETE FROM Students WHERE StudentId = ?", [
-    req.body.studentId
-  ]);
+  const courseId = parseInt(req.query.courseId as string);
+  await connection.execute(
+    "DELETE FROM Students WHERE StudentId = ? and CourseId = ?",
+    [req.body.studentId, courseId]
+  );
   res.status(200).end();
 }
