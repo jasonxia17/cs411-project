@@ -40,7 +40,7 @@ export default function ViewCourseHomepage(): JSX.Element {
 
   async function dropClassAsStudent(): Promise<void> {
     assert(userRole == UserRole.Student);
-    await fetch("/api/course/remove_from_course", {
+    await fetch(`/api/course/${courseId}/remove_from_course`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
