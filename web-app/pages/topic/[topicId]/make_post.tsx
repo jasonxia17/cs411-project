@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
+import { useRouter } from "next/router";
 
 export default function MakePostPage(): JSX.Element {
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
+  const { query } = useRouter();
 
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
@@ -11,12 +13,13 @@ export default function MakePostPage(): JSX.Element {
   }
 
   async function submitPost(): Promise<void> {
+    const topicId = query.topicId;
     await fetch("/api/make_post", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ postTitle, postBody })
+      body: JSON.stringify({ postTitle, postBody, topicId })
     });
     window.location.href = "/"; // go back to home page
   }

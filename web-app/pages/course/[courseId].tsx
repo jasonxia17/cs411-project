@@ -56,7 +56,6 @@ export default function ViewCourseHomepage(): JSX.Element {
   }
 
   const viewPostsLink = `/course/${courseId}/view_posts`;
-  const makePostsLink = `/course/${courseId}/make_post`;
   const searchPostsLink = `/course/${courseId}/search_post_keywords`;
   const viewTopicsLink = `/course/${courseId}/view_topics`;
   const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
@@ -67,11 +66,6 @@ export default function ViewCourseHomepage(): JSX.Element {
       <div>
         <Link href={viewPostsLink}>
           <a className="page_link">Go see posts!</a>
-        </Link>
-      </div>
-      <div>
-        <Link href={makePostsLink}>
-          <a className="page_link">Make a post!</a>
         </Link>
       </div>
       <div>
