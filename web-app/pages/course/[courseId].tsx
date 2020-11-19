@@ -2,11 +2,18 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
+import assert from "assert";
+
+enum UserRole {
+  Student = "Student",
+  Instructor = "Instructor"
+}
 
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
   const [joinCode, setJoinCode] = useState("");
+  const [userRole, setUserRole] = useState(UserRole.Student);
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -20,9 +27,28 @@ export default function ViewCourseHomepage(): JSX.Element {
       .then(res => res.json())
       .then(data => {
         setJoinCode(data.courseData.JoinCode as string);
+
+        assert(data.isStudent || data.isInstructor);
+        if (data.isStudent) {
+          setUserRole(UserRole.Student);
+        } else if (data.isInstructor) {
+          setUserRole(UserRole.Instructor);
+        }
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  async function dropClassAsStudent(): Promise<void> {
+    assert(userRole == UserRole.Student);
+    await fetch(`/api/course/${courseId}/remove_from_course`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ studentId: session.user["id"] })
+    });
+    window.location.href = "/view_courses";
+  }
 
   const [session, loading] = useProtectedRoute();
   if (loading || !session) {
@@ -33,6 +59,7 @@ export default function ViewCourseHomepage(): JSX.Element {
   const makePostsLink = `/course/${courseId}/make_post`;
   const searchPostsLink = `/course/${courseId}/search_post_keywords`;
   const viewTopicsLink = `/course/${courseId}/view_topics`;
+  const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
 
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
@@ -57,7 +84,37 @@ export default function ViewCourseHomepage(): JSX.Element {
           <a className="page_link">Go see topics!</a>
         </Link>
       </div>
-      <div>Join Code: {joinCode}</div>
+      {userRole == UserRole.Student && (
+        <div
+          style={{
+            marginTop: 10
+          }}
+        >
+          <button style={{ cursor: "pointer" }} onClick={dropClassAsStudent}>
+            Drop class
+          </button>
+        </div>
+      )}
+      {userRole == UserRole.Instructor && (
+        <div
+          style={{
+            marginTop: 10
+          }}
+        >
+          <Link href={viewRosterAsInstructorLink}>
+            <a className="page_link">
+              See roster (to remove students from course)!
+            </a>
+          </Link>
+        </div>
+      )}
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        Join Code: {joinCode}
+      </div>
     </div>
   );
 }
