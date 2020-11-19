@@ -31,7 +31,7 @@ export default function ViewRoster(): JSX.Element {
   }
 
   async function removeStudentFromRoster(studentId: string): Promise<void> {
-    await fetch("/api/remove_from_class", {
+    await fetch(`/api/course/${courseId}/remove_from_course`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
