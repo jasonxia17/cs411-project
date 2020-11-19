@@ -27,6 +27,7 @@ export default function ViewCourseHomepage(): JSX.Element {
       .then(res => res.json())
       .then(data => {
         setJoinCode(data.courseData.JoinCode as string);
+
         assert(data.isStudent || data.isInstructor);
         if (data.isStudent) {
           setUserRole(UserRole.Student);

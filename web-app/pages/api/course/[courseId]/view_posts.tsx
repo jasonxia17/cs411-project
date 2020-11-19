@@ -13,12 +13,16 @@ async function viewPostsHandler(
 
   await verifyAuthentication(req, res);
   const connection = await getConnection();
+
   const courseId = parseInt(req.query.courseId as string);
 
-  const [
-    rows
-  ] = await connection.query(
-    "SELECT * FROM Posts WHERE EXISTS (SELECT * FROM Topics WHERE Topics.TopicId = Posts.TopicId AND Topics.CourseId = ?)",
+  const [rows] = await connection.query(
+    `SELECT Posts.PostId, Posts.UserId, Posts.Title,
+            Posts.PostTime, Posts.Body, COUNT(CommentId) AS NumComments
+    FROM Posts LEFT JOIN Comments
+    ON Posts.PostId = Comments.PostId
+    WHERE Posts.TopicId IN (SELECT TopicId FROM Topics WHERE CourseId = ?)
+    GROUP BY Posts.PostId`,
     [courseId]
   );
   res.status(200).json({ posts: rows });
