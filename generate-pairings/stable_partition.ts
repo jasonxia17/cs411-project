@@ -89,7 +89,7 @@ export function RunPhase2(
       console.log("After elimination: ", reducedPreferences);
 
       // Remove lists that were made inactive
-      for (const user of rotation.flat()) {
+      for (const user of rotation[0].concat(rotation[1])) {
         const preference = activePreferences.get(user);
         if (preference !== undefined && preference.length < 2) {
           activePreferences.delete(user);
@@ -212,11 +212,19 @@ function IsOddPartyRotation(
   rotation: Rotation
 ): boolean {
   const [proposers, receivers] = rotation;
-  // Odd cardinality, every list has 2 persons, and proposers === receivers
+  const sortedReceivers = receivers.slice().sort();
+
+  // Odd cardinality, every list has 2 persons, and proposers and receivers are the same set of people
   return (
     proposers.length % 2 === 1 &&
-    proposers.every(proposer => reducedPreferences[proposer].length === 2) &&
-    proposers.slice().sort() === receivers.slice().sort() // Slice to avoid modifying (since sort is in-place)
+    proposers
+      .slice()
+      .sort()
+      .every(
+        (proposer, i) =>
+          reducedPreferences[proposer].length === 2 &&
+          proposer === sortedReceivers[i]
+      )
   );
 }
 
@@ -225,15 +233,19 @@ function EliminateRotation(
   rotation: Rotation
 ): PreferenceMatrix {
   const [proposers, receivers] = rotation;
-  proposers.forEach(proposer => {
-    reducedPreferences[proposer].shift();
-  });
-
   receivers.forEach((receiver, i) => {
-    const deleteIndex = reducedPreferences[receiver].indexOf(
-      proposers[(i + proposers.length - 1) % proposers.length]
-    );
-    reducedPreferences[receiver].length = deleteIndex + 1; // Deletes all elements of the array after that index
+    const newProposer =
+      proposers[(i + proposers.length - 1) % proposers.length];
+
+    let deletedProposer = reducedPreferences[receiver].pop();
+    while (deletedProposer !== undefined && deletedProposer !== newProposer) {
+      reducedPreferences[deletedProposer].splice(
+        reducedPreferences[deletedProposer].indexOf(receiver),
+        1
+      );
+      deletedProposer = reducedPreferences[receiver].pop();
+    }
+    reducedPreferences[receiver].push(newProposer);
   });
 
   return reducedPreferences;
