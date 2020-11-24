@@ -30,14 +30,16 @@ export default function SingleTopicPage(): JSX.Element {
     <Fragment>
       <div style={{ border: "1px solid black", marginBottom: 30 }}>
         <ul>
-          {posts.map(post => (
-            <li key={post.TopicId}>
-              <h2>
-                Post {post.PostId} by User {post.UserId}: {post.Title}
-              </h2>
-              <p>{post.Body}</p>
-            </li>
-          ))}
+          {posts === null
+            ? "You must post in this topic before viewing other posts."
+            : posts.map(post => (
+                <li key={post.TopicId}>
+                  <h2>
+                    Post {post.PostId} by User {post.UserId}: {post.Title}
+                  </h2>
+                  <p>{post.Body}</p>
+                </li>
+              ))}
         </ul>
       </div>
       <div>
