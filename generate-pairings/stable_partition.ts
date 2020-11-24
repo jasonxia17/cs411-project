@@ -67,6 +67,7 @@ export function RunPhase1(preferences: PreferenceMatrix): PreferenceMatrix {
 export function RunPhase2(
   reducedPreferences: PreferenceMatrix
 ): StablePartition {
+  // Construct "active" part of table
   const activePreferences: Map<number, PreferenceList> = new Map();
   reducedPreferences.forEach((preference, i) => {
     if (preference.length >= 2) {
@@ -78,16 +79,25 @@ export function RunPhase2(
     const rotation = FindRotation(activePreferences);
     console.log("Rotation: ", rotation);
 
-    reducedPreferences = EliminateRotation(reducedPreferences, rotation);
-    console.log("After elimination: ", reducedPreferences);
-
-    for (const user of rotation.flat()) {
-      const preference = activePreferences.get(user);
-      if (preference !== undefined && preference.length < 2) {
+    if (IsOddPartyRotation(reducedPreferences, rotation)) {
+      console.log("Rotation is odd party, no elimination");
+      for (const user of rotation[0]) {
         activePreferences.delete(user);
+      }
+    } else {
+      reducedPreferences = EliminateRotation(reducedPreferences, rotation);
+      console.log("After elimination: ", reducedPreferences);
+
+      // Remove lists that were made inactive
+      for (const user of rotation.flat()) {
+        const preference = activePreferences.get(user);
+        if (preference !== undefined && preference.length < 2) {
+          activePreferences.delete(user);
+        }
       }
     }
   }
+
   return reducedPreferences;
 }
 
@@ -197,12 +207,23 @@ function FindRotation(
   return [proposers, receivers];
 }
 
+function IsOddPartyRotation(
+  reducedPreferences: PreferenceMatrix,
+  rotation: Rotation
+): boolean {
+  const [proposers, receivers] = rotation;
+  // Odd cardinality, every list has 2 persons, and proposers === receivers
+  return (
+    proposers.length % 2 === 1 &&
+    proposers.every(proposer => reducedPreferences[proposer].length === 2) &&
+    proposers.slice().sort() === receivers.slice().sort() // Slice to avoid modifying (since sort is in-place)
+  );
+}
+
 function EliminateRotation(
   reducedPreferences: PreferenceMatrix,
   rotation: Rotation
 ): PreferenceMatrix {
-  // TODO check if it's an odd party (shouldn't be eliminated)
-
   const [proposers, receivers] = rotation;
   proposers.forEach(proposer => {
     reducedPreferences[proposer].shift();
