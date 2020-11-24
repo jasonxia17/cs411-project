@@ -25,19 +25,57 @@ function Phase1Example() {
   */
 }
 
-Phase1Example();
-
 function Phase2Example() {
   const reducedPreferences: PreferenceMatrix = [
-    [ 3, 1, 5 ],
-    [ 5, 4, 3, 0, 2 ],
-    [ 1, 3, 4 ],
-    [ 4, 1, 2, 5, 0 ],
-    [ 2, 1, 3 ],
-    [ 0, 3, 1 ]
+    [3, 1, 5],
+    [5, 4, 3, 0, 2],
+    [1, 3, 4],
+    [4, 1, 2, 5, 0],
+    [2, 1, 3],
+    [0, 3, 1]
   ];
 
   RunPhase2(reducedPreferences);
+
+  /* Expected output: (3 rounds)
+  Rotation 1: [ [ 0, 2 ], [ 3, 1 ] ]
+  After elimination: [
+    [ 1, 5 ],
+    [ 5, 4, 3, 0 ],
+    [ 3, 4 ],
+    [ 4, 1, 2 ],
+    [ 2, 1, 3 ],
+    [ 0, 3, 1 ]
+  ]
+  Rotation 2: [ [ 0, 1, 3 ], [ 1, 5, 4 ] ]
+  After elimination: [ [ 5 ], [ 4, 3 ], [ 3, 4 ], [ 1, 2 ], [ 2, 1 ], [ 0 ] ]
+  Rotation 3: [ [ 1, 2 ], [ 4, 3 ] ]
+  After elimination: [ [ 5 ], [ 3 ], [ 4 ], [ 1 ], [ 2 ], [ 0 ] ]
+  */
 }
 
-Phase2Example();
+// Taken from the paper (Figure 3, page 23)
+function FullExample() {
+  const preferences: PreferenceMatrix = [
+    [2, 1, 4, 3, 9, 5, 12, 13],
+    [4, 2, 0, 5, 12, 13],
+    [3, 1, 0, 5, 12, 13],
+    [4, 0, 2, 5, 12, 13],
+    [10, 0, 3, 1, 5, 12, 13],
+    [0, 1, 2, 3, 4, 6, 10],
+    [8, 7, 9, 11, 5, 12, 13],
+    [9, 8, 10, 6],
+    [9, 7, 6],
+    [0, 6, 8, 7],
+    [11, 7, 4, 5, 12, 13],
+    [6, 10],
+    [0, 1, 2, 3, 4, 6, 10],
+    [0, 1, 2, 3, 4, 6, 10]
+  ];
+
+  const reducedPreferences = RunPhase1(preferences);
+  RunPhase2(reducedPreferences);
+}
+
+// Phase2Example();
+FullExample();
