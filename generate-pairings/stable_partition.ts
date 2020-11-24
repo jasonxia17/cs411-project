@@ -4,7 +4,12 @@ A Necessary and Sufficient Condition for the Existence of Complete Stable Matchi
 A free electronic copy is available at https://www.ime.usp.br/~cris/aulas/17_2_6906/projetos/Tan-JAlg91.pdf 
 */
 
-import { Matching, PreferenceList, PreferenceMatrix, StablePartition } from "./types";
+import {
+  Matching,
+  PreferenceList,
+  PreferenceMatrix,
+  StablePartition
+} from "./types";
 
 export function GenerateStablePartition(
   preferences: PreferenceMatrix
@@ -54,7 +59,7 @@ export function RunPhase1(preferences: PreferenceMatrix): PreferenceMatrix {
     reducedPreferences[i].push(match);
   });
 
-  console.log(reducedPreferences);
+  console.log("Reduced preference matrix after phase 1: ", reducedPreferences);
   return reducedPreferences;
 }
 
@@ -69,9 +74,21 @@ export function RunPhase2(
     }
   });
 
-  const rotation = FindRotation(activePreferences);
-  console.log(rotation);
-  return [[]];
+  while (activePreferences.size > 0) {
+    const rotation = FindRotation(activePreferences);
+    console.log("Rotation: ", rotation);
+
+    reducedPreferences = EliminateRotation(reducedPreferences, rotation);
+    console.log("After elimination: ", reducedPreferences);
+
+    for (const user of rotation.flat()) {
+      const preference = activePreferences.get(user);
+      if (preference !== undefined && preference.length < 2) {
+        activePreferences.delete(user);
+      }
+    }
+  }
+  return reducedPreferences;
 }
 
 function RunProposalRound(
@@ -180,6 +197,23 @@ function FindRotation(
   return [proposers, receivers];
 }
 
-function EliminateRotation(activePreferences: PreferenceMatrix, rotation: Rotation): PreferenceMatrix {
-  return [[]];
+function EliminateRotation(
+  reducedPreferences: PreferenceMatrix,
+  rotation: Rotation
+): PreferenceMatrix {
+  // TODO check if it's an odd party (shouldn't be eliminated)
+
+  const [proposers, receivers] = rotation;
+  proposers.forEach(proposer => {
+    reducedPreferences[proposer].shift();
+  });
+
+  receivers.forEach((receiver, i) => {
+    const deleteIndex = reducedPreferences[receiver].indexOf(
+      proposers[(i + proposers.length - 1) % proposers.length]
+    );
+    reducedPreferences[receiver].length = deleteIndex + 1; // Deletes all elements of the array after that index
+  });
+
+  return reducedPreferences;
 }
