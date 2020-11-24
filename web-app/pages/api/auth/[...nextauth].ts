@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { User } from "next-auth";
+import NextAuth, { InitOptions, User } from "next-auth";
 import { Session } from "next-auth/client";
 import Providers from "next-auth/providers";
 
-const options = {
+const options: InitOptions = {
   providers: [
     Providers.Email({
       server: {

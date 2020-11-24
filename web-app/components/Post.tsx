@@ -6,7 +6,7 @@ interface PostData {
   UserId: string;
   Title: string;
   Body: string;
-  NumComments: number;
+  NumComments?: number;
 }
 
 export default function Post({
