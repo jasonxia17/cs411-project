@@ -4,10 +4,10 @@ A Necessary and Sufficient Condition for the Existence of Complete Stable Matchi
 A free electronic copy is available at https://www.ime.usp.br/~cris/aulas/17_2_6906/projetos/Tan-JAlg91.pdf 
 */
 
-import { Matching, PreferenceList, StablePartition } from "./types";
+import { Matching, PreferenceList, PreferenceMatrix, StablePartition } from "./types";
 
 export function GenerateStablePartition(
-  preferences: PreferenceList
+  preferences: PreferenceMatrix
 ): StablePartition {
   preferences = RunPhase1(preferences);
   const partition = RunPhase2(preferences);
@@ -15,11 +15,11 @@ export function GenerateStablePartition(
 }
 
 // Phase 1: repeated rounds of proposals, which will reduce the preference list by removing 'impossible' pairs
-export function RunPhase1(preferences: PreferenceList): PreferenceList {
+export function RunPhase1(preferences: PreferenceMatrix): PreferenceMatrix {
   // Make deep copies
-  const proposalOrders: PreferenceList = [];
+  const proposalOrders: PreferenceMatrix = [];
   preferences.forEach(preference => proposalOrders.push([...preference]));
-  const reducedPreferences: PreferenceList = [];
+  const reducedPreferences: PreferenceMatrix = [];
   preferences.forEach(preference => reducedPreferences.push([...preference]));
 
   // Build a lookup table in which lookup[i][j] gives rank of user j on user i's preference list
@@ -59,12 +59,23 @@ export function RunPhase1(preferences: PreferenceList): PreferenceList {
 }
 
 // Phase 2: repeated rounds of rotation elimination
-function RunPhase2(preferences: PreferenceList): StablePartition {
+export function RunPhase2(
+  reducedPreferences: PreferenceMatrix
+): StablePartition {
+  const activePreferences: Map<number, PreferenceList> = new Map();
+  reducedPreferences.forEach((preference, i) => {
+    if (preference.length >= 2) {
+      activePreferences.set(i, preference);
+    }
+  });
+
+  const rotation = FindRotation(activePreferences);
+  console.log(rotation);
   return [[]];
 }
 
 function RunProposalRound(
-  proposalOrders: PreferenceList,
+  proposalOrders: PreferenceMatrix,
   preferenceLookup: Array<Map<number, number>>,
   proposedTo: Matching,
   proposedBy: Matching
@@ -112,7 +123,7 @@ function RunProposalRound(
 }
 
 function ShouldContinueProposal(
-  proposalOrders: PreferenceList,
+  proposalOrders: PreferenceMatrix,
   proposedTo: Matching
 ): boolean {
   return proposedTo.some(
@@ -120,12 +131,55 @@ function ShouldContinueProposal(
   );
 }
 
-type Rotation = Array<number>;
+type Rotation = [Array<number>, Array<number>];
 
-function FindRotation(activePreferences: PreferenceList): Rotation {
-  return [];
+// Assumes that activePreferences is already filtered so that it only contains preference lists with >= 2 elements left
+function FindRotation(
+  activePreferences: Map<number, PreferenceList>
+): Rotation {
+  const visited: Set<number> = new Set();
+  let proposer: number = activePreferences.keys().next().value;
+
+  // Follow preference edges until a cycle is found
+  while (visited.has(proposer) === false) {
+    visited.add(proposer);
+    const preference = activePreferences.get(proposer);
+    if (preference === undefined) {
+      console.error(`Proposer ${proposer} is not in active preferences`);
+      return [[], []];
+    }
+
+    const receiverPreference = activePreferences.get(preference[1]);
+    if (receiverPreference === undefined) {
+      console.error(`receiver ${preference[1]} is not in active preferences`);
+      return [[], []];
+    }
+
+    proposer = receiverPreference[receiverPreference.length - 1];
+  }
+
+  // Delete vertices outside cycle
+  for (const vertex of visited.values()) {
+    if (vertex === proposer) {
+      break;
+    }
+    visited.delete(vertex);
+  }
+
+  // Construct rotation
+  const proposers = [];
+  const receivers = [];
+  for (const vertex of visited.values()) {
+    proposers.push(vertex);
+    const preference: PreferenceList = activePreferences.get(vertex) || [];
+    receivers.push(preference[1]);
+  }
+
+  receivers.unshift(receivers[receivers.length - 1]);
+  receivers.pop();
+  return [proposers, receivers];
 }
 
-function EliminateRotation(activePreferences: PreferenceList, rotation: Rotation): PreferenceList {
+function EliminateRotation(activePreferences: PreferenceMatrix, rotation: Rotation): PreferenceMatrix {
   return [[]];
 }
