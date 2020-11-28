@@ -50,25 +50,19 @@ export default async function searchPostKeywordsHandler(
     });
   neo4j_session.close();
 
-  async function getUserName(node_id: number) {
-    const [
-      user_name_row
-    ] = await connection.execute("SELECT name FROM users WHERE id = ?", [
-      node_id
-    ]);
-    return user_name_row[0].name;
-  }
   async function getUserNames() {
     for (const node_id of Array.from(node_ids)) {
-      const user_name = await getUserName((node_id as unknown) as number);
+      const [
+        user_name_row
+      ] = await connection.execute("SELECT name FROM users WHERE id = ?", [
+        node_id
+      ]);
       graph.nodes.push({
         id: node_id,
-        label: user_name
+        label: user_name_row[0].name
       });
     }
   }
   await getUserNames();
-  console.log(graph);
-
   res.status(200).json({ graph });
 }
