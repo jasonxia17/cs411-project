@@ -10,14 +10,25 @@
     "start": "next start ./web-app -p $PORT"
   },
   "dependencies": {
+    "@egjs/hammerjs": "^2.0.17",
     "@types/mysql": "^2.15.15",
     "@types/next-auth": "^3.1.14",
+    "keycharm": "^0.2.0",
+    "moment": "^2.29.1",
     "mysql2": "^2.2.5",
+    "neo4j": "^2.0.0-RC2",
     "neo4j-driver": "^4.2.1",
     "next": "^9.5.5",
     "next-auth": "^3.1.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-graph-vis": "^1.0.5",
+    "save": "^2.4.0",
+    "timsort": "^0.3.0",
+    "uuid": "^7.0.3",
+    "vis": "^4.21.0-EOL",
+    "vis-data": "^6.6.1",
+    "vis-util": "^4.3.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
