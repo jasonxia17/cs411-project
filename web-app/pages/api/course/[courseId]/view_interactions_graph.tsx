@@ -13,7 +13,7 @@ export default async function searchPostKeywordsHandler(
   }
 
   await verifyAuthentication(req, res);
-  await getConnection();
+  const connection = await getConnection();
 
   const course_id = parseInt(req.query.courseId as string);
 
@@ -46,17 +46,29 @@ export default async function searchPostKeywordsHandler(
           to: poster_id,
           label: edge_weight
         });
-        console.log(graph.edges);
       });
     });
   neo4j_session.close();
 
-  node_ids.forEach(node => {
-    graph.nodes.push({
-      id: node,
-      label: "node " + node
-    });
-  });
+  async function getUserName(node_id: number) {
+    const [
+      user_name_row
+    ] = await connection.execute("SELECT name FROM users WHERE id = ?", [
+      node_id
+    ]);
+    return user_name_row[0].name;
+  }
+  async function getUserNames() {
+    for (const node_id of Array.from(node_ids)) {
+      const user_name = await getUserName((node_id as unknown) as number);
+      graph.nodes.push({
+        id: node_id,
+        label: user_name
+      });
+    }
+  }
+  await getUserNames();
+  console.log(graph);
 
   res.status(200).json({ graph });
 }
