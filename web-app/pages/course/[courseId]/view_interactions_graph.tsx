@@ -15,7 +15,11 @@ export default function ViewInteractionsPage(): JSX.Element {
   };
 
   const { query } = useRouter();
-  const [graph, setGraph] = useState(<div></div>);
+
+  // Note: We get an error when refreshing the page if we just store the
+  // graph's nodes/edges object via state instead of directly storing the
+  // JSX.Element graph.
+  const [visualization, setVisualization] = useState(<div></div>);
 
   useEffect(() => {
     const courseId = query.courseId as string;
@@ -28,10 +32,17 @@ export default function ViewInteractionsPage(): JSX.Element {
     })
       .then(res => res.json())
       .then(data => {
-        setGraph(<Graph graph={data.graph} options={options} />);
+        const raw_graph = data.graph;
+        if (raw_graph.edges.length === 0 && raw_graph.nodes.length === 0) {
+          setVisualization(
+            <h1>Users have not interacted with each other yet.</h1>
+          );
+        } else {
+          setVisualization(<Graph graph={data.graph} options={options} />);
+        }
       })
       .catch(reason => console.log(reason));
   }, [query]);
 
-  return <div>{graph}</div>;
+  return <div>{visualization}</div>;
 }
