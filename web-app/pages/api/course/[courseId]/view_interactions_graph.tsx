@@ -44,7 +44,7 @@ export default async function searchPostKeywordsHandler(
         graph.edges.push({
           from: viewer_id,
           to: poster_id,
-          label: edge_weight
+          label: "Interaction strength: " + edge_weight
         });
       });
     });
