@@ -24,19 +24,19 @@ Return [M]: A matching, where the entry M[i] holds the i-th student's partner. N
 with no partner, if the total number of students is odd.
 */
 export function GenerateNearPopularMatching(
-  preferences: PreferenceList
+  preferences: Preferences
 ): Matching {
-  return [null];
+  return new Map();
 }
 
 function MakeBipartition(stablePartition: StablePartition): [StablePartitionParty, StablePartitionParty] {
   return [[], []];
 }
 
-function RunGaleShapley(leftPreferences: PreferenceList, rightPreferences: PreferenceList): Matching {
-  return [];
+function RunGaleShapley(leftPreferences: Preferences, rightPreferences: Preferences): Matching {
+  return new Map();
 }
 
-function InduceSubgraph(preferences: PreferenceList, partialMatching: Matching): PreferenceList {
-  return [[]];
+function InduceSubgraph(preferences: Preferences, partialMatching: Matching): Preferences {
+  return new Map();
 }

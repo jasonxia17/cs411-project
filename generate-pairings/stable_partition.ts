@@ -7,56 +7,68 @@ A free electronic copy is available at https://www.ime.usp.br/~cris/aulas/17_2_6
 import {
   Matching,
   PreferenceList,
-  PreferenceMatrix,
+  Preferences,
+  RankLookup,
   StablePartition
 } from "./types";
 
 export function GenerateStablePartition(
-  preferences: PreferenceMatrix
+  preferences: Preferences
 ): StablePartition {
   preferences = RunPhase1(preferences);
-  const partition = RunPhase2(preferences);
-  return partition;
+  preferences = RunPhase2(preferences);
+
+  // TODO Convert preferences to partition
+  return [];
 }
 
 // Phase 1: repeated rounds of proposals, which will reduce the preference list by removing 'impossible' pairs
-export function RunPhase1(preferences: PreferenceMatrix): PreferenceMatrix {
+export function RunPhase1(preferences: Preferences): Preferences {
   // Make deep copies
-  const proposalOrders: PreferenceMatrix = [];
-  preferences.forEach(preference => proposalOrders.push([...preference]));
-  const reducedPreferences: PreferenceMatrix = [];
-  preferences.forEach(preference => reducedPreferences.push([...preference]));
+  const proposalOrders: Preferences = new Map();
+  const reducedPreferences: Preferences = new Map();
+  preferences.forEach((preference, id) => {
+    proposalOrders.set(id, [...preference]);
+    reducedPreferences.set(id, [...preference]);
+  });
 
   // Build a lookup table in which lookup[i][j] gives rank of user j on user i's preference list
-  const preferencesLookup: Array<Map<number, number>> = [];
-  preferences.forEach(ranking => {
-    const rankLookup: Map<number, number> = new Map();
-    ranking.forEach((j, rank) => {
-      rankLookup.set(j, rank);
+  const rankLookup: RankLookup = new Map();
+  preferences.forEach((preference, id) => {
+    const singleRankLookup: Map<number, number> = new Map();
+    preference.forEach((j, rank) => {
+      singleRankLookup.set(j, rank);
     });
-    preferencesLookup.push(rankLookup);
+    rankLookup.set(id, singleRankLookup);
   });
 
   // Run proposal rounds until no one can improve their match
-  const proposedTo: Matching = new Array(preferences.length).fill(null);
-  const proposedBy: Matching = new Array(preferences.length).fill(null);
+  const proposedTo: Matching = new Map();
+  const proposedBy: Matching = new Map();
+  for (const key of preferences.keys()) {
+    proposedTo.set(key, null);
+    proposedBy.set(key, null);
+  }
+
   do {
-    RunProposalRound(proposalOrders, preferencesLookup, proposedTo, proposedBy);
+    RunProposalRound(proposalOrders, rankLookup, proposedTo, proposedBy);
   } while (ShouldContinueProposal(proposalOrders, proposedTo));
 
   // Reduce preference lists
-  proposedBy.forEach((match, i) => {
+  proposedBy.forEach((match, id) => {
     if (match === null) {
       return;
     }
 
-    let impossibleMatch = reducedPreferences[i].pop();
+    let impossibleMatch = reducedPreferences.get(id)?.pop();
     while (impossibleMatch != match && impossibleMatch !== undefined) {
-      const position = reducedPreferences[impossibleMatch].indexOf(i);
-      reducedPreferences[impossibleMatch].splice(position, 1);
-      impossibleMatch = reducedPreferences[i].pop();
+      const position = reducedPreferences.get(impossibleMatch)?.indexOf(id);
+      if (position !== undefined) {
+        reducedPreferences.get(impossibleMatch)?.splice(position, 1);
+      }
+      impossibleMatch = reducedPreferences.get(id)?.pop();
     }
-    reducedPreferences[i].push(match);
+    reducedPreferences.get(id)?.push(match);
   });
 
   console.log("Reduced preference matrix after phase 1: ", reducedPreferences);
@@ -64,11 +76,9 @@ export function RunPhase1(preferences: PreferenceMatrix): PreferenceMatrix {
 }
 
 // Phase 2: repeated rounds of rotation elimination
-export function RunPhase2(
-  reducedPreferences: PreferenceMatrix
-): StablePartition {
+export function RunPhase2(reducedPreferences: Preferences): Preferences {
   // Construct "active" part of table
-  const activePreferences: Map<number, PreferenceList> = new Map();
+  const activePreferences: Preferences = new Map();
   reducedPreferences.forEach((preference, i) => {
     if (preference.length >= 2) {
       activePreferences.set(i, preference);
@@ -102,8 +112,8 @@ export function RunPhase2(
 }
 
 function RunProposalRound(
-  proposalOrders: PreferenceMatrix,
-  preferenceLookup: Array<Map<number, number>>,
+  proposalOrders: Preferences,
+  rankLookup: RankLookup,
   proposedTo: Matching,
   proposedBy: Matching
 ) {
@@ -111,17 +121,18 @@ function RunProposalRound(
     const preferredPartnerId = order[0];
     if (
       preferredPartnerId === undefined || // No more possible matches
-      proposedTo[id] === preferredPartnerId // Already matched
+      proposedTo.get(id) === preferredPartnerId // Already matched
     ) {
       return;
     }
 
-    const partnerRankings = preferenceLookup[preferredPartnerId];
-    const previousMatch = proposedBy[preferredPartnerId];
+    const partnerRankings: Map<number, number> =
+      rankLookup.get(preferredPartnerId) || new Map();
+    const previousMatch = proposedBy.get(preferredPartnerId);
     let isProposalAccepted = false;
 
     // Person being proposed will accept if they don't already have a better proposal
-    if (previousMatch === null) {
+    if (previousMatch === null || previousMatch === undefined) {
       isProposalAccepted = true;
     } else {
       const thisRank = partnerRankings.get(id);
@@ -138,24 +149,27 @@ function RunProposalRound(
     }
 
     // Reset previous partners
-    if (previousMatch != null) {
-      proposalOrders[previousMatch].shift();
-      proposedTo[previousMatch] = null;
+    if (previousMatch !== null && previousMatch !== undefined) {
+      proposalOrders.get(previousMatch)?.shift();
+      proposedTo.set(previousMatch, null);
     }
 
     // Set new partners
-    proposedTo[id] = preferredPartnerId;
-    proposedBy[preferredPartnerId] = id;
+    proposedTo.set(id, preferredPartnerId);
+    proposedBy.set(preferredPartnerId, id);
   });
 }
 
 function ShouldContinueProposal(
-  proposalOrders: PreferenceMatrix,
+  proposalOrders: Preferences,
   proposedTo: Matching
 ): boolean {
-  return proposedTo.some(
-    (match, i) => proposalOrders[i].length > 0 && match === null
-  );
+  for (const [id, match] of proposedTo) {
+    if ((proposalOrders.get(id)?.length || 0) > 0 && match === null) {
+      return true;
+    }
+  }
+  return false;
 }
 
 type Rotation = [Array<number>, Array<number>];
@@ -208,7 +222,7 @@ function FindRotation(
 }
 
 function IsOddPartyRotation(
-  reducedPreferences: PreferenceMatrix,
+  reducedPreferences: Preferences,
   rotation: Rotation
 ): boolean {
   const [proposers, receivers] = rotation;
@@ -222,30 +236,32 @@ function IsOddPartyRotation(
       .sort()
       .every(
         (proposer, i) =>
-          reducedPreferences[proposer].length === 2 &&
+          reducedPreferences.get(proposer)?.length === 2 &&
           proposer === sortedReceivers[i]
       )
   );
 }
 
 function EliminateRotation(
-  reducedPreferences: PreferenceMatrix,
+  reducedPreferences: Preferences,
   rotation: Rotation
-): PreferenceMatrix {
+): Preferences {
   const [proposers, receivers] = rotation;
   receivers.forEach((receiver, i) => {
     const newProposer =
       proposers[(i + proposers.length - 1) % proposers.length];
 
-    let deletedProposer = reducedPreferences[receiver].pop();
+    let deletedProposer = reducedPreferences.get(receiver)?.pop();
     while (deletedProposer !== undefined && deletedProposer !== newProposer) {
-      reducedPreferences[deletedProposer].splice(
-        reducedPreferences[deletedProposer].indexOf(receiver),
-        1
-      );
-      deletedProposer = reducedPreferences[receiver].pop();
+      const otherRank = reducedPreferences
+        .get(deletedProposer)
+        ?.indexOf(receiver);
+      if (otherRank !== undefined) {
+        reducedPreferences.get(deletedProposer)?.splice(otherRank, 1);
+      }
+      deletedProposer = reducedPreferences.get(receiver)?.pop();
     }
-    reducedPreferences[receiver].push(newProposer);
+    reducedPreferences.get(receiver)?.push(newProposer);
   });
 
   return reducedPreferences;
