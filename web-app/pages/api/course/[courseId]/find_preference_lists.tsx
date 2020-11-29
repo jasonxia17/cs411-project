@@ -3,10 +3,13 @@ import { getConnection } from "../../../../shared/sql_connection";
 import verifyAuthentication from "../../../../shared/authentication_middleware";
 import neo4j_driver from "../../../../shared/neo4j_connection";
 import assert from "assert";
+import { start } from "repl";
 
 type AdjacentNodes = Map<number, number>; // <head node, weight>
 type AdjacencyList = Map<number, AdjacentNodes>; // <tail node, AdjacentNodes>
 type Nodes = Set<number>;
+type PreferenceList = Array<number>;
+type PreferenceListMapping = { Node: number; PreferenceList: PreferenceList };
 
 export default async function findPreferenceLists(
   req: NextApiRequest,
@@ -24,8 +27,8 @@ export default async function findPreferenceLists(
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
-  await graph.findShortestPaths(5);
-  res.status(200).json({ });
+  const preference_lists = await graph.findAllShortestPaths();
+  res.status(200).json({ preference_lists });
 }
 
 class Graph {
@@ -37,7 +40,15 @@ class Graph {
     this.nodes = new Set();
   }
 
-  findShortestPaths(start_node: number): Array<number> {
+  findAllShortestPaths(): Array<PreferenceListMapping> {
+    const preference_lists = [];
+    this.nodes.forEach(node =>
+      preference_lists.push(this.findShortestPaths(node))
+    );
+    return preference_lists;
+  }
+
+  findShortestPaths(start_node: number): PreferenceListMapping {
     const distances = new Map();
     const unvisited_nodes = new Set();
 
@@ -89,7 +100,7 @@ class Graph {
     });
     assert(nodes_by_distances[0] === start_node);
     nodes_by_distances.shift();
-    return nodes_by_distances;
+    return { Node: start_node, PreferenceList: nodes_by_distances };
   }
 
   async buildGraph(course_id: number): Promise<void> {
