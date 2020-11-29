@@ -20,29 +20,30 @@ export default async function findPreferenceLists(
     return;
   }
 
-  const session = await verifyAuthentication(req, res);
-  const connection = await getConnection();
+  await verifyAuthentication(req, res);
+  await getConnection();
 
   const course_id = parseInt(req.query.courseId as string);
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
   const preference_lists = await graph.findAllShortestPaths();
+
   res.status(200).json({ preference_lists });
 }
 
 class Graph {
-  adjacency_list: AdjacencyList;
-  nodes: Nodes;
+  _adjacency_list: AdjacencyList;
+  _nodes: Nodes;
 
   constructor() {
-    this.adjacency_list = new Map();
-    this.nodes = new Set();
+    this._adjacency_list = new Map();
+    this._nodes = new Set();
   }
 
   findAllShortestPaths(): Array<PreferenceListMapping> {
     const preference_lists = [];
-    this.nodes.forEach(node =>
+    this._nodes.forEach(node =>
       preference_lists.push(this.findShortestPaths(node))
     );
     return preference_lists;
@@ -52,7 +53,7 @@ class Graph {
     const distances = new Map();
     const unvisited_nodes = new Set();
 
-    this.nodes.forEach(node => {
+    this._nodes.forEach(node => {
       unvisited_nodes.add(node);
       distances.set(node, Infinity);
     });
@@ -71,11 +72,11 @@ class Graph {
       return { min_node, min_node_dist };
     }
 
-    for (let _ = 0; _ < this.nodes.size; ++_) {
+    for (let _ = 0; _ < this._nodes.size; ++_) {
       const { min_node, min_node_dist } = findClosestUnprocessedNode();
       unvisited_nodes.delete(min_node);
 
-      const adjacencies = this.adjacency_list.get(min_node);
+      const adjacencies = this._adjacency_list.get(min_node);
       if (adjacencies == undefined) {
         continue;
       }
@@ -92,7 +93,7 @@ class Graph {
     }
 
     // Order nodes by distances
-    const nodes_by_distances = Array.from(this.nodes);
+    const nodes_by_distances = Array.from(this._nodes);
     nodes_by_distances.sort(function(node_1, node_2) {
       const node_1_dist = distances.get(node_1);
       const node_2_dist = distances.get(node_2);
@@ -170,15 +171,15 @@ class Graph {
       });
     neo4j_session.close();
 
-    this.adjacency_list = adjacencies;
-    this.nodes = nodes;
+    this._adjacency_list = adjacencies;
+    this._nodes = nodes;
 
     this._invertEdgeWeights();
   }
 
   _invertEdgeWeights(): void {
-    Array.from(this.adjacency_list.keys()).forEach(tail_node => {
-      const adjacency = this.adjacency_list.get(tail_node);
+    Array.from(this._adjacency_list.keys()).forEach(tail_node => {
+      const adjacency = this._adjacency_list.get(tail_node);
 
       Array.from(adjacency.keys()).forEach(head_node =>
         adjacency.set(head_node, 1 / adjacency.get(head_node))
