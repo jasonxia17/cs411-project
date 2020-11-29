@@ -117,7 +117,7 @@ class Graph {
       } else if (edge_type === "VIEWED") {
         return edge_count;
       }
-      return -1;
+      assert(false);
     }
 
     function addEdge(
