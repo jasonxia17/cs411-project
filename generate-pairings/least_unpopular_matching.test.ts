@@ -1,6 +1,18 @@
 import { Preferences } from "./types";
 import { GenerateNearPopularMatching } from "./least_unpopular_matching";
 
+function UnstableMatchingExample() {
+  const preferences: Preferences = new Map([
+    [0, [1, 2, 3]],
+    [1, [2, 0, 3]],
+    [2, [0, 1, 3]],
+    [3, [0, 1, 2]]
+  ]);
+
+  // Expected output: must be able to match all users, even though stable matching doesn't exist
+  GenerateNearPopularMatching(preferences);
+}
+
 function FullExample() {
   const preferences: Preferences = new Map([
     [0, [2, 1, 4, 3, 9, 5, 12, 13]],
@@ -19,7 +31,8 @@ function FullExample() {
     [13, [0, 1, 2, 3, 4, 6, 10]]
   ]);
 
-  const matching = GenerateNearPopularMatching(preferences);
+  GenerateNearPopularMatching(preferences);
 }
 
-FullExample();
+UnstableMatchingExample();
+// FullExample();
