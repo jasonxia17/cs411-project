@@ -89,16 +89,18 @@ export default function SinglePostPage(): JSX.Element {
               Comment {comment.CommentId} by User {comment.UserId}
             </h3>
             <p>{comment.Body}</p>
-            <div>
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  deleteComment(comment.CommentId);
-                }}
-              >
-                Delete comment!
-              </button>
-            </div>
+            {comment.UserId == session.user["id"] && (
+              <div>
+                <button
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    deleteComment(comment.CommentId);
+                  }}
+                >
+                  Delete comment!
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

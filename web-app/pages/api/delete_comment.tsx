@@ -11,8 +11,19 @@ export default async function deleteCommentHandler(
     return;
   }
 
-  await verifyAuthentication(req, res);
+  const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
+
+  const [
+    commenter_id_row
+  ] = await connection.execute(
+    "SELECT UserId FROM Comments WHERE CommentId = ?",
+    [req.body.commentId]
+  );
+  if (commenter_id_row[0].UserId !== session.user["id"]) {
+    res.status(401).end("User cannot delete comments they didn't make");
+    return;
+  }
 
   await connection.execute("DELETE FROM Comments WHERE CommentId = ?", [
     req.body.commentId
