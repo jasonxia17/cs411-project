@@ -36,11 +36,6 @@ export default function MakePostPage(): JSX.Element {
       </div>
       <br></br>
       <div>
-        ID number:
-        <input value={topicId} onChange={e => setTopicId(e.target.value)} />
-      </div>
-      <br></br>
-      <div>
         <button style={{ cursor: "pointer" }} onClick={submitTopic}>
           Create topic!
         </button>

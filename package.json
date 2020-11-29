@@ -15,6 +15,7 @@
     "@types/mysql": "^2.15.15",
     "@types/next-auth": "^3.1.14",
     "mysql2": "^2.2.5",
+    "neo4j-driver": "^4.2.1",
     "next": "^9.5.5",
     "next-auth": "^3.1.0",
     "react": "16.13.1",

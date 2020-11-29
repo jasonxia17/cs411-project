@@ -11,12 +11,12 @@ async function makeTopicHandler(
     return;
   }
 
-  //const session = await verifyAuthentication(req, res);
+  const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
   await connection.execute(
-    "INSERT INTO Topics(TopicId, CourseId, Title) VALUES (?, ?, ?)",
-    [req.body.topicId, req.body.courseId, req.body.topicTitle]
+    "INSERT INTO Topics(CourseId, Title) VALUES (?, ?)",
+    [req.body.courseId, req.body.topicTitle]
   );
 
   res.status(200).end();

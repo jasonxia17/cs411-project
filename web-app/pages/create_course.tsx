@@ -2,25 +2,6 @@ import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function CreateCoursePage(): JSX.Element {
-  const [generatedJoinCode, setGeneratedJoinCode] = useState("");
-  const [customJoinCode, setCustomJoinCode] = useState("");
-  const [joinCodeLength, setJoinCodeLength] = useState(-1);
-
-  useEffect(() => {
-    async function fetchJoinCode() {
-      fetch("/api/build_join_code", {
-        method: "GET"
-      })
-        .then(res => res.json())
-        .then(data => {
-          setGeneratedJoinCode(data.joinCode);
-          setJoinCodeLength(data.joinCode.length);
-        })
-        .catch(reason => console.log(reason));
-    }
-    fetchJoinCode();
-  }, []);
-
   function getCurrentSemester(): { year: number; season: string } {
     // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
     const date = new Date();
@@ -54,7 +35,6 @@ export default function CreateCoursePage(): JSX.Element {
   const [title, setTitle] = useState("");
   const [season, setSeason] = useState(currentSemester.season);
   const [year, setYear] = useState(currentSemester.year);
-  const [isJoinCodeColliding, setIsJoinCodeColliding] = useState(false);
   const SUCCESS = 200;
 
   const [session, loading] = useProtectedRoute();
@@ -63,30 +43,16 @@ export default function CreateCoursePage(): JSX.Element {
   }
 
   async function createNewCourse(): Promise<void> {
-    let joinCode;
-    if (joinCode.length < joinCodeLength) {
-      joinCode = generatedJoinCode;
-    } else {
-      joinCode = customJoinCode;
-    }
     // Build semester from season and course year
     const semester = season + " " + String(year);
-    let courseReturnCode;
     await fetch("/api/create_course", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ title, semester, joinCode })
-    }).then(data => {
-      courseReturnCode = data.status;
-      setIsJoinCodeColliding(courseReturnCode !== SUCCESS);
+      body: JSON.stringify({ title, semester })
     });
-
-    if (courseReturnCode === SUCCESS) {
-      window.location.href = "/view_courses";
-    }
-    setCustomJoinCode(generatedJoinCode);
+    window.location.href = "/view_courses";
   }
 
   return (
@@ -128,28 +94,6 @@ export default function CreateCoursePage(): JSX.Element {
           min="1900"
           max="2099"
           step="1"
-        />
-      </div>
-      <h2>(Optional) Customized Join Code</h2>
-      Note: If you choose not to input a custom join code, one will be generated
-      for you. Maximum length: {joinCodeLength}
-      <div
-        style={{
-          marginTop: 5
-        }}
-      >
-        {isJoinCodeColliding && (
-          <h3>Join code already exists. Please select another one</h3>
-        )}
-        Join Code:
-        <input
-          value={
-            customJoinCode.length == 0 ? generatedJoinCode : customJoinCode
-          }
-          onChange={e => {
-            const code = e.target.value;
-            setCustomJoinCode(code.substr(0, joinCodeLength));
-          }}
         />
       </div>
       <div
