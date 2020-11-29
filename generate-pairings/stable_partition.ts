@@ -51,6 +51,7 @@ export function GenerateStablePartition(
     }
   });
 
+  console.log("Final partition: ", partition);
   return partition;
 }
 
@@ -64,15 +65,7 @@ export function RunPhase1(preferences: Preferences): Preferences {
     reducedPreferences.set(id, [...preference]);
   });
 
-  // Build a lookup table in which lookup[i][j] gives rank of user j on user i's preference list
-  const rankLookup: RankLookup = new Map();
-  preferences.forEach((preference, id) => {
-    const singleRankLookup: Map<number, number> = new Map();
-    preference.forEach((j, rank) => {
-      singleRankLookup.set(j, rank);
-    });
-    rankLookup.set(id, singleRankLookup);
-  });
+  const rankLookup = MakeRankLookup(preferences);
 
   // Run proposal rounds until no one can improve their match
   const proposedTo: Matching = new Map();
@@ -141,6 +134,20 @@ export function RunPhase2(reducedPreferences: Preferences): Preferences {
   }
 
   return reducedPreferences;
+}
+
+export function MakeRankLookup(preferences: Preferences): RankLookup {
+  const rankLookup: RankLookup = new Map();
+
+  // Build a lookup table in which lookup[i][j] gives rank of user j on user i's preference list
+  preferences.forEach((preference, id) => {
+    const singleRankLookup: Map<number, number> = new Map();
+    preference.forEach((j, rank) => {
+      singleRankLookup.set(j, rank);
+    });
+    rankLookup.set(id, singleRankLookup);
+  });
+  return rankLookup;
 }
 
 function RunProposalRound(

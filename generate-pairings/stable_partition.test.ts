@@ -73,8 +73,7 @@ function FullExample() {
     [13, [0, 1, 2, 3, 4, 6, 10]]
   ]);
 
-  const partition = GenerateStablePartition(preferences);
-  console.log("Final partition: ", partition);
+  GenerateStablePartition(preferences);
 }
 
 // Phase1Example();
