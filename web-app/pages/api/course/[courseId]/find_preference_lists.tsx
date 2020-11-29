@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getConnection } from "../../../../shared/sql_connection";
 import verifyAuthentication from "../../../../shared/authentication_middleware";
 import neo4j_driver from "../../../../shared/neo4j_connection";
+import assert from "assert";
 
 type AdjacentNodes = Map<number, number>; // <head node, weight>
 type AdjacencyList = Map<number, AdjacentNodes>; // <tail node, AdjacentNodes>
+type Nodes = Set<number>;
 
 export default async function findPreferenceLists(
   req: NextApiRequest,
@@ -22,26 +24,80 @@ export default async function findPreferenceLists(
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
-  console.log(graph.adjacency_list);
+  await graph.findShortestPaths(5);
   res.status(200).json({ });
 }
 
 class Graph {
   adjacency_list: AdjacencyList;
+  nodes: Nodes;
 
   constructor() {
     this.adjacency_list = new Map();
+    this.nodes = new Set();
   }
 
-  getClosestPaths(): void {
+  findShortestPaths(start_node: number): Array<number> {
+    const distances = new Map();
+    const unvisited_nodes = new Set();
 
+    this.nodes.forEach(node => {
+      unvisited_nodes.add(node);
+      distances.set(node, Infinity);
+    });
+    distances.set(start_node, 0);
+
+    function findClosestUnprocessedNode() {
+      let min_node_dist = Infinity;
+      let min_node;
+      unvisited_nodes.forEach(unvisited_node => {
+        const currDist = distances.get(unvisited_node);
+        if (currDist < min_node_dist) {
+          min_node_dist = currDist;
+          min_node = unvisited_node;
+        }
+      });
+      return { min_node, min_node_dist };
+    }
+
+    for (let _ = 0; _ < this.nodes.size; ++_) {
+      const { min_node, min_node_dist } = findClosestUnprocessedNode();
+      unvisited_nodes.delete(min_node);
+
+      const adjacencies = this.adjacency_list.get(min_node);
+      if (adjacencies == undefined) {
+        continue;
+      }
+
+      Array.from(adjacencies.keys()).forEach(head_node => {
+        const possible_new_dist = min_node_dist + adjacencies.get(head_node);
+        if (
+          unvisited_nodes.has(head_node) &&
+          distances.get(head_node) > possible_new_dist
+        ) {
+          distances.set(head_node, possible_new_dist);
+        }
+      });
+    }
+
+    // Order nodes by distances
+    const nodes_by_distances = Array.from(this.nodes);
+    nodes_by_distances.sort(function(node_1, node_2) {
+      const node_1_dist = distances.get(node_1);
+      const node_2_dist = distances.get(node_2);
+      return node_1_dist - node_2_dist;
+    });
+    assert(nodes_by_distances[0] === start_node);
+    nodes_by_distances.shift();
+    return nodes_by_distances;
   }
 
   async buildGraph(course_id: number): Promise<void> {
     // Note: For some reason, "this" isn't being properly bound
     // within our function in .then, which is why I'm populating
     // a local map first
-    const local_adjacencies: AdjacencyList = new Map();
+    const adjacencies: AdjacencyList = new Map();
+    const nodes: Nodes = new Set();
 
     function getEdgeWeight(edge_count: number, edge_type: string): number {
       if (edge_type === "COMMENTED") {
@@ -50,6 +106,28 @@ class Graph {
         return edge_count;
       }
       return -1;
+    }
+
+    function addEdge(
+      tail_id: number,
+      head_id: number,
+      edge_weight: number
+    ): void {
+      if (adjacencies.has(tail_id)) {
+        const adjacent_nodes = adjacencies.get(tail_id);
+        if (adjacent_nodes.has(head_id)) {
+          adjacent_nodes.set(
+            head_id,
+            adjacent_nodes.get(head_id) + edge_weight
+          );
+        } else {
+          adjacent_nodes.set(head_id, edge_weight);
+        }
+      } else {
+        const adjacent_nodes: AdjacentNodes = new Map();
+        adjacent_nodes.set(head_id, edge_weight);
+        adjacencies.set(tail_id, adjacent_nodes);
+      }
     }
 
     const neo4j_session = neo4j_driver.session();
@@ -68,29 +146,22 @@ class Graph {
           const viewer_id = record.get("viewer").properties.user_id;
           const poster_id = record.get("poster").properties.user_id;
 
+          nodes.add(viewer_id);
+          nodes.add(poster_id);
+
           const raw_edge_count = record.get("e").properties.weight.low;
           const edge_type = record.get("e").type;
           const edge_weight = getEdgeWeight(raw_edge_count, edge_type);
 
-          if (local_adjacencies.has(viewer_id)) {
-            const adjacent_nodes = local_adjacencies.get(viewer_id);
-            if (adjacent_nodes.has(poster_id)) {
-              adjacent_nodes.set(
-                poster_id,
-                adjacent_nodes.get(poster_id) + edge_weight
-              );
-            } else {
-              adjacent_nodes.set(poster_id, edge_weight);
-            }
-          } else {
-            const adjacent_nodes: AdjacentNodes = new Map();
-            adjacent_nodes.set(poster_id, edge_weight);
-            local_adjacencies.set(viewer_id, adjacent_nodes);
-          }
+          addEdge(viewer_id, poster_id, edge_weight);
+          addEdge(poster_id, viewer_id, edge_weight);
         });
       });
     neo4j_session.close();
-    this.adjacency_list = local_adjacencies;
+
+    this.adjacency_list = adjacencies;
+    this.nodes = nodes;
+
     this._invertEdgeWeights();
   }
 
