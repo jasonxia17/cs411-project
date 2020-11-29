@@ -36,13 +36,22 @@ export function GenerateStablePartition(
       partition.push([id, preference[0]]);
     } else if (preference.length === 2) {
       const oddParty: StablePartitionParty = [id];
-      let nextVertex = preference[1];
+      let vertex = preference[1];
 
-      while (!visited.has(nextVertex)) {
-        oddParty.push(nextVertex);
-        visited.add(nextVertex);
-        nextVertex = preferences.get(nextVertex)?.[1];
+      while (!visited.has(vertex)) {
+        oddParty.push(vertex);
+        visited.add(vertex);
+        const nextVertex = preferences.get(vertex)?.[1];
+
+        if (nextVertex === undefined) {
+          console.error(
+            `${vertex} should be in an odd party but has wrong number of preference list entries`
+          );
+          break;
+        }
+        vertex = nextVertex;
       }
+
       partition.push(oddParty);
     } else {
       console.error(

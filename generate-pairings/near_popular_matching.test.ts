@@ -35,4 +35,4 @@ function FullExample() {
 }
 
 UnstableMatchingExample();
-// FullExample();
+FullExample();

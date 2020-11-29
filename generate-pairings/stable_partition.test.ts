@@ -1,5 +1,9 @@
 import { Preferences } from "./types";
-import { RunPhase1, RunPhase2, GenerateStablePartition } from "./stable_partition";
+import {
+  RunPhase1,
+  RunPhase2,
+  GenerateStablePartition
+} from "./stable_partition";
 
 function Phase1Example() {
   const preferences: Preferences = new Map([
@@ -76,6 +80,6 @@ function FullExample() {
   GenerateStablePartition(preferences);
 }
 
-// Phase1Example();
-// Phase2Example();
+Phase1Example();
+Phase2Example();
 FullExample();
