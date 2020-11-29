@@ -6,7 +6,6 @@ Near-Popular matching in the Roommates problem by Chien-Chung Huang and Telikepa
 A free electronic copy is available at https://www.di.ens.fr/~cchuang/work/unpopular_roommates.pdf 
 */
 
-import { match } from "assert";
 import { GenerateStablePartition, MakeRankLookup } from "./stable_partition";
 import { Matching, Preferences, StablePartition } from "./types";
 

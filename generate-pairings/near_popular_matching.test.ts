@@ -1,5 +1,5 @@
 import { Preferences } from "./types";
-import { GenerateNearPopularMatching } from "./least_unpopular_matching";
+import { GenerateNearPopularMatching } from "./near_popular_matching";
 
 function UnstableMatchingExample() {
   const preferences: Preferences = new Map([
