@@ -5,7 +5,8 @@ const driver = neo4j.driver(
   neo4j.auth.basic(
     process.env.GRAPHENEDB_BOLT_USER,
     process.env.GRAPHENEDB_BOLT_PASSWORD
-  )
+  ),
+  { encrypted: "ENCRYPTION_ON" }
 );
 
 export default driver;

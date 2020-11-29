@@ -6,11 +6,6 @@ import Header from "../components/user-profile/Header";
 export default function Index(): JSX.Element {
   return (
     <Fragment>
-      <script src="lib/browser/neo4j-web.min.js"></script>
-      <script src="https://unpkg.com/neo4j-driver"></script>
-      <script src="https://unpkg.com/neo4j-driver@X.Y.Z/lib/browser/neo4j-web.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/neo4j-driver"></script>
-      <script src="https://cdn.jsdelivr.net/npm/neo4j-driver@X.Y.Z/lib/browser/neo4j-web.min.js"></script>
       <div className="container">
         <Head>
           <title>Struggle Session</title>
