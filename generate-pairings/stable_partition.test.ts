@@ -1,5 +1,5 @@
 import { Preferences } from "./types";
-import { RunPhase1, RunPhase2 } from "./stable_partition";
+import { RunPhase1, RunPhase2, GenerateStablePartition } from "./stable_partition";
 
 function Phase1Example() {
   const preferences: Preferences = new Map([
@@ -73,8 +73,8 @@ function FullExample() {
     [13, [0, 1, 2, 3, 4, 6, 10]]
   ]);
 
-  const reducedPreferences = RunPhase1(preferences);
-  RunPhase2(reducedPreferences);
+  const partition = GenerateStablePartition(preferences);
+  console.log("Final partition: ", partition);
 }
 
 // Phase1Example();

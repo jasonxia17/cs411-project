@@ -9,7 +9,8 @@ import {
   PreferenceList,
   Preferences,
   RankLookup,
-  StablePartition
+  StablePartition,
+  StablePartitionParty
 } from "./types";
 
 export function GenerateStablePartition(
@@ -18,8 +19,39 @@ export function GenerateStablePartition(
   preferences = RunPhase1(preferences);
   preferences = RunPhase2(preferences);
 
-  // TODO Convert preferences to partition
-  return [];
+  // Convert preferences to partition
+  const partition: StablePartition = [];
+  const visited: Set<number> = new Set();
+
+  preferences.forEach((preference, id) => {
+    if (visited.has(id)) {
+      return;
+    }
+    visited.add(id);
+
+    if (preference.length === 0) {
+      partition.push([id]);
+    } else if (preference.length === 1) {
+      visited.add(preference[0]);
+      partition.push([id, preference[0]]);
+    } else if (preference.length === 2) {
+      const oddParty: StablePartitionParty = [id];
+      let nextVertex = preference[1];
+
+      while (!visited.has(nextVertex)) {
+        oddParty.push(nextVertex);
+        visited.add(nextVertex);
+        nextVertex = preferences.get(nextVertex)?.[1];
+      }
+      partition.push(oddParty);
+    } else {
+      console.error(
+        `Found more than 2 entries in reduced preference list for ${id}`
+      );
+    }
+  });
+
+  return partition;
 }
 
 // Phase 1: repeated rounds of proposals, which will reduce the preference list by removing 'impossible' pairs
