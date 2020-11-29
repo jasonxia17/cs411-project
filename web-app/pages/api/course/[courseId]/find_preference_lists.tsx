@@ -22,16 +22,8 @@ export default async function findPreferenceLists(
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
+  console.log(graph.adjacency_list);
   res.status(200).json({ });
-}
-
-function getEdgeWeight(edge_count: number, edge_type: string): number {
-  if (edge_type === "COMMENTED") {
-    return edge_count * 3;
-  } else if (edge_type === "VIEWED") {
-    return edge_count;
-  }
-  return -1;
 }
 
 class Graph {
@@ -41,11 +33,24 @@ class Graph {
     this.adjacency_list = new Map();
   }
 
+  getClosestPaths(): void {
+
+  }
+
   async buildGraph(course_id: number): Promise<void> {
     // Note: For some reason, "this" isn't being properly bound
     // within our function in .then, which is why I'm populating
     // a local map first
     const local_adjacencies: AdjacencyList = new Map();
+
+    function getEdgeWeight(edge_count: number, edge_type: string): number {
+      if (edge_type === "COMMENTED") {
+        return edge_count * 3;
+      } else if (edge_type === "VIEWED") {
+        return edge_count;
+      }
+      return -1;
+    }
 
     const neo4j_session = neo4j_driver.session();
 
@@ -84,7 +89,18 @@ class Graph {
           }
         });
       });
-    this.adjacency_list = local_adjacencies;
     neo4j_session.close();
+    this.adjacency_list = local_adjacencies;
+    this._invertEdgeWeights();
+  }
+
+  _invertEdgeWeights(): void {
+    Array.from(this.adjacency_list.keys()).forEach(tail_node => {
+      const adjacency = this.adjacency_list.get(tail_node);
+
+      Array.from(adjacency.keys()).forEach(head_node =>
+        adjacency.set(head_node, 1 / adjacency.get(head_node))
+      );
+    });
   }
 }
