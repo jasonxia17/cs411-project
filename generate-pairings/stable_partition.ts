@@ -70,10 +70,6 @@ export function RunPhase1(preferences: Preferences): Preferences {
   // Run proposal rounds until no one can improve their match
   const proposedTo: Matching = new Map();
   const proposedBy: Matching = new Map();
-  for (const key of preferences.keys()) {
-    proposedTo.set(key, null);
-    proposedBy.set(key, null);
-  }
 
   do {
     RunProposalRound(proposalOrders, rankLookup, proposedTo, proposedBy);
@@ -81,12 +77,8 @@ export function RunPhase1(preferences: Preferences): Preferences {
 
   // Reduce preference lists
   proposedBy.forEach((match, id) => {
-    if (match === null) {
-      return;
-    }
-
     let impossibleMatch = reducedPreferences.get(id)?.pop();
-    while (impossibleMatch != match && impossibleMatch !== undefined) {
+    while (impossibleMatch !== match && impossibleMatch !== undefined) {
       const position = reducedPreferences.get(impossibleMatch)?.indexOf(id);
       if (position !== undefined) {
         reducedPreferences.get(impossibleMatch)?.splice(position, 1);
@@ -171,7 +163,7 @@ function RunProposalRound(
     let isProposalAccepted = false;
 
     // Person being proposed will accept if they don't already have a better proposal
-    if (previousMatch === null || previousMatch === undefined) {
+    if (previousMatch === undefined) {
       isProposalAccepted = true;
     } else {
       const thisRank = partnerRankings.get(id);
@@ -188,9 +180,9 @@ function RunProposalRound(
     }
 
     // Reset previous partners
-    if (previousMatch !== null && previousMatch !== undefined) {
+    if (previousMatch !== undefined) {
       proposalOrders.get(previousMatch)?.shift();
-      proposedTo.set(previousMatch, null);
+      proposedTo.delete(previousMatch);
     }
 
     // Set new partners
@@ -203,8 +195,8 @@ function ShouldContinueProposal(
   proposalOrders: Preferences,
   proposedTo: Matching
 ): boolean {
-  for (const [id, match] of proposedTo) {
-    if ((proposalOrders.get(id)?.length || 0) > 0 && match === null) {
+  for (const [id, preference] of proposalOrders) {
+    if (!proposedTo.has(id) && preference.length > 0) {
       return true;
     }
   }
