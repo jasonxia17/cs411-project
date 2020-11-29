@@ -141,6 +141,24 @@ function RunGaleShapley(
   return matching;
 }
 
-function InduceSubgraph(preferences: Preferences, partialMatching: Matching): Preferences {
-  return new Map();
+function InduceSubgraph(
+  preferences: Preferences,
+  partialMatching: Matching
+): Preferences {
+  const finishedMatches = new Set(partialMatching.keys());
+
+  preferences.forEach((preference, id) => {
+    if (finishedMatches.has(id)) {
+      preferences.delete(id);
+    } else {
+      const newPreference = preference.filter(v => !finishedMatches.has(v));
+      if (newPreference.length > 0) {
+        preferences.set(id, newPreference);
+      } else {
+        preferences.delete(id);
+      }
+    }
+  });
+
+  return preferences;
 }
