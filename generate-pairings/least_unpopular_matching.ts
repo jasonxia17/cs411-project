@@ -6,7 +6,8 @@ Near-Popular matching in the Roommates problem by Chien-Chung Huang and Telikepa
 A free electronic copy is available at https://www.di.ens.fr/~cchuang/work/unpopular_roommates.pdf 
 */
 
-import { GenerateStablePartition } from "./stable_partition";
+import { match } from "assert";
+import { GenerateStablePartition, MakeRankLookup } from "./stable_partition";
 import { Matching, Preferences, StablePartition } from "./types";
 
 /*
@@ -30,7 +31,17 @@ export function GenerateNearPopularMatching(
 
   console.log("Left partition preferences: ", leftPreferences);
   console.log("Right partition preferences: ", rightPreferences);
-  return new Map();
+
+  const matching = RunGaleShapley(leftPreferences, rightPreferences);
+  const subgraphPreferences = InduceSubgraph(preferences, matching);
+  if (subgraphPreferences.size > 0) {
+    // Recursively compute matching
+    const subgraphMatching = GenerateNearPopularMatching(subgraphPreferences);
+    subgraphMatching.forEach((v, k) => matching.set(k, v)); // Merge matching
+  }
+
+  console.log(matching);
+  return matching;
 }
 
 function MakeBipartition(
@@ -71,8 +82,12 @@ function MakeBipartition(
   return [leftPreferences, rightPreferences];
 }
 
-function RunGaleShapley(leftPreferences: Preferences, rightPreferences: Preferences): Matching {
+function RunGaleShapley(
+  leftPreferences: Preferences,
+  rightPreferences: Preferences
+): Matching {
   const matching: Matching = new Map();
+  const rankLookup = MakeRankLookup(rightPreferences);
 
   function ShouldContinue(): boolean {
     for (const [id, preference] of leftPreferences) {
@@ -85,7 +100,41 @@ function RunGaleShapley(leftPreferences: Preferences, rightPreferences: Preferen
 
   do {
     leftPreferences.forEach((preference, id) => {
+      if (preference.length === 0 || typeof matching.get(id) === "number") {
+        return;
+      }
 
+      const preferredPartnerId = preference[0];
+      const partnerRankings: Map<number, number> =
+        rankLookup.get(preferredPartnerId) || new Map();
+      const previousMatch = matching.get(preferredPartnerId);
+      let isProposalAccepted = false;
+
+      // Person being proposed will accept if they don't already have a better proposal
+      if (previousMatch === null || previousMatch === undefined) {
+        isProposalAccepted = true;
+      } else {
+        const thisRank = partnerRankings.get(id);
+        const previousRank = partnerRankings.get(previousMatch);
+        isProposalAccepted =
+          thisRank !== undefined &&
+          previousRank !== undefined &&
+          thisRank < previousRank; // Lower rank is better
+      }
+
+      if (!isProposalAccepted) {
+        preference.shift(); // Move on to next person
+        return;
+      }
+
+      // Reset previous partners
+      if (previousMatch !== null && previousMatch !== undefined) {
+        matching.delete(previousMatch);
+      }
+
+      // Set new partners
+      matching.set(id, preferredPartnerId);
+      matching.set(preferredPartnerId, id);
     });
   } while (ShouldContinue());
 
