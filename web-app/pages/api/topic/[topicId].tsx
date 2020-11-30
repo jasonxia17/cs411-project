@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { NextApiRequest, NextApiResponse } from "next";
 import verifyAuthentication from "../../../shared/authentication_middleware";
 import { getConnection } from "../../../shared/sql_connection";
@@ -19,12 +20,24 @@ async function viewTopicPostsHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  const [num_posts_by_user] = await connection.query(
+  const [topic_rows] = await connection.query<RowDataPacket[]>(
+    "SELECT * FROM Topics WHERE TopicId = ?",
+    [req.query.topicId]
+  );
+
+  if (topic_rows.length !== 1) {
+    res.status(401).end("Topic does not exist");
+    return;
+  }
+
+  const [
+    num_posts_by_user
+  ] = await connection.query(
     "SELECT COUNT(*) FROM Posts WHERE TopicId = ? AND UserId = ?",
     [req.query.topicId, session.user["id"]]
   );
 
-  const [instructor_rows] = await connection.query(
+  const [instructor_rows] = await connection.query<RowDataPacket[]>(
     `SELECT *
     FROM Instructors NATURAL JOIN Topics
     WHERE TopicId = ? AND InstructorId = ?`,
@@ -32,17 +45,18 @@ async function viewTopicPostsHandler(
   );
 
   if (num_posts_by_user[0]["COUNT(*)"] === 0 && instructor_rows.length === 0) {
-    res.status(200).json({ posts: null });
+    res.status(200).json({ posts: null, topicTitle: topic_rows[0].Title });
     return;
   }
 
   const [
     posts
-  ] = await connection.query("SELECT * FROM Posts WHERE TopicId = ?", [
-    req.query.topicId
-  ]);
+  ] = await connection.query(
+    "SELECT * FROM PostsWithCommentCounts WHERE TopicId = ?",
+    [req.query.topicId]
+  );
 
-  res.status(200).json({ posts });
+  res.status(200).json({ posts, topicTitle: topic_rows[0].Title });
 }
 
 export default viewTopicPostsHandler;
