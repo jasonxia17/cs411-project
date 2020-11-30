@@ -54,6 +54,7 @@ export default function ViewCourses(): JSX.Element {
           {studentCourses.map(course => (
             <Course
               key={course.CourseId}
+              UserType={"Student"}
               CardColor={studentCardColor}
               CourseId={course.CourseId as string}
               Title={course.Title as string}
@@ -65,6 +66,7 @@ export default function ViewCourses(): JSX.Element {
           {instructorCourses.map(course => (
             <Course
               key={course.CourseId}
+              UserType={"Instructor"}
               CardColor={instructorCardColor}
               CourseId={course.CourseId as string}
               Title={course.Title as string}
