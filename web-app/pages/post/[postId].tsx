@@ -4,6 +4,9 @@ import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import Post from "../../components/Post";
 
+import Button from "react-bootstrap/Button";
+import { ArrowLeft } from "react-bootstrap-icons";
+
 export default function SinglePostPage(): JSX.Element {
   const [data, setData] = useState(undefined);
   const [newComment, setNewComment] = useState("");
@@ -66,6 +69,12 @@ export default function SinglePostPage(): JSX.Element {
   return (
     <div className="body-wrapper">
       <div className="limit-width">
+        <Button
+          variant="outline-secondary"
+          href={`/topic/${data.post.TopicId}`}
+        >
+          <ArrowLeft /> Back to Topic
+        </Button>
         <Post
           {...data.post}
           clickable={false}
