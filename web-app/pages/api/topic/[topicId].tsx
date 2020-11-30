@@ -19,7 +19,9 @@ async function viewTopicPostsHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  const [num_posts_by_user] = await connection.query(
+  const [
+    num_posts_by_user
+  ] = await connection.query(
     "SELECT COUNT(*) FROM Posts WHERE TopicId = ? AND UserId = ?",
     [req.query.topicId, session.user["id"]]
   );
