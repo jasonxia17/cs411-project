@@ -109,9 +109,7 @@ export default function ViewCourseHomepage(): JSX.Element {
             }}
           >
             <Link href={viewRosterAsInstructorLink}>
-              <a className="page_link">
-                See roster (to remove students from course)!
-              </a>
+              <a className="page_link">See roster!</a>
             </Link>
           </div>
         </div>
