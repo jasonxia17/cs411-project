@@ -51,7 +51,7 @@ export default async function joinCourseHandler(
   }
 
   if (shouldJoinAsStudent) {
-    if (await hasJoinedAsInstructor()) {
+    if ((await hasJoinedAsInstructor()) || (await hasJoinedAsStudent())) {
       res
         .status(401)
         .end("User has already joined this course as an instructor");
@@ -62,7 +62,7 @@ export default async function joinCourseHandler(
       [userId, courseToJoinId as number]
     );
   } else {
-    if (await hasJoinedAsStudent()) {
+    if ((await hasJoinedAsInstructor()) || (await hasJoinedAsStudent())) {
       res
         .status(401)
         .end("User has already joined this course as an instructor");
