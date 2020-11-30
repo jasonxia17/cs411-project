@@ -138,6 +138,20 @@ class Graph {
     }
 
     const neo4j_session = neo4j_driver.session();
+    const connection = await getConnection();
+
+    // Filter out all instructors to prevent student-instructor pairs, which would
+    // be awkward
+    const [
+      instructorRows
+    ] = await connection.query(
+      "SELECT InstructorId FROM Instructors WHERE CourseId = ?",
+      [course_id]
+    );
+    const instructors = new Set();
+    JSON.parse(JSON.stringify(instructorRows)).forEach(instructorId => {
+      instructors.add(instructorId.InstructorId as number);
+    });
 
     await neo4j_session
       .run(
@@ -153,15 +167,23 @@ class Graph {
           const viewer_id = record.get("viewer").properties.user_id;
           const poster_id = record.get("poster").properties.user_id;
 
-          nodes.add(viewer_id);
-          nodes.add(poster_id);
+          const isViewerInstructor = instructors.has(viewer_id as number);
+          const isPosterInstructor = instructors.has(poster_id as number);
 
-          const raw_edge_count = record.get("e").properties.weight.low;
-          const edge_type = record.get("e").type;
-          const edge_weight = getEdgeWeight(raw_edge_count, edge_type);
+          if (!isViewerInstructor) {
+            nodes.add(viewer_id);
+          }
+          if (!isPosterInstructor) {
+            nodes.add(poster_id);
+          }
+          if (!isViewerInstructor && !isPosterInstructor) {
+            const raw_edge_count = record.get("e").properties.weight.low;
+            const edge_type = record.get("e").type;
+            const edge_weight = getEdgeWeight(raw_edge_count, edge_type);
 
-          addEdge(viewer_id, poster_id, edge_weight);
-          addEdge(poster_id, viewer_id, edge_weight);
+            addEdge(viewer_id, poster_id, edge_weight);
+            addEdge(poster_id, viewer_id, edge_weight);
+          }
         });
       });
     neo4j_session.close();
