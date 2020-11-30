@@ -14,6 +14,7 @@ export default function ViewCourseHomepage(): JSX.Element {
   const [courseId, setCourseId] = useState(query.courseId as string);
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
+  const [partnerName, setPartnerName] = useState("");
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function ViewCourseHomepage(): JSX.Element {
         } else if (data.isInstructor) {
           setUserRole(UserRole.Instructor);
         }
+        setPartnerName(data.studentPairing);
       })
       .catch(reason => console.log(reason));
   }, [query]);
@@ -120,6 +122,15 @@ export default function ViewCourseHomepage(): JSX.Element {
         }}
       >
         Join Code: {joinCode}
+      </div>
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        {userRole == UserRole.Student && partnerName && (
+          <h2>Partner name: {partnerName}</h2>
+        )}
       </div>
     </div>
   );
