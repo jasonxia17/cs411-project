@@ -5,6 +5,7 @@ import ContentWrapper from "../components/ContentWrapper";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import JoinCourseModal from "../components/JoinCourseModal";
+import CreateCourseModal from "../components/CreateCourseModal";
 
 import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
@@ -15,6 +16,10 @@ export default function ViewCourses(): JSX.Element {
   const [shouldShowJoinCourseModal, setShouldShowJoinCourseModal] = useState(
     false
   );
+  const [
+    shouldShowCreateCourseModal,
+    setShouldShowCreateCourseModal
+  ] = useState(false);
 
   useEffect(() => {
     fetch("/api/view_courses")
@@ -58,14 +63,18 @@ export default function ViewCourses(): JSX.Element {
         >
           Join Course As Instructor
         </Button>{" "}
-        <JoinCourseModal
-          joinType="Instructor"
-          shouldShow={shouldShowJoinCourseModal}
-          setShouldShow={setShouldShowJoinCourseModal}
-        ></JoinCourseModal>
-        <Button variant={instructorCardColor} href="/create_course">
+        <Button
+          variant={instructorCardColor}
+          onClick={() => {
+            setShouldShowCreateCourseModal(true);
+          }}
+        >
           Create Course As Instructor
         </Button>{" "}
+        <CreateCourseModal
+          shouldShow={shouldShowCreateCourseModal}
+          setShouldShow={setShouldShowCreateCourseModal}
+        ></CreateCourseModal>
       </div>
       <div>
         <CardColumns>
