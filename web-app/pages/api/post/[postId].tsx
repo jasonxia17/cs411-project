@@ -31,17 +31,29 @@ async function viewPostsHandler(
     req.query.postId
   );
 
+  const [courseIdRow] = await connection.query(
+    "SELECT CourseId FROM Topics WHERE TopicId = ?",
+    posts[0].TopicId
+  );
+
   const viewer_id = session.user["id"];
   const poster_id = posts[0].UserId;
+  const course_id = courseIdRow[0].CourseId as number;
+
   if (viewer_id !== poster_id) {
     const neo4j_session = neo4j_driver.session();
     await neo4j_session.run(
       `MERGE (viewer:User {user_id: $viewer_id})
       MERGE (poster:User {user_id: $poster_id})
-      MERGE (viewer)-[e:VIEWED]->(poster)
-        ON CREATE SET e.weight = 1
+      MERGE (viewer)-[e:VIEWED {course_id: $course_id_match}]->(poster)
+        ON CREATE SET e.weight = 1, e.course_id = $course_id_create
         ON MATCH SET e.weight = e.weight + 1`,
-      { viewer_id, poster_id }
+      {
+        viewer_id,
+        poster_id,
+        course_id_match: course_id,
+        course_id_create: course_id
+      }
     );
     neo4j_session.close();
   }

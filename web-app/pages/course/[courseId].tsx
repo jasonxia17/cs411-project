@@ -59,6 +59,7 @@ export default function ViewCourseHomepage(): JSX.Element {
   const searchPostsLink = `/course/${courseId}/search_post_keywords`;
   const viewTopicsLink = `/course/${courseId}/view_topics`;
   const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
+  const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
 
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
@@ -85,16 +86,29 @@ export default function ViewCourseHomepage(): JSX.Element {
         </div>
       )}
       {userRole == UserRole.Instructor && (
-        <div
-          style={{
-            marginTop: 10
-          }}
-        >
-          <Link href={viewRosterAsInstructorLink}>
-            <a className="page_link">
-              See roster (to remove students from course)!
-            </a>
-          </Link>
+        <div>
+          <div
+            style={{
+              marginTop: 10
+            }}
+          >
+            <Link href={seeInteractionsLink}>
+              <a className="page_link">
+                See a visualization of student interactions!
+              </a>
+            </Link>
+          </div>
+          <div
+            style={{
+              marginTop: 10
+            }}
+          >
+            <Link href={viewRosterAsInstructorLink}>
+              <a className="page_link">
+                See roster (to remove students from course)!
+              </a>
+            </Link>
+          </div>
         </div>
       )}
       <div
