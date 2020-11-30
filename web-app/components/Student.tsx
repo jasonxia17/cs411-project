@@ -1,7 +1,7 @@
 import React from "react";
 
 interface StudentData {
-  key: string;
+  id: string;
   name: string;
   preference_list: Array<string> | null;
   partner?: string;
@@ -9,13 +9,12 @@ interface StudentData {
 }
 
 export default function Student({
-  key,
+  id,
   name,
   preference_list,
   partner,
   removeStudentFromRoster
 }: StudentData): JSX.Element {
-  console.log(preference_list);
   return (
     <div>
       <div>
@@ -44,7 +43,7 @@ export default function Student({
         <button
           style={{ cursor: "pointer" }}
           onClick={() => {
-            removeStudentFromRoster(key);
+            removeStudentFromRoster(id);
           }}
         >
           Remove student from course

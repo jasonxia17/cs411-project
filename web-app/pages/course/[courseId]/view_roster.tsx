@@ -57,6 +57,7 @@ export default function ViewRoster(): JSX.Element {
   }
 
   async function removeStudentFromRoster(studentId: string): Promise<void> {
+    console.log("here", studentId);
     await fetch(`/api/course/${courseId}/remove_from_course`, {
       method: "POST",
       headers: {
@@ -94,6 +95,7 @@ export default function ViewRoster(): JSX.Element {
         {students.map(student => (
           <Student
             key={student.id}
+            id={student.id}
             name={student.name}
             preference_list={student.preference_list}
             partner={student.matching}
