@@ -131,9 +131,13 @@ export default function ViewCourseHomepage(): JSX.Element {
             marginTop: 10
           }}
         >
-          <button style={{ cursor: "pointer" }} onClick={dropClassAsStudent}>
+          <Button
+            variant="danger"
+            style={{ cursor: "pointer" }}
+            onClick={dropClassAsStudent}
+          >
             Drop class
-          </button>
+          </Button>
         </div>
       )}
       {userRole == UserRole.Instructor && (
