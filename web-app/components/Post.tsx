@@ -9,6 +9,7 @@ interface PostData {
   Body: string;
   NumComments?: number;
   PostTime: string;
+  clickable: boolean;
 }
 
 export default function Post({
@@ -17,12 +18,16 @@ export default function Post({
   Title,
   Body,
   NumComments,
-  PostTime
+  PostTime,
+  clickable = true
 }: PostData): JSX.Element {
   const timestampString = new Date(PostTime).toLocaleString("en-US", {
-    dateStyle: "short",
-    timeStyle: "short"
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric"
   });
+
   return (
     <Card style={{ marginTop: 30, marginBottom: 30 }}>
       <Card.Body>
@@ -37,7 +42,7 @@ export default function Post({
         {NumComments === 1 ? "Comment" : "Comments"}
       </Card.Footer>
 
-      <a href={`/post/${PostId}`} className="stretched-link"></a>
+      {clickable && <a href={`/post/${PostId}`} className="stretched-link"></a>}
     </Card>
   );
 }

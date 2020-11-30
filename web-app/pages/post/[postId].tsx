@@ -66,7 +66,7 @@ export default function SinglePostPage(): JSX.Element {
   return (
     <div className="body-wrapper">
       <div className="limit-width">
-        <Post {...data.post} />
+        <Post {...data.post} clickable={false} />
         <Link href={`/post/${data.post.PostId}/edit_post`}>
           <a className="edit_link">Edit post!</a>
         </Link>
