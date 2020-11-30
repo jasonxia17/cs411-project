@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
 import Post from "../../../components/Post";
+import { Alert, Button, FormControl, InputGroup } from "react-bootstrap";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
@@ -32,55 +33,43 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
   }
 
   const searchTextbox = (
-    <div>
-      <h1>Search for matching posts and comments by keywords or usernames!</h1>
-      <textarea
-        style={{ width: 250, height: 50, padding: 10, resize: "none" }}
+    <InputGroup className="mb-3">
+      <FormControl
+        placeholder="Search for matching posts and comments by keywords or usernames!"
+        aria-label="Search keywords"
         value={keywords}
         onChange={e => setKeywords(e.target.value)}
       />
-      <div>
-        <button
-          disabled={keywords.length === 0}
-          style={{ cursor: "pointer" }}
-          onClick={searchForPosts}
-        >
+      <InputGroup.Append>
+        <Button disabled={keywords.length === 0} onClick={searchForPosts}>
           Search!
-        </button>
-      </div>
-    </div>
+        </Button>
+      </InputGroup.Append>
+    </InputGroup>
   );
 
   const displayedPosts = (
     <div>
-      <h1>Matching posts:</h1>
-      <ul>
-        {matchingPosts.map(post => (
-          <li key={post.PostId}>
-            <Post
-              PostId={post.PostId as string}
-              UserId={post.UserId as string}
-              Title={post.Title as string}
-              Body={post.Body as string}
-            />
-          </li>
-        ))}
-      </ul>
+      <h2 style={{ marginTop: 30 }}>Matching posts:</h2>
+      {matchingPosts.map(post => (
+        <Post key={post.PostId} {...post} />
+      ))}
     </div>
   );
 
-  if (shouldDisplayResults) {
-    return (
-      <div>
+  return (
+    <div className="body-wrapper">
+      <div className="limit-width">
         {searchTextbox}
-        {matchingPosts.length > 0 ? (
-          displayedPosts
-        ) : (
-          <h2>No posts were found</h2>
-        )}
+        {shouldDisplayResults &&
+          (matchingPosts.length > 0 ? (
+            displayedPosts
+          ) : (
+            <Alert variant="secondary" style={{ marginTop: 30 }}>
+              No posts were found
+            </Alert>
+          ))}
       </div>
-    );
-  } else {
-    return searchTextbox;
-  }
+    </div>
+  );
 }
