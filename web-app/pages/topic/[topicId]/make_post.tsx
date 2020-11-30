@@ -22,7 +22,7 @@ export default function MakePostPage(): JSX.Element {
       },
       body: JSON.stringify({ postTitle, postBody, topicId })
     });
-    window.location.href = "/"; // go back to home page
+    window.location.href = `/topic/${topicId}`;
   }
 
   return (

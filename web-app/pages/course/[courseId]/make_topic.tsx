@@ -3,9 +3,8 @@ import useProtectedRoute from "../../../hooks/protected_route_hook";
 import { useRouter } from "next/router";
 import ContentWrapper from "../../../components/ContentWrapper";
 
-export default function MakePostPage(): JSX.Element {
+export default function MakeTopicPage(): JSX.Element {
   const [topicTitle, setTopicTitle] = useState("");
-  const [topicId, setTopicId] = useState("");
   const { query } = useRouter();
 
   const [session, loading] = useProtectedRoute();
@@ -20,9 +19,9 @@ export default function MakePostPage(): JSX.Element {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ topicId, courseId, topicTitle })
+      body: JSON.stringify({ courseId, topicTitle })
     });
-    window.location.href = "/"; // go back to home page
+    window.location.href = `/course/${courseId}`;
   }
 
   return (
