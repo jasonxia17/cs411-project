@@ -1,3 +1,4 @@
+import { connect } from "http2";
 import { NextApiRequest, NextApiResponse } from "next";
 import verifyAuthentication from "../../../shared/authentication_middleware";
 import { getConnection } from "../../../shared/sql_connection";
@@ -38,7 +39,24 @@ async function courseInformationHandler(
   );
   const isStudent = JSON.parse(JSON.stringify(joinedAsStudent)).length !== 0;
 
-  res.status(200).json({ courseData: courseData[0], isStudent, isInstructor });
+  const [
+    studentPairingRow
+  ] = await connection.execute(
+    "SELECT name from Partners, users WHERE CourseId = ? AND UserIdA = ? AND UserIdB = users.id",
+    [req.query.courseId, userId]
+  );
+  const studentPairingArr = JSON.parse(JSON.stringify(studentPairingRow));
+  let studentPairing;
+  if (studentPairingArr.length !== 0) {
+    studentPairing = studentPairingArr[0].name;
+  }
+  console.log(userId, studentPairing);
+  res.status(200).json({
+    courseData: courseData[0],
+    isStudent,
+    isInstructor,
+    studentPairing
+  });
 }
 
 export default courseInformationHandler;
