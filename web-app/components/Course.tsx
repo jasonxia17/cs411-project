@@ -1,27 +1,30 @@
 import React from "react";
-import Link from "next/link";
+import Card from "react-bootstrap/Card";
+import Badge from "react-bootstrap/Badge";
 
 interface CourseData {
+  key: string;
+  CardColor: string;
   CourseId: string;
   Title: string;
   Semester: string;
 }
 
 export default function Course({
+  CardColor,
   CourseId,
   Title,
   Semester
 }: CourseData): JSX.Element {
   return (
-    <div>
-      <h2>
-        Title: {Title}, Semester: {Semester}
-      </h2>
-      <div>
-        <Link href={`/course/${CourseId}`}>
-          <a className="posts_link">Go to {Title} forum!</a>
-        </Link>
-      </div>
-    </div>
+    <Card border={CardColor} key={CourseId}>
+      <Card.Body>
+        <Card.Title>
+          {Title} <Badge variant="secondary">Instructor</Badge>
+        </Card.Title>
+        <Card.Text>{Semester}</Card.Text>
+        <Card.Link href={`/course/${CourseId}`}>Visit course forum</Card.Link>
+      </Card.Body>
+    </Card>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 import Course from "../components/Course";
@@ -8,9 +7,6 @@ import CardColumns from "react-bootstrap/CardColumns";
 
 import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
-import ListGroupItem from "react-bootstrap/ListGroupItem";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 export default function ViewCourses(): JSX.Element {
   const [studentCourses, setStudentCourses] = useState([]);
@@ -56,32 +52,24 @@ export default function ViewCourses(): JSX.Element {
       <div>
         <CardColumns>
           {studentCourses.map(course => (
-            <Card border={studentCardColor} key={course.CourseId}>
-              <Card.Body>
-                <Card.Title>
-                  {course.Title} <Badge variant="secondary">Student</Badge>
-                </Card.Title>
-                <Card.Text>{course.Semester}</Card.Text>
-                <Card.Link href={`/course/${course.CourseId}`}>
-                  Visit course forum
-                </Card.Link>
-              </Card.Body>
-            </Card>
+            <Course
+              key={course.CourseId}
+              CardColor={studentCardColor}
+              CourseId={course.CourseId as string}
+              Title={course.Title as string}
+              Semester={course.Semester as string}
+            />
           ))}
         </CardColumns>
         <CardColumns>
           {instructorCourses.map(course => (
-            <Card border={instructorCardColor} key={course.CourseId}>
-              <Card.Body>
-                <Card.Title>
-                  {course.Title} <Badge variant="secondary">Instructor</Badge>
-                </Card.Title>
-                <Card.Text>{course.Semester}</Card.Text>
-                <Card.Link href={`/course/${course.CourseId}`}>
-                  Visit course forum
-                </Card.Link>
-              </Card.Body>
-            </Card>
+            <Course
+              key={course.CourseId}
+              CardColor={instructorCardColor}
+              CourseId={course.CourseId as string}
+              Title={course.Title as string}
+              Semester={course.Semester as string}
+            />
           ))}
         </CardColumns>
       </div>
