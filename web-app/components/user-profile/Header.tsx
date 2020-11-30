@@ -1,24 +1,32 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { useSession, signIn, signOut } from "next-auth/client";
-import styles from "./Header.module.css";
+
+import Button from "react-bootstrap/Button";
+import Navbar from "react-bootstrap/Navbar";
 
 export default function Header(): JSX.Element {
   const [session] = useSession();
 
   return (
-    <header className={styles.Header}>
-      {session && (
-        <div>
-          <p>Signed in as {session.user.email}</p>
-          <p>Your display name is {session.user.name}</p>
-          <button onClick={() => signOut()}>Sign out</button>
-        </div>
-      )}
-      {!session && (
-        <p>
-          <button onClick={() => signIn()}>Sign in</button>
-        </p>
-      )}
-    </header>
+    <Navbar bg="dark" variant="dark">
+      <Navbar.Brand href="/">Struggle Session</Navbar.Brand>
+      <Navbar.Toggle />
+      <Navbar.Collapse className="justify-content-end">
+        {session ? (
+          <Fragment>
+            <Navbar.Text className="mr-sm-2">
+              Signed in as: <a>{session.user.name}</a>
+            </Navbar.Text>
+            <Button onClick={() => signOut()} variant="danger">
+              Sign out
+            </Button>
+          </Fragment>
+        ) : (
+          <Button onClick={() => signIn()} variant="primary">
+            Sign in
+          </Button>
+        )}
+      </Navbar.Collapse>
+    </Navbar>
   );
 }
