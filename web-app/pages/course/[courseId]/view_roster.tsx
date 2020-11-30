@@ -15,7 +15,6 @@ export default function ViewRoster(): JSX.Element {
       courseIdLocal = courseId;
     }
 
-    console.log("here");
     // Use local version of course ID because useState doesn't
     // guarantee synchronous updates
     fetch(`/api/course/${courseIdLocal}/view_roster?`, {
