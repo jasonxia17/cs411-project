@@ -102,8 +102,6 @@ export default function ViewCourseHomepage(): JSX.Element {
     return <div> Loading... </div>;
   }
 
-  const viewPostsLink = `/course/${courseId}/view_posts`;
-  const searchPostsLink = `/course/${courseId}/search_post_keywords`;
   const viewTopicsLink = `/course/${courseId}/view_topics`;
   const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
   const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
