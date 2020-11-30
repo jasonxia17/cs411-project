@@ -64,11 +64,6 @@ export default function ViewCourseHomepage(): JSX.Element {
   return (
     <div>
       <div>
-        <Link href={viewPostsLink}>
-          <a className="page_link">Go see posts!</a>
-        </Link>
-      </div>
-      <div>
         <Link href={searchPostsLink}>
           <a className="page_link">Search for posts based on keywords!</a>
         </Link>
