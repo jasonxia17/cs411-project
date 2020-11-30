@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 import Course from "../components/Course";
 import ContentWrapper from "../components/ContentWrapper";
+import Card from "react-bootstrap/Card";
+import CardColumns from "react-bootstrap/CardColumns";
+
+import Button from "react-bootstrap/Button";
+import Badge from "react-bootstrap/Badge";
+import ListGroupItem from "react-bootstrap/ListGroupItem";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 export default function ViewCourses(): JSX.Element {
   const [studentCourses, setStudentCourses] = useState([]);
@@ -23,78 +31,59 @@ export default function ViewCourses(): JSX.Element {
     return <div> Loading... </div>;
   }
 
+  const studentCardColor = "primary"; // blue
+  const instructorCardColor = "success"; // green
+
   return (
     <ContentWrapper>
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        <h1>Courses where you are a student:</h1>
-        {studentCourses.length == 0 ? (
-          <h2>No courses available</h2>
-        ) : (
-          <ul>
-            {studentCourses.map(course => (
-              <li key={course.CourseId}>
-                <Course
-                  CourseId={course.CourseId as string}
-                  Title={course.Title as string}
-                  Semester={course.Semester as string}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="mb-2">
+        <Button
+          variant={studentCardColor}
+          href="/join_course?join_type=student"
+        >
+          Join Course As Student
+        </Button>{" "}
+        <Button
+          variant={instructorCardColor}
+          href="/join_course?join_type=instructor"
+        >
+          Join Course As Instructor
+        </Button>{" "}
+        <Button variant={instructorCardColor} href="/create_course">
+          Create Course As Instructor
+        </Button>{" "}
       </div>
-      <div
-        style={{
-          marginTop: 50
-        }}
-      >
-        <Link href="/join_course?join_type=student">
-          <a className="page_link">Join a course as a student!</a>
-        </Link>
-      </div>
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        <h1>Courses where you are an instructor:</h1>
-        {instructorCourses.length == 0 ? (
-          <h2>No courses available</h2>
-        ) : (
-          <ul>
-            {instructorCourses.map(course => (
-              <li key={course.CourseId}>
-                <Course
-                  CourseId={course.CourseId as string}
-                  Title={course.Title as string}
-                  Semester={course.Semester as string}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <div
-        style={{
-          marginTop: 50
-        }}
-      >
-        <Link href="/create_course">
-          <a className="page_link">Create a course as an instructor!</a>
-        </Link>
-      </div>
-      <div
-        style={{
-          marginTop: 50
-        }}
-      >
-        <Link href="/join_course?join_type=instructor">
-          <a className="page_link">Join a course as an instructor!</a>
-        </Link>
+      <div>
+        <CardColumns>
+          {studentCourses.map(course => (
+            <Card border={studentCardColor} key={course.CourseId}>
+              <Card.Body>
+                <Card.Title>
+                  {course.Title} <Badge variant="secondary">Student</Badge>
+                </Card.Title>
+                <Card.Text>{course.Semester}</Card.Text>
+                <Card.Link href={`/course/${course.CourseId}`}>
+                  Visit course forum
+                </Card.Link>
+              </Card.Body>
+            </Card>
+          ))}
+        </CardColumns>
+        <CardColumns>
+          {instructorCourses.map(course => (
+            <Card border={instructorCardColor} key={course.CourseId}>
+              <Card.Body>
+                <Card.Title>
+                  {course.Title} <Badge variant="secondary">Instructor</Badge>
+                </Card.Title>
+                <Card.Text>{course.Semester}</Card.Text>
+                <Card.Link href={`/course/${course.CourseId}`}>
+                  Visit course forum
+                </Card.Link>
+              </Card.Body>
+            </Card>
+          ))}
+        </CardColumns>
       </div>
     </ContentWrapper>
   );
