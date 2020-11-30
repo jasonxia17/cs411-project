@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import assert from "assert";
 import ContentWrapper from "../../components/ContentWrapper";
+import Post from "../../components/Post";
+import { Alert, Button, FormControl, InputGroup } from "react-bootstrap";
 
 enum UserRole {
   Student = "Student",
@@ -15,6 +17,9 @@ export default function ViewCourseHomepage(): JSX.Element {
   const [courseId, setCourseId] = useState(query.courseId as string);
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
+  const [keywords, setKeywords] = useState("");
+  const [matchingPosts, setMatchingPosts] = useState([]);
+  const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -38,6 +43,47 @@ export default function ViewCourseHomepage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  async function searchForPosts(): Promise<void> {
+    const courseId = query.courseId as string;
+
+    await fetch(
+      `/api/course/${courseId}/search_post_keywords?` +
+        new URLSearchParams({ keywords: keywords }),
+      {
+        method: "GET"
+      }
+    )
+      .then(res => res.json())
+      .then(data => setMatchingPosts(data.matched_posts))
+      .catch(reason => console.log(reason));
+    setShouldDisplayResults(true);
+  }
+
+  const displayedPosts = (
+    <div>
+      <h2 style={{ marginTop: 30 }}>Matching posts:</h2>
+      {matchingPosts.map(post => (
+        <Post key={post.PostId} {...post} />
+      ))}
+    </div>
+  );
+
+  const searchTextbox = (
+    <InputGroup className="mb-3">
+      <FormControl
+        placeholder="Search for matching posts and comments by keywords or usernames!"
+        aria-label="Search keywords"
+        value={keywords}
+        onChange={e => setKeywords(e.target.value)}
+      />
+      <InputGroup.Append>
+        <Button disabled={keywords.length === 0} onClick={searchForPosts}>
+          Search!
+        </Button>
+      </InputGroup.Append>
+    </InputGroup>
+  );
 
   async function dropClassAsStudent(): Promise<void> {
     assert(userRole == UserRole.Student);
@@ -66,9 +112,15 @@ export default function ViewCourseHomepage(): JSX.Element {
   return (
     <ContentWrapper>
       <div>
-        <Link href={searchPostsLink}>
-          <a className="page_link">Search for posts based on keywords!</a>
-        </Link>
+        {searchTextbox}
+        {shouldDisplayResults &&
+          (matchingPosts.length > 0 ? (
+            displayedPosts
+          ) : (
+            <Alert variant="secondary" style={{ marginTop: 30 }}>
+              No posts were found
+            </Alert>
+          ))}
       </div>
       <div>
         <Link href={viewTopicsLink}>
