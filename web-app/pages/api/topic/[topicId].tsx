@@ -19,7 +19,9 @@ async function viewTopicPostsHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  const [num_posts_by_user] = await connection.query(
+  const [
+    num_posts_by_user
+  ] = await connection.query(
     "SELECT COUNT(*) FROM Posts WHERE TopicId = ? AND UserId = ?",
     [req.query.topicId, session.user["id"]]
   );
@@ -31,7 +33,10 @@ async function viewTopicPostsHandler(
     [req.query.topicId, session.user["id"]]
   );
 
-  if (num_posts_by_user[0]["COUNT(*)"] === 0 && instructor_rows.length === 0) {
+  if (
+    num_posts_by_user[0]["COUNT(*)"] === 0 &&
+    JSON.parse(JSON.stringify(instructor_rows)).length === 0
+  ) {
     res.status(200).json({ posts: null });
     return;
   }
