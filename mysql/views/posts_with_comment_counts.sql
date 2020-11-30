@@ -5,3 +5,4 @@ FROM Posts
     LEFT JOIN Comments ON Posts.PostId = Comments.PostId
     LEFT JOIN users    ON Posts.UserId = users.id
 GROUP BY Posts.PostId
+ORDER BY Posts.PostTime DESC
