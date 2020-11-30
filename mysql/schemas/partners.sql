@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS Partners (
-    LeaderId INT REFERENCES users.id,
-    PartnerId INT REFERENCES users.id,
+    UserIdA INT REFERENCES users.id,
+    UserIdB INT REFERENCES users.id,
     CourseId INT REFERENCES Courses.CourseId,
-    PRIMARY KEY (LeaderId, PartnerId, CourseId),
-    CHECK(LeaderId IS NOT NULL or PartnerId IS NOT NULL),
-    CHECK (PartnerId IS NULL OR LeaderId < PartnerId)
+    PRIMARY KEY (UserIdA, UserIdB, CourseId),
+    CHECK(UserIdA IS NOT NULL AND UserIdB IS NOT NULL),
+    CHECK (UserIdA < UserIdB)
 );
