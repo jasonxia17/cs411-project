@@ -15,7 +15,7 @@ export default function Student({
   partner,
   removeStudentFromRoster
 }: StudentData): JSX.Element {
-  console.log("partner: ", partner);
+  console.log(preference_list);
   return (
     <div>
       <div>
@@ -30,9 +30,11 @@ export default function Student({
       </div>
       <div>
         <h2>Preference list:</h2>
-        {preference_list.map(user => (
-          <li key={user}>{user}</li>
-        ))}
+        {preference_list != null ? (
+          preference_list.map(user => <li key={user}>{user}</li>)
+        ) : (
+          <h2>Preference list not generated</h2>
+        )}
       </div>
       <div
         style={{
