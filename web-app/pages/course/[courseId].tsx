@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import assert from "assert";
+import ContentWrapper from "../../components/ContentWrapper";
 
 enum UserRole {
   Student = "Student",
@@ -63,7 +64,7 @@ export default function ViewCourseHomepage(): JSX.Element {
 
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
-    <div>
+    <ContentWrapper>
       <div>
         <Link href={searchPostsLink}>
           <a className="page_link">Search for posts based on keywords!</a>
@@ -118,6 +119,6 @@ export default function ViewCourseHomepage(): JSX.Element {
       >
         Join Code: {joinCode}
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

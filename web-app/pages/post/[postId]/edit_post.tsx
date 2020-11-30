@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function EditPostPage(): JSX.Element {
   const [postBody, editPostBody] = useState("");
@@ -41,7 +42,7 @@ export default function EditPostPage(): JSX.Element {
   }
 
   return (
-    <div>
+    <ContentWrapper>
       <h1>Edit the post here!</h1>
       <textarea
         style={{
@@ -58,6 +59,6 @@ export default function EditPostPage(): JSX.Element {
           Submit edit!
         </button>
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

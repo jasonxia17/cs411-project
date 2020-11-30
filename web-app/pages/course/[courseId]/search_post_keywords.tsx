@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
 import Post from "../../../components/Post";
 import { Alert, Button, FormControl, InputGroup } from "react-bootstrap";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function SearchPostsKeywordsPage(): JSX.Element {
   const [keywords, setKeywords] = useState("");
@@ -58,18 +59,16 @@ export default function SearchPostsKeywordsPage(): JSX.Element {
   );
 
   return (
-    <div className="body-wrapper">
-      <div className="limit-width">
-        {searchTextbox}
-        {shouldDisplayResults &&
-          (matchingPosts.length > 0 ? (
-            displayedPosts
-          ) : (
-            <Alert variant="secondary" style={{ marginTop: 30 }}>
-              No posts were found
-            </Alert>
-          ))}
-      </div>
-    </div>
+    <ContentWrapper>
+      {searchTextbox}
+      {shouldDisplayResults &&
+        (matchingPosts.length > 0 ? (
+          displayedPosts
+        ) : (
+          <Alert variant="secondary" style={{ marginTop: 30 }}>
+            No posts were found
+          </Alert>
+        ))}
+    </ContentWrapper>
   );
 }

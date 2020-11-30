@@ -5,6 +5,7 @@ import Post from "../../components/Post";
 
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import ContentWrapper from "../../components/ContentWrapper";
 
 export default function SingleTopicPage(): JSX.Element {
   const { query } = useRouter();
@@ -33,34 +34,32 @@ export default function SingleTopicPage(): JSX.Element {
   }
 
   return (
-    <div className="body-wrapper">
-      <div className="limit-width">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center"
-          }}
-        >
-          <h2 style={{ flex: 1 }}>Topic: {topicTitle}</h2>
-          <Button size="lg" href={makePostsLink}>
-            Make a post
-          </Button>
-        </div>
-        <div>
-          {posts === null ? (
-            <Alert variant="secondary" style={{ marginTop: 30 }}>
-              You must post in this topic before viewing other posts.
-            </Alert>
-          ) : (
-            <Fragment>
-              {posts.map(post => (
-                <Post key={post.PostId} {...post} />
-              ))}
-            </Fragment>
-          )}
-        </div>
+    <ContentWrapper>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        <h2 style={{ flex: 1 }}>Topic: {topicTitle}</h2>
+        <Button size="lg" href={makePostsLink}>
+          Make a post
+        </Button>
       </div>
-    </div>
+      <div>
+        {posts === null ? (
+          <Alert variant="secondary" style={{ marginTop: 30 }}>
+            You must post in this topic before viewing other posts.
+          </Alert>
+        ) : (
+          <Fragment>
+            {posts.map(post => (
+              <Post key={post.PostId} {...post} />
+            ))}
+          </Fragment>
+        )}
+      </div>
+    </ContentWrapper>
   );
 }

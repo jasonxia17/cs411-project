@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function ViewRoster(): JSX.Element {
   const [students, setStudents] = useState([]);
@@ -42,7 +43,7 @@ export default function ViewRoster(): JSX.Element {
   }
 
   return (
-    <div>
+    <ContentWrapper>
       <ul>
         {students.map(student => (
           <li key={student.id}>
@@ -80,6 +81,6 @@ export default function ViewRoster(): JSX.Element {
           Go back to course forum
         </button>
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

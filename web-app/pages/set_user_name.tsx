@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import ContentWrapper from "../components/ContentWrapper";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function ViewCourses(): JSX.Element {
@@ -24,7 +25,7 @@ export default function ViewCourses(): JSX.Element {
   }
 
   return (
-    <div>
+    <ContentWrapper>
       <p>Your user name:</p>
       <input
         value={newUserName}
@@ -33,6 +34,6 @@ export default function ViewCourses(): JSX.Element {
       <button style={{ cursor: "pointer" }} onClick={submitUserName}>
         Save!
       </button>
-    </div>
+    </ContentWrapper>
   );
 }

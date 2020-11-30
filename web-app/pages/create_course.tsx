@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ContentWrapper from "../components/ContentWrapper";
 import useProtectedRoute from "../hooks/protected_route_hook";
 
 export default function CreateCoursePage(): JSX.Element {
@@ -56,7 +57,7 @@ export default function CreateCoursePage(): JSX.Element {
   }
 
   return (
-    <div>
+    <ContentWrapper>
       <h1>Create a Course</h1>
       <h2>Course Title</h2>
       <div>
@@ -109,6 +110,6 @@ export default function CreateCoursePage(): JSX.Element {
           Create my course!
         </button>
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

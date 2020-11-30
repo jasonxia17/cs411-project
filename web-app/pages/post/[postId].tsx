@@ -6,6 +6,7 @@ import Post from "../../components/Post";
 
 import Button from "react-bootstrap/Button";
 import { ArrowLeft } from "react-bootstrap-icons";
+import ContentWrapper from "../../components/ContentWrapper";
 
 export default function SinglePostPage(): JSX.Element {
   const [data, setData] = useState(undefined);
@@ -67,60 +68,55 @@ export default function SinglePostPage(): JSX.Element {
   }
 
   return (
-    <div className="body-wrapper">
-      <div className="limit-width">
-        <Button
-          variant="outline-secondary"
-          href={`/topic/${data.post.TopicId}`}
-        >
-          <ArrowLeft /> Back to Topic
-        </Button>
-        <Post
-          {...data.post}
-          clickable={false}
-          editable={session.user["id"] == data.post.UserId}
-        />
+    <ContentWrapper>
+      <Button variant="outline-secondary" href={`/topic/${data.post.TopicId}`}>
+        <ArrowLeft /> Back to Topic
+      </Button>
+      <Post
+        {...data.post}
+        clickable={false}
+        editable={session.user["id"] == data.post.UserId}
+      />
 
-        <h2>Comments</h2>
-        <ul>
-          {data.comments.map(comment => (
-            <li key={comment.CommentId}>
-              <h3>
-                Comment {comment.CommentId} by User {comment.UserId}
-              </h3>
-              <p>{comment.Body}</p>
-              {comment.UserId == session.user["id"] && (
-                <div>
-                  <button
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      deleteComment(comment.CommentId);
-                    }}
-                  >
-                    Delete comment!
-                  </button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-        <h3 style={{ marginTop: 50 }}>Make a comment:</h3>
-        <textarea
-          style={{
-            width: "100%",
-            height: 150,
-            padding: 10,
-            resize: "none"
-          }}
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-        />
-        <div>
-          <button style={{ cursor: "pointer" }} onClick={submitComment}>
-            Comment!
-          </button>
-        </div>
+      <h2>Comments</h2>
+      <ul>
+        {data.comments.map(comment => (
+          <li key={comment.CommentId}>
+            <h3>
+              Comment {comment.CommentId} by User {comment.UserId}
+            </h3>
+            <p>{comment.Body}</p>
+            {comment.UserId == session.user["id"] && (
+              <div>
+                <button
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    deleteComment(comment.CommentId);
+                  }}
+                >
+                  Delete comment!
+                </button>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      <h3 style={{ marginTop: 50 }}>Make a comment:</h3>
+      <textarea
+        style={{
+          width: "100%",
+          height: 150,
+          padding: 10,
+          resize: "none"
+        }}
+        value={newComment}
+        onChange={e => setNewComment(e.target.value)}
+      />
+      <div>
+        <button style={{ cursor: "pointer" }} onClick={submitComment}>
+          Comment!
+        </button>
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

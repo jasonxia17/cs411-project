@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function ViewTopicsPage(): JSX.Element {
   const [topics, setTopics] = useState([]);
@@ -29,7 +30,7 @@ export default function ViewTopicsPage(): JSX.Element {
   }
 
   return (
-    <Fragment>
+    <ContentWrapper>
       <ul>
         {topics.map(topic => (
           <li key={topic.TopicId}>
@@ -48,6 +49,6 @@ export default function ViewTopicsPage(): JSX.Element {
           <a className="page_link">Make a new topic!</a>
         </Link>
       </div>
-    </Fragment>
+    </ContentWrapper>
   );
 }

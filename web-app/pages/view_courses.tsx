@@ -2,6 +2,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
 import Course from "../components/Course";
+import ContentWrapper from "../components/ContentWrapper";
 
 export default function ViewCourses(): JSX.Element {
   const [studentCourses, setStudentCourses] = useState([]);
@@ -23,7 +24,7 @@ export default function ViewCourses(): JSX.Element {
   }
 
   return (
-    <ul>
+    <ContentWrapper>
       <div
         style={{
           marginTop: 10
@@ -33,15 +34,17 @@ export default function ViewCourses(): JSX.Element {
         {studentCourses.length == 0 ? (
           <h2>No courses available</h2>
         ) : (
-          studentCourses.map(course => (
-            <li key={course.CourseId}>
-              <Course
-                CourseId={course.CourseId as string}
-                Title={course.Title as string}
-                Semester={course.Semester as string}
-              />
-            </li>
-          ))
+          <ul>
+            {studentCourses.map(course => (
+              <li key={course.CourseId}>
+                <Course
+                  CourseId={course.CourseId as string}
+                  Title={course.Title as string}
+                  Semester={course.Semester as string}
+                />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
       <div
@@ -62,15 +65,17 @@ export default function ViewCourses(): JSX.Element {
         {instructorCourses.length == 0 ? (
           <h2>No courses available</h2>
         ) : (
-          instructorCourses.map(course => (
-            <li key={course.CourseId}>
-              <Course
-                CourseId={course.CourseId as string}
-                Title={course.Title as string}
-                Semester={course.Semester as string}
-              />
-            </li>
-          ))
+          <ul>
+            {instructorCourses.map(course => (
+              <li key={course.CourseId}>
+                <Course
+                  CourseId={course.CourseId as string}
+                  Title={course.Title as string}
+                  Semester={course.Semester as string}
+                />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
       <div
@@ -91,6 +96,6 @@ export default function ViewCourses(): JSX.Element {
           <a className="page_link">Join a course as an instructor!</a>
         </Link>
       </div>
-    </ul>
+    </ContentWrapper>
   );
 }

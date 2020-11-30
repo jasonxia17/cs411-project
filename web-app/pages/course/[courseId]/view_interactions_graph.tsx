@@ -1,6 +1,7 @@
 import Graph from "react-graph-vis";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function ViewInteractionsPage(): JSX.Element {
   // Derived from https://github.com/crubier/react-graph-vis
@@ -44,5 +45,5 @@ export default function ViewInteractionsPage(): JSX.Element {
       .catch(reason => console.log(reason));
   }, [query]);
 
-  return <div>{visualization}</div>;
+  return <ContentWrapper>{visualization}</ContentWrapper>;
 }

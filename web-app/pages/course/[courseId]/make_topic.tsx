@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
 import { useRouter } from "next/router";
+import ContentWrapper from "../../../components/ContentWrapper";
 
 export default function MakePostPage(): JSX.Element {
   const [topicTitle, setTopicTitle] = useState("");
@@ -25,7 +26,7 @@ export default function MakePostPage(): JSX.Element {
   }
 
   return (
-    <div>
+    <ContentWrapper>
       <h1>Create a new topic!</h1>
       <div>
         Title:
@@ -40,6 +41,6 @@ export default function MakePostPage(): JSX.Element {
           Create topic!
         </button>
       </div>
-    </div>
+    </ContentWrapper>
   );
 }
