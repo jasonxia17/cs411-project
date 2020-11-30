@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../../hooks/protected_route_hook";
+import Student from "../../../components/Student";
 
 export default function ViewRoster(): JSX.Element {
-  const [students, setStudents] = useState([]);
   const [courseId, setCourseId] = useState("");
+  const [studentMatchingInfo, setStudentMatchingInfo] = useState(new Map());
+  const [students, setStudents] = useState([]);
+
   const { query } = useRouter();
+
+  function updateStudentsWithMatchingInfo(curr_students, matchings) {
+    // Setting state to force a re-render (so the instructor can see the updated student
+    // info right away)
+    const students_with_preferences = [];
+    curr_students.forEach(student => {
+      const curr_student_info = matchings.get(student.id);
+      if (curr_student_info != null) {
+        students_with_preferences.push({
+          ...student,
+          preference_list: curr_student_info.preference_list,
+          matching: curr_student_info.matching
+        });
+      } else {
+        students_with_preferences.push({ ...student });
+      }
+    });
+    setStudents(students_with_preferences);
+  }
 
   useEffect(() => {
     let courseIdLocal = query.courseId as string;
@@ -23,6 +45,8 @@ export default function ViewRoster(): JSX.Element {
       .then(res => res.json())
       .then(data => {
         setStudents(data.students);
+        // Pass in data.students because setState isn't guaranteed to be synchronous
+        updateStudentsWithMatchingInfo(data.students, studentMatchingInfo);
       })
       .catch(reason => console.log(reason));
   }, [query]);
@@ -45,13 +69,20 @@ export default function ViewRoster(): JSX.Element {
 
   async function matchStudents(): Promise<void> {
     await fetch(`/api/course/${courseId}/find_student_pairings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-    location.reload();
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(data => {
+        const student_info = new Map();
+        data.student_info.forEach(student =>
+          student_info.set(student.student_id, student)
+        );
+        setStudentMatchingInfo(student_info);
+        updateStudentsWithMatchingInfo(students, student_info);
+      })
+      .catch(reason => console.log(reason));
   }
+
   return (
     <div>
       <div style={{ marginTop: 10 }}>
@@ -61,26 +92,13 @@ export default function ViewRoster(): JSX.Element {
       </div>
       <ul>
         {students.map(student => (
-          // TODO REFACTOR INTO STUDENT COMPONENT!
-          <li key={student.id}>
-            <div>
-              <h2>Name: {student.name}</h2>
-            </div>
-            <div
-              style={{
-                marginTop: 10
-              }}
-            >
-              <button
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  removeStudentFromRoster(student.id);
-                }}
-              >
-                Remove student from course
-              </button>
-            </div>
-          </li>
+          <Student
+            key={student.id}
+            name={student.name}
+            preference_list={student.preference_list}
+            partner={student.matching}
+            removeStudentFromRoster={removeStudentFromRoster}
+          />
         ))}
       </ul>
       <div
