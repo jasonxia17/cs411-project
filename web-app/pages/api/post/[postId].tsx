@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import verifyAuthentication from "../../../shared/authentication_middleware";
 import { getConnection } from "../../../shared/sql_connection";
 import neo4j_driver from "../../../shared/neo4j_connection";
+import { RowDataPacket } from "mysql2";
 
 async function viewPostsHandler(
   req: NextApiRequest,
@@ -15,10 +16,15 @@ async function viewPostsHandler(
   const session = await verifyAuthentication(req, res);
   const connection = await getConnection();
 
-  const [posts] = await connection.query(
-    "SELECT * FROM Posts WHERE PostId = ?",
+  const [posts] = await connection.query<RowDataPacket[]>(
+    "SELECT * FROM PostsWithCommentCounts WHERE PostId = ?",
     req.query.postId
   );
+
+  if (posts.length !== 1) {
+    res.status(401).end("Post does not exist");
+    return;
+  }
 
   const [comments] = await connection.query(
     "SELECT * FROM Comments WHERE PostId = ?",
@@ -40,7 +46,7 @@ async function viewPostsHandler(
     neo4j_session.close();
   }
 
-  res.status(200).json({ posts, comments });
+  res.status(200).json({ post: posts[0], comments });
 }
 
 export default viewPostsHandler;
