@@ -66,10 +66,12 @@ export default function SinglePostPage(): JSX.Element {
   return (
     <div className="body-wrapper">
       <div className="limit-width">
-        <Post {...data.post} clickable={false} />
-        <Link href={`/post/${data.post.PostId}/edit_post`}>
-          <a className="edit_link">Edit post!</a>
-        </Link>
+        <Post
+          {...data.post}
+          clickable={false}
+          editable={session.user["id"] == data.post.UserId}
+        />
+
         <h2>Comments</h2>
         <ul>
           {data.comments.map(comment => (
