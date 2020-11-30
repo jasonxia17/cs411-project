@@ -1,0 +1,11 @@
+div.body-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 30px;
+}
+
+div.limit-width {
+    flex: 1;
+    max-width: 1000px;
+}
