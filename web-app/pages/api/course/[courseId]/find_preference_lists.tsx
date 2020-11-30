@@ -3,11 +3,11 @@ import { getConnection } from "../../../../shared/sql_connection";
 import verifyAuthentication from "../../../../shared/authentication_middleware";
 import neo4j_driver from "../../../../shared/neo4j_connection";
 import assert from "assert";
-import { start } from "repl";
+
 import {
   Preferences,
   PreferenceList
-} from "../../../../../generate-pairings/types";
+} from "../../../../generate-pairings/types";
 
 type AdjacentNodes = Map<number, number>; // <head node, weight>
 type AdjacencyList = Map<number, AdjacentNodes>; // <tail node, AdjacentNodes>
