@@ -8,11 +8,14 @@ export default function ViewRoster(): JSX.Element {
   const { query } = useRouter();
 
   useEffect(() => {
-    const courseIdLocal = query.courseId as string;
+    let courseIdLocal = query.courseId as string;
     if (courseIdLocal != undefined) {
       setCourseId(courseIdLocal);
+    } else {
+      courseIdLocal = courseId;
     }
 
+    console.log("here");
     // Use local version of course ID because useState doesn't
     // guarantee synchronous updates
     fetch(`/api/course/${courseIdLocal}/view_roster?`, {
@@ -41,10 +44,25 @@ export default function ViewRoster(): JSX.Element {
     location.reload();
   }
 
+  async function matchStudents(): Promise<void> {
+    await fetch(`/api/course/${courseId}/find_student_pairings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    location.reload();
+  }
   return (
     <div>
+      <div style={{ marginTop: 10 }}>
+        <button style={{ cursor: "pointer" }} onClick={matchStudents}>
+          Match students with partners!
+        </button>
+      </div>
       <ul>
         {students.map(student => (
+          // TODO REFACTOR INTO STUDENT COMPONENT!
           <li key={student.id}>
             <div>
               <h2>Name: {student.name}</h2>
