@@ -10,7 +10,7 @@ export default async function findStudentPairingsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (req.method !== "POST") {
+  if (req.method !== "GET") {
     res.status(405).end(`Method ${req.method} not allowed.`);
     return;
   }
@@ -19,7 +19,7 @@ export default async function findStudentPairingsHandler(
   const connection = await getConnection();
 
   const preferences = await findPreferenceLists(req, res);
-  const matching: Matching = GenerateNearPopularMatching(preferences);
+  const matching: Matching = GenerateNearPopularMatching(new Map(preferences));
   const courseId = parseInt(req.query.courseId as string);
   // Map { 7 => 5, 5 => 7 }
   // Delete all rows for ths course
@@ -36,5 +36,13 @@ export default async function findStudentPairingsHandler(
   }
   await cachePartnerPairings();
 
-  res.status(200).end();
+  const student_info = [];
+  for (const node_id of Array.from(preferences.keys())) {
+    student_info.push({
+      student_id: node_id,
+      preference_list: preferences.get(node_id),
+      matching: matching.get(node_id)
+    });
+  }
+  res.status(200).json({ student_info });
 }
