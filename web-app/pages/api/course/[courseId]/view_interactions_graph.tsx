@@ -23,12 +23,16 @@ export default async function searchPostKeywordsHandler(
   };
 
   const node_ids = new Set();
+  const edges = new Set();
 
   const neo4j_session = neo4j_driver.session();
 
   await neo4j_session
     .run(
       `MATCH (viewer:User)-[e:VIEWED {course_id: $course_id}]->(poster:User)
+      RETURN viewer, poster, e
+      UNION
+      MATCH (viewer:User)-[e:COMMENTED {course_id: $course_id}]->(poster:User)
       RETURN viewer, poster, e`,
       { course_id }
     )
@@ -41,11 +45,30 @@ export default async function searchPostKeywordsHandler(
         node_ids.add(poster_id);
 
         const edge_weight = record.get("e").properties.weight.low;
-        graph.edges.push({
-          from: viewer_id,
-          to: poster_id,
-          label: "Interaction strength: " + edge_weight
-        });
+        const edge_type = record.get("e").type;
+
+        let edge_label;
+        if (edge_type === "COMMENTED") {
+          edge_label = "Comments: " + edge_weight;
+        } else if (edge_type === "VIEWED") {
+          edge_label = "Views: " + edge_weight;
+        }
+
+        // Draw each edge one time to avoid having edges overlap
+        const from_to_edge = { from: viewer_id, to: poster_id };
+        if (edges.has(JSON.stringify(from_to_edge))) {
+          graph.edges.forEach(edge => {
+            if (edge.from === viewer_id && edge.to === poster_id) {
+              edge.label = edge.label + ", " + edge_label;
+            }
+          });
+        } else {
+          graph.edges.push({
+            ...from_to_edge,
+            label: edge_label
+          });
+        }
+        edges.add(JSON.stringify(from_to_edge));
       });
     });
   neo4j_session.close();
