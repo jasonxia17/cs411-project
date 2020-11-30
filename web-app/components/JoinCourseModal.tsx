@@ -16,7 +16,10 @@ export default function JoinCourseModal({
   shouldShow,
   setShouldShow
 }: JoinCourseModalData): JSX.Element {
-  const hideModal = () => setShouldShow(false);
+  const hideModal = () => {
+    setErrorCode(0);
+    setShouldShow(false);
+  };
 
   const [joinCode, setJoinCode] = useState("");
   const [errorCode, setErrorCode] = useState(0);
@@ -49,6 +52,7 @@ export default function JoinCourseModal({
       .catch(reason => console.log(reason));
 
     if (join_status === SUCCESSFUL_JOIN_ERR_CODE) {
+      setErrorCode(0);
       location.reload();
     }
     setJoinCode("");
@@ -67,7 +71,7 @@ export default function JoinCourseModal({
         <Modal.Title>Join a Course</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form validated={errorCode !== 404 && errorCode !== 401}>
+        <Form>
           <Form.Group controlId="formJoinCode">
             <Form.Label>Join code</Form.Label>
             <Form.Control
@@ -76,6 +80,9 @@ export default function JoinCourseModal({
               onChange={e => setJoinCode(e.target.value)}
               isInvalid={errorCode === 404 || errorCode === 401}
             />
+            <Form.Control.Feedback type="valid">
+              Valid
+            </Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">
               {errorMessage}
             </Form.Control.Feedback>
