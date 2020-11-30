@@ -14,12 +14,7 @@ type PreferenceListMapping = { Node: number; PreferenceList: PreferenceList };
 export default async function findPreferenceLists(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<void> {
-  if (req.method !== "GET") {
-    res.status(405).end(`Method ${req.method} not allowed.`);
-    return;
-  }
-
+): Promise<Array<PreferenceListMapping>> {
   await verifyAuthentication(req, res);
   await getConnection();
 
@@ -27,9 +22,7 @@ export default async function findPreferenceLists(
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
-  const preference_lists = await graph.findAllShortestPaths();
-
-  res.status(200).json({ preference_lists });
+  return await graph.findAllShortestPaths();
 }
 
 class Graph {
