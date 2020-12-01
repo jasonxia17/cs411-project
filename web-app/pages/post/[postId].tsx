@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import Post from "../../components/Post";
+import Comment from "../../components/Comment";
 
 import Button from "react-bootstrap/Button";
 import { ArrowLeft } from "react-bootstrap-icons";
@@ -33,7 +34,7 @@ export default function SinglePostPage(): JSX.Element {
       .then(data => setData(data))
       .catch(reason => console.log(reason));
   }
-
+  console.log(data);
   async function submitComment(): Promise<void> {
     const postId = query.postId;
     if (postId === undefined) {
@@ -77,30 +78,16 @@ export default function SinglePostPage(): JSX.Element {
         clickable={false}
         editable={session.user["id"] == data.post.UserId}
       />
-
-      <h2>Comments</h2>
-      <ul>
-        {data.comments.map(comment => (
-          <li key={comment.CommentId}>
-            <h3>
-              Comment {comment.CommentId} by User {comment.UserId}
-            </h3>
-            <p>{comment.Body}</p>
-            {comment.UserId == session.user["id"] && (
-              <div>
-                <button
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    deleteComment(comment.CommentId);
-                  }}
-                >
-                  Delete comment!
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {data.comments.map(comment => (
+        <Comment
+          key={comment.CommentId}
+          CommentId={comment.CommentId}
+          Username={comment.name}
+          Body={comment.Body}
+          PostTime={comment.PostTime}
+          deletable={comment.UserId == session.user["id"]}
+        />
+      ))}
       <h3 style={{ marginTop: 50 }}>Make a comment:</h3>
       <textarea
         style={{

@@ -27,7 +27,7 @@ async function viewPostsHandler(
   }
 
   const [comments] = await connection.query(
-    "SELECT * FROM Comments WHERE PostId = ?",
+    "SELECT * FROM Comments, users WHERE PostId = ? AND UserId = users.id",
     req.query.postId
   );
 
