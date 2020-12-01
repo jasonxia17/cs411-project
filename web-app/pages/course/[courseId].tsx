@@ -6,13 +6,13 @@ import assert from "assert";
 import ContentWrapper from "../../components/ContentWrapper";
 import Post from "../../components/Post";
 import Topic from "../../components/Topic";
+import InteractionGraphAccordion from "../../components/InteractionGraphAccordion";
 import {
   Alert,
   Button,
   FormControl,
   InputGroup,
-  CardColumns,
-  Accordion
+  CardColumns
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import MakeTopicModal from "../../components/MakeTopicModal";
@@ -44,17 +44,6 @@ export default function ViewCourseHomepage(): JSX.Element {
   const classTheme = "info";
   const [partnerName, setPartnerName] = useState("");
 
-  const [visualization, setVisualization] = useState(<div></div>);
-  // Derived from https://github.com/crubier/react-graph-vis
-  const options = {
-    layout: {
-      hierarchical: false
-    },
-    edges: {
-      color: "#000000"
-    },
-    height: "400px"
-  };
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
     const courseId = query.courseId as string;
@@ -158,7 +147,6 @@ export default function ViewCourseHomepage(): JSX.Element {
     return <div> Loading... </div>;
   }
 
-  const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
   const noTopicsMessage =
     userRole == UserRole.Student
       ? "Your instructor hasn't created any topics yet"
@@ -257,32 +245,8 @@ export default function ViewCourseHomepage(): JSX.Element {
         <div>
           <div
             style={{
-              marginTop: 10
-            }}
-          >
-            <Button
-              variant={classTheme}
-              style={{ cursor: "pointer" }}
-              href={seeInteractionsLink}
-            >
-              See a visualization of student interactions!
-            </Button>
-          </div>
-          <Accordion defaultActiveKey="0">
-            <Card>
-              <Card.Header>
-                <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                  See a visualization of student interactions!
-                </Accordion.Toggle>
-              </Card.Header>
-              <Accordion.Collapse eventKey="1">
-                <Card.Body>{visualization}</Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-          <div
-            style={{
-              marginTop: 10
+              marginTop: 10,
+              marginBottom: 10
             }}
           >
             <Button
@@ -300,6 +264,7 @@ export default function ViewCourseHomepage(): JSX.Element {
               colorTheme={classTheme}
             ></RosterModal>
           </div>
+          <InteractionGraphAccordion></InteractionGraphAccordion>
         </div>
       )}
       <div
