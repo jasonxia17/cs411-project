@@ -7,11 +7,13 @@ import MakePostModal from "../../components/MakePostModal";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import ContentWrapper from "../../components/ContentWrapper";
+import { ArrowLeft } from "react-bootstrap-icons";
 
 export default function SingleTopicPage(): JSX.Element {
   const { query } = useRouter();
   const [posts, setPosts] = useState([]);
   const [topicTitle, setTopicTitle] = useState("");
+  const [courseId, setCourseId] = useState("");
   const [showMakePostModal, setShowMakePostModal] = useState(false);
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function SingleTopicPage(): JSX.Element {
       .then(data => {
         setPosts(data.posts);
         setTopicTitle(data.topicTitle);
+        setCourseId(data.courseId);
       })
       .catch(reason => console.log(reason));
   }, [query]); // query is an empty object initially; need to rerun effect when it's populated
@@ -36,8 +39,12 @@ export default function SingleTopicPage(): JSX.Element {
 
   return (
     <ContentWrapper>
+      <Button variant="outline-secondary" href={`/course/${courseId}`}>
+        <ArrowLeft /> Back to Course
+      </Button>
       <div
         style={{
+          marginTop: 30,
           display: "flex",
           flexDirection: "row",
           alignItems: "center"
