@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import Post from "../../components/Post";
+import MakePostModal from "../../components/MakePostModal";
 
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -11,8 +12,8 @@ export default function SingleTopicPage(): JSX.Element {
   const { query } = useRouter();
   const [posts, setPosts] = useState([]);
   const [topicTitle, setTopicTitle] = useState("");
+  const [showMakePostModal, setShowMakePostModal] = useState(false);
 
-  const makePostsLink = `/topic/${query.topicId}/make_post`;
   useEffect(() => {
     const topicId = query.topicId;
     if (topicId === undefined) {
@@ -43,9 +44,19 @@ export default function SingleTopicPage(): JSX.Element {
         }}
       >
         <h2 style={{ flex: 1 }}>Topic: {topicTitle}</h2>
-        <Button size="lg" href={makePostsLink}>
+        <Button
+          size="lg"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setShowMakePostModal(true);
+          }}
+        >
           Make a post
         </Button>
+        <MakePostModal
+          shouldShow={showMakePostModal}
+          setShouldShow={setShowMakePostModal}
+        ></MakePostModal>
       </div>
       <div>
         {posts === null ? (
