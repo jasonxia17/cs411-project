@@ -44,8 +44,11 @@ async function viewTopicPostsHandler(
     [req.query.topicId, session.user["id"]]
   );
 
-  if (num_posts_by_user[0]["COUNT(*)"] === 0 && instructor_rows.length === 0) {
-    res.status(200).json({ posts: null, topicTitle: topic_rows[0].Title });
+  if (
+    num_posts_by_user[0]["COUNT(*)"] === 0 &&
+    JSON.parse(JSON.stringify(instructor_rows)).length === 0
+  ) {
+    res.status(200).json({ posts: null });
     return;
   }
 
