@@ -5,16 +5,17 @@ import useProtectedRoute from "../../hooks/protected_route_hook";
 import assert from "assert";
 import ContentWrapper from "../../components/ContentWrapper";
 import Post from "../../components/Post";
+import Topic from "../../components/Topic";
 import {
   Alert,
   Button,
   FormControl,
   InputGroup,
-  Row,
-  Col
+  CardColumns
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
+import MakeTopicModal from "../../components/MakeTopicModal";
 
 enum UserRole {
   Student = "Student",
@@ -30,8 +31,14 @@ export default function ViewCourseHomepage(): JSX.Element {
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
   const [keywords, setKeywords] = useState("");
+
   const [matchingPosts, setMatchingPosts] = useState([]);
+  const [topics, setTopics] = useState([]);
+
   const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
+  const [shouldShowNewTopicModal, setShouldShowNewTopicModal] = useState(false);
+
+  const classTheme = "info";
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -40,6 +47,15 @@ export default function ViewCourseHomepage(): JSX.Element {
       return;
     }
     setCourseId(courseId);
+
+    fetch(`/api/course/${courseId}/view_topics?`, {
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(data => {
+        setTopics(data.topics);
+      })
+      .catch(reason => console.log(reason));
 
     fetch(`/api/course/${courseId}`)
       .then(res => res.json())
@@ -83,8 +99,9 @@ export default function ViewCourseHomepage(): JSX.Element {
     </div>
   );
 
+  // TODO border doesn't work here?
   const searchTextbox = (
-    <InputGroup className="mb-3">
+    <InputGroup border={classTheme} className="mb-3">
       <FormControl
         placeholder="Search for matching posts and comments by keywords or usernames!"
         aria-label="Search keywords"
@@ -116,15 +133,13 @@ export default function ViewCourseHomepage(): JSX.Element {
     return <div> Loading... </div>;
   }
 
-  const viewTopicsLink = `/course/${courseId}/view_topics`;
   const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
   const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
 
-  // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
     <ContentWrapper>
       <div style={{ marginBottom: 10 }}>
-        <Card className="text-center">
+        <Card border={classTheme} className="text-center">
           <Card.Body>
             <Card.Title>{courseTitle}</Card.Title>
             <Card.Text>
@@ -149,9 +164,27 @@ export default function ViewCourseHomepage(): JSX.Element {
           ))}
       </div>
       <div>
-        <Link href={viewTopicsLink}>
-          <a className="page_link">Go see topics!</a>
-        </Link>
+        <CardColumns>
+          {topics.map(topic => (
+            <Topic
+              key={topic.TopicId}
+              id={topic.TopicId}
+              title={topic.Title}
+              cardColor={classTheme}
+            />
+          ))}
+        </CardColumns>
+        <Button
+          variant={classTheme}
+          style={{ cursor: "pointer" }}
+          onClick={setShouldShowNewTopicModal}
+        >
+          Make a new topic!
+        </Button>
+        <MakeTopicModal
+          shouldShow={shouldShowNewTopicModal}
+          setShouldShow={setShouldShowNewTopicModal}
+        ></MakeTopicModal>
       </div>
       {userRole == UserRole.Student && (
         <div
