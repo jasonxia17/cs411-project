@@ -14,7 +14,6 @@ import {
   CardColumns
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
 import MakeTopicModal from "../../components/MakeTopicModal";
 import RosterModal from "../../components/RosterModal";
 
@@ -168,6 +167,14 @@ export default function ViewCourseHomepage(): JSX.Element {
           ))}
       </div>
       <div>
+        <style jsx>{`
+          .myDiv {
+            text-align: center;
+          }
+        `}</style>
+        <div className="myDiv">
+          <h5>Topics</h5>
+        </div>
         <CardColumns>
           {topics.map(topic => (
             <Topic
