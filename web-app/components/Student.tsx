@@ -1,6 +1,7 @@
 import React from "react";
 
 interface StudentData {
+  key: string;
   id: string;
   name: string;
   preference_list: Array<string> | null;

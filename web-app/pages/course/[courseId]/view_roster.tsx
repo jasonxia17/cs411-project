@@ -86,16 +86,12 @@ export default function ViewRoster(): JSX.Element {
   }
 
   return (
-<<<<<<< HEAD
     <ContentWrapper>
-=======
-    <div>
       <div style={{ marginTop: 10 }}>
         <button style={{ cursor: "pointer" }} onClick={matchStudents}>
           Match students with partners!
         </button>
       </div>
->>>>>>> dev
       <ul>
         {students.map(student => (
           <Student
