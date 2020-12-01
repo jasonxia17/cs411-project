@@ -64,7 +64,7 @@ export default function CreateCourseModal({
       },
       body: JSON.stringify({ title, semester })
     });
-    window.location.href = "/view_courses";
+    window.location.reload();
   }
 
   return (

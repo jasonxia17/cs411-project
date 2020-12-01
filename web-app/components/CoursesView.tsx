@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import useProtectedRoute from "../hooks/protected_route_hook";
-import Course from "../components/Course";
-import ContentWrapper from "../components/ContentWrapper";
+import Course from "./Course";
+import ContentWrapper from "./ContentWrapper";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
-import JoinCourseModal from "../components/JoinCourseModal";
-import CreateCourseModal from "../components/CreateCourseModal";
+import JoinCourseModal from "./JoinCourseModal";
+import CreateCourseModal from "./CreateCourseModal";
 
 import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
