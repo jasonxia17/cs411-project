@@ -5,7 +5,16 @@ import useProtectedRoute from "../../hooks/protected_route_hook";
 import assert from "assert";
 import ContentWrapper from "../../components/ContentWrapper";
 import Post from "../../components/Post";
-import { Alert, Button, FormControl, InputGroup } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  FormControl,
+  InputGroup,
+  Row,
+  Col
+} from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
 
 enum UserRole {
   Student = "Student",
@@ -15,6 +24,9 @@ enum UserRole {
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseSemester, setCourseSemester] = useState("");
+
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
   const [keywords, setKeywords] = useState("");
@@ -33,6 +45,8 @@ export default function ViewCourseHomepage(): JSX.Element {
       .then(res => res.json())
       .then(data => {
         setJoinCode(data.courseData.JoinCode as string);
+        setCourseTitle(data.courseData.Title);
+        setCourseSemester(data.courseData.Semester);
 
         assert(data.isStudent || data.isInstructor);
         if (data.isStudent) {
@@ -109,6 +123,20 @@ export default function ViewCourseHomepage(): JSX.Element {
   // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
     <ContentWrapper>
+      <div style={{ marginBottom: 10 }}>
+        <Card className="text-center">
+          <Card.Body>
+            <Card.Title>{courseTitle}</Card.Title>
+            <Card.Text>
+              You are on the {courseSemester} forum as a(n){" "}
+              {userRole.toLowerCase()}
+            </Card.Text>
+            <Card.Footer className="text-muted">
+              Join code: {joinCode}
+            </Card.Footer>
+          </Card.Body>
+        </Card>
+      </div>
       <div>
         {searchTextbox}
         {shouldDisplayResults &&
@@ -166,13 +194,12 @@ export default function ViewCourseHomepage(): JSX.Element {
           </div>
         </div>
       )}
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        Join Code: {joinCode}
-      </div>
+      <Card style={{ width: "18rem" }}>
+        <Card.Body>
+          <Card.Title>Join Code</Card.Title>
+          <Card.Text>{joinCode}</Card.Text>
+        </Card.Body>
+      </Card>
     </ContentWrapper>
   );
 }
