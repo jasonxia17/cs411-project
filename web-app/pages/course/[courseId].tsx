@@ -194,12 +194,6 @@ export default function ViewCourseHomepage(): JSX.Element {
           </div>
         </div>
       )}
-      <Card style={{ width: "18rem" }}>
-        <Card.Body>
-          <Card.Title>Join Code</Card.Title>
-          <Card.Text>{joinCode}</Card.Text>
-        </Card.Body>
-      </Card>
     </ContentWrapper>
   );
 }
