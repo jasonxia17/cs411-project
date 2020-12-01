@@ -68,7 +68,7 @@ export default function JoinCourseModal({
   return (
     <Modal show={shouldShow} onHide={hideModal} animation={false}>
       <Modal.Header closeButton>
-        <Modal.Title>Join a Course</Modal.Title>
+        <Modal.Title>Join a Course As A {joinType}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>

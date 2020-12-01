@@ -13,9 +13,14 @@ import Badge from "react-bootstrap/Badge";
 export default function ViewCourses(): JSX.Element {
   const [studentCourses, setStudentCourses] = useState([]);
   const [instructorCourses, setInstructorCourses] = useState([]);
-  const [shouldShowJoinCourseModal, setShouldShowJoinCourseModal] = useState(
-    false
-  );
+  const [
+    shouldShowJoinCourseStudentModal,
+    setShouldShowJoinCourseStudentModal
+  ] = useState(false);
+  const [
+    shouldShowJoinCourseInstructorModal,
+    setShouldShowJoinCourseInstructorModal
+  ] = useState(false);
   const [
     shouldShowCreateCourseModal,
     setShouldShowCreateCourseModal
@@ -45,24 +50,29 @@ export default function ViewCourses(): JSX.Element {
         <Button
           variant={studentCardColor}
           onClick={() => {
-            setShouldShowJoinCourseModal(true);
+            setShouldShowJoinCourseStudentModal(true);
           }}
         >
           Join Course As Student
         </Button>{" "}
         <JoinCourseModal
           joinType="Student"
-          shouldShow={shouldShowJoinCourseModal}
-          setShouldShow={setShouldShowJoinCourseModal}
+          shouldShow={shouldShowJoinCourseStudentModal}
+          setShouldShow={setShouldShowJoinCourseStudentModal}
         ></JoinCourseModal>
         <Button
           variant={instructorCardColor}
           onClick={() => {
-            setShouldShowJoinCourseModal(true);
+            setShouldShowJoinCourseInstructorModal(true);
           }}
         >
           Join Course As Instructor
         </Button>{" "}
+        <JoinCourseModal
+          joinType="Instructor"
+          shouldShow={shouldShowJoinCourseInstructorModal}
+          setShouldShow={setShouldShowJoinCourseInstructorModal}
+        ></JoinCourseModal>
         <Button
           variant={instructorCardColor}
           onClick={() => {
