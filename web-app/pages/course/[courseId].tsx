@@ -103,9 +103,8 @@ export default function ViewCourseHomepage(): JSX.Element {
     </div>
   );
 
-  // TODO border doesn't work here?
   const searchTextbox = (
-    <InputGroup border={classTheme} className="mb-3">
+    <InputGroup className="mb-3">
       <FormControl
         placeholder="Search for matching posts and comments by keywords or usernames!"
         aria-label="Search keywords"
@@ -206,7 +205,7 @@ export default function ViewCourseHomepage(): JSX.Element {
           <Button
             variant={classTheme}
             style={{ cursor: "pointer" }}
-            onClick={setShouldShowNewTopicModal}
+            onClick={() => setShouldShowNewTopicModal(true)}
           >
             Make a new topic!
           </Button>
