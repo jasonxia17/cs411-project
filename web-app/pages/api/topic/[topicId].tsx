@@ -59,7 +59,11 @@ async function viewTopicPostsHandler(
     [req.query.topicId]
   );
 
-  res.status(200).json({ posts, topicTitle: topic_rows[0].Title });
+  res.status(200).json({
+    posts,
+    courseId: topic_rows[0].CourseId,
+    topicTitle: topic_rows[0].Title
+  });
 }
 
 export default viewTopicPostsHandler;
