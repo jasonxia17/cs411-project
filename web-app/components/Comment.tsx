@@ -44,20 +44,16 @@ export default function Comment({
       bg={commentTheme}
       style={{ marginLeft: 30, marginTop: 7.5, marginBottom: 7.5 }}
     >
-      <Card.Header className="text-muted">
-        Posted on {timestampString}
-      </Card.Header>
       <Card.Body>
         <Card.Subtitle className="mb-2 text-muted">
-          Posted by {Username}
+          Posted by {Username} on {timestampString}
         </Card.Subtitle>
         <Card.Text>{Body}</Card.Text>
-      </Card.Body>
-      <Card.Footer>
         {deletable && (
           <div>
             <Button
               size="sm"
+              variant="danger"
               onClick={() => {
                 deleteComment(CommentId);
               }}
@@ -66,7 +62,7 @@ export default function Comment({
             </Button>
           </div>
         )}
-      </Card.Footer>
+      </Card.Body>
     </Card>
   );
 }
