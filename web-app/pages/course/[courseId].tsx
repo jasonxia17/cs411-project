@@ -11,11 +11,13 @@ import {
   Button,
   FormControl,
   InputGroup,
-  CardColumns
+  CardColumns,
+  Accordion
 } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import MakeTopicModal from "../../components/MakeTopicModal";
 import RosterModal from "../../components/RosterModal";
+import Graph from "react-graph-vis";
 
 enum UserRole {
   Student = "Student",
@@ -42,6 +44,17 @@ export default function ViewCourseHomepage(): JSX.Element {
   const classTheme = "info";
   const [partnerName, setPartnerName] = useState("");
 
+  const [visualization, setVisualization] = useState(<div></div>);
+  // Derived from https://github.com/crubier/react-graph-vis
+  const options = {
+    layout: {
+      hierarchical: false
+    },
+    edges: {
+      color: "#000000"
+    },
+    height: "400px"
+  };
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
     const courseId = query.courseId as string;
@@ -62,6 +75,8 @@ export default function ViewCourseHomepage(): JSX.Element {
     fetch(`/api/course/${courseId}`)
       .then(res => res.json())
       .then(data => {
+        const raw_graph = data.graph;
+
         setJoinCode(data.courseData.JoinCode as string);
         setCourseTitle(data.courseData.Title);
         setCourseSemester(data.courseData.Semester);
@@ -73,6 +88,13 @@ export default function ViewCourseHomepage(): JSX.Element {
           setUserRole(UserRole.Instructor);
         }
         setPartnerName(data.studentPairing);
+        if (raw_graph.edges.length === 0 && raw_graph.nodes.length === 0) {
+          setVisualization(
+            <h1>Users have not interacted with each other yet.</h1>
+          );
+        } else {
+          setVisualization(<Graph graph={data.graph} options={options} />);
+        }
       })
       .catch(reason => console.log(reason));
   }, [query]);
@@ -246,6 +268,18 @@ export default function ViewCourseHomepage(): JSX.Element {
               See a visualization of student interactions!
             </Button>
           </div>
+          <Accordion defaultActiveKey="0">
+            <Card>
+              <Card.Header>
+                <Accordion.Toggle as={Button} variant="link" eventKey="1">
+                  See a visualization of student interactions!
+                </Accordion.Toggle>
+              </Card.Header>
+              <Accordion.Collapse eventKey="1">
+                <Card.Body>{visualization}</Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          </Accordion>
           <div
             style={{
               marginTop: 10
