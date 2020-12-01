@@ -136,8 +136,11 @@ export default function ViewCourseHomepage(): JSX.Element {
     return <div> Loading... </div>;
   }
 
-  const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
   const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
+  const noTopicsMessage =
+    userRole == UserRole.Student
+      ? "Your instructor hasn't created any topics yet"
+      : "No topics have been created. Please create a topic to allow students to post";
 
   return (
     <ContentWrapper>
@@ -166,13 +169,18 @@ export default function ViewCourseHomepage(): JSX.Element {
             </Alert>
           ))}
       </div>
-      <div>
+      <div
+        style={{
+          marginTop: 10,
+          marginBottom: 30
+        }}
+      >
         <style jsx>{`
-          .myDiv {
+          .title {
             text-align: center;
           }
         `}</style>
-        <div className="myDiv">
+        <div className="title">
           <h5>Topics</h5>
         </div>
         <CardColumns>
@@ -185,6 +193,15 @@ export default function ViewCourseHomepage(): JSX.Element {
             />
           ))}
         </CardColumns>
+        {topics.length == 0 && (
+          <Card className="text-center" border="warning">
+            <Card.Body>
+              <Card.Text>{noTopicsMessage}</Card.Text>
+            </Card.Body>
+          </Card>
+        )}
+      </div>
+      <div>
         {userRole == UserRole.Instructor && (
           <Button
             variant={classTheme}
