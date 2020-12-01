@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import EditPostModal from "./EditPostModal";
 
 interface CommentData {
   key: string;
@@ -14,7 +13,7 @@ interface CommentData {
 }
 
 export default function Comment({
-  CommentId: PostId,
+  CommentId,
   Username,
   Body,
   PostTime,
@@ -27,8 +26,24 @@ export default function Comment({
     minute: "numeric"
   });
 
+  async function deleteComment(commentId: string): Promise<void> {
+    await fetch("/api/delete_comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ commentId })
+    });
+    location.reload();
+  }
+
+  const commentTheme = "light";
+
   return (
-    <Card style={{ marginTop: 30, marginBottom: 30 }}>
+    <Card
+      bg={commentTheme}
+      style={{ marginLeft: 30, marginTop: 7.5, marginBottom: 7.5 }}
+    >
       <Card.Header className="text-muted">
         Posted on {timestampString}
       </Card.Header>
@@ -38,6 +53,20 @@ export default function Comment({
         </Card.Subtitle>
         <Card.Text>{Body}</Card.Text>
       </Card.Body>
+      <Card.Footer>
+        {deletable && (
+          <div>
+            <Button
+              size="sm"
+              onClick={() => {
+                deleteComment(CommentId);
+              }}
+            >
+              Delete comment!
+            </Button>
+          </div>
+        )}
+      </Card.Footer>
     </Card>
   );
 }

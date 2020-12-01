@@ -34,7 +34,7 @@ export default function SinglePostPage(): JSX.Element {
       .then(data => setData(data))
       .catch(reason => console.log(reason));
   }
-  console.log(data);
+
   async function submitComment(): Promise<void> {
     const postId = query.postId;
     if (postId === undefined) {
@@ -51,17 +51,6 @@ export default function SinglePostPage(): JSX.Element {
     });
     setNewComment("");
     fetchPost();
-  }
-
-  async function deleteComment(commentId: string): Promise<void> {
-    await fetch("/api/delete_comment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ commentId })
-    });
-    location.reload();
   }
 
   if (!data) {
