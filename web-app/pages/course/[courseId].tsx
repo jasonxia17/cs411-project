@@ -3,6 +3,20 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import assert from "assert";
+import ContentWrapper from "../../components/ContentWrapper";
+import Post from "../../components/Post";
+import Topic from "../../components/Topic";
+import InteractionGraphAccordion from "../../components/InteractionGraphAccordion";
+import {
+  Alert,
+  Button,
+  FormControl,
+  InputGroup,
+  CardColumns
+} from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+import MakeTopicModal from "../../components/MakeTopicModal";
+import RosterModal from "../../components/RosterModal";
 
 enum UserRole {
   Student = "Student",
@@ -12,8 +26,21 @@ enum UserRole {
 export default function ViewCourseHomepage(): JSX.Element {
   const { query } = useRouter();
   const [courseId, setCourseId] = useState(query.courseId as string);
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseSemester, setCourseSemester] = useState("");
+
   const [joinCode, setJoinCode] = useState("");
   const [userRole, setUserRole] = useState(UserRole.Student);
+  const [keywords, setKeywords] = useState("");
+
+  const [matchingPosts, setMatchingPosts] = useState([]);
+  const [topics, setTopics] = useState([]);
+
+  const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
+  const [shouldShowNewTopicModal, setShouldShowNewTopicModal] = useState(false);
+  const [shouldShowRosterModal, setShouldShowRosterModal] = useState(false);
+
+  const classTheme = "info";
   const [partnerName, setPartnerName] = useState("");
 
   // Wrap courseId in hook to handle case where user refreshes
@@ -24,10 +51,21 @@ export default function ViewCourseHomepage(): JSX.Element {
     }
     setCourseId(courseId);
 
+    fetch(`/api/course/${courseId}/view_topics?`, {
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(data => {
+        setTopics(data.topics);
+      })
+      .catch(reason => console.log(reason));
+
     fetch(`/api/course/${courseId}`)
       .then(res => res.json())
       .then(data => {
         setJoinCode(data.courseData.JoinCode as string);
+        setCourseTitle(data.courseData.Title);
+        setCourseSemester(data.courseData.Semester);
 
         assert(data.isStudent || data.isInstructor);
         if (data.isStudent) {
@@ -39,6 +77,48 @@ export default function ViewCourseHomepage(): JSX.Element {
       })
       .catch(reason => console.log(reason));
   }, [query]);
+
+  async function searchForPosts(): Promise<void> {
+    const courseId = query.courseId as string;
+
+    await fetch(
+      `/api/course/${courseId}/search_post_keywords?` +
+        new URLSearchParams({ keywords: keywords }),
+      {
+        method: "GET"
+      }
+    )
+      .then(res => res.json())
+      .then(data => setMatchingPosts(data.matched_posts))
+      .catch(reason => console.log(reason));
+    setShouldDisplayResults(true);
+  }
+
+  const displayedPosts = (
+    <div>
+      <h2 style={{ marginTop: 30 }}>Matching posts:</h2>
+      {matchingPosts.map(post => (
+        <Post key={post.PostId} {...post} />
+      ))}
+    </div>
+  );
+
+  // TODO border doesn't work here?
+  const searchTextbox = (
+    <InputGroup border={classTheme} className="mb-3">
+      <FormControl
+        placeholder="Search for matching posts and comments by keywords or usernames!"
+        aria-label="Search keywords"
+        value={keywords}
+        onChange={e => setKeywords(e.target.value)}
+      />
+      <InputGroup.Append>
+        <Button disabled={keywords.length === 0} onClick={searchForPosts}>
+          Search!
+        </Button>
+      </InputGroup.Append>
+    </InputGroup>
+  );
 
   async function dropClassAsStudent(): Promise<void> {
     assert(userRole == UserRole.Student);
@@ -57,29 +137,84 @@ export default function ViewCourseHomepage(): JSX.Element {
     return <div> Loading... </div>;
   }
 
-  const viewPostsLink = `/course/${courseId}/view_posts`;
-  const searchPostsLink = `/course/${courseId}/search_post_keywords`;
-  const viewTopicsLink = `/course/${courseId}/view_topics`;
-  const viewRosterAsInstructorLink = `/course/${courseId}/view_roster`;
-  const seeInteractionsLink = `/course/${courseId}/view_interactions_graph`;
+  const noTopicsMessage =
+    userRole == UserRole.Student
+      ? "Your instructor hasn't created any topics yet"
+      : "No topics have been created. Please create a topic to allow students to post";
 
-  // TODO refactor to page's home screen (should have a similar layout as Piazza)
   return (
-    <div>
-      <div>
-        <Link href={viewPostsLink}>
-          <a className="page_link">Go see posts!</a>
-        </Link>
+    <ContentWrapper>
+      <div style={{ marginBottom: 10 }}>
+        <Card border={classTheme} className="text-center">
+          <Card.Body>
+            <Card.Title>{courseTitle}</Card.Title>
+            <Card.Text>
+              You are on the {courseSemester} forum as a(n){" "}
+              {userRole.toLowerCase()}
+            </Card.Text>
+            <Card.Footer className="text-muted">
+              Join code: {joinCode}
+            </Card.Footer>
+          </Card.Body>
+        </Card>
       </div>
       <div>
-        <Link href={searchPostsLink}>
-          <a className="page_link">Search for posts based on keywords!</a>
-        </Link>
+        {searchTextbox}
+        {shouldDisplayResults &&
+          (matchingPosts.length > 0 ? (
+            displayedPosts
+          ) : (
+            <Alert variant="secondary" style={{ marginTop: 30 }}>
+              No posts were found
+            </Alert>
+          ))}
+      </div>
+      <div
+        style={{
+          marginTop: 10,
+          marginBottom: 30
+        }}
+      >
+        <style jsx>{`
+          .title {
+            text-align: center;
+          }
+        `}</style>
+        <div className="title">
+          <h5>Topics</h5>
+        </div>
+        <CardColumns>
+          {topics.map(topic => (
+            <Topic
+              key={topic.TopicId}
+              id={topic.TopicId}
+              title={topic.Title}
+              cardColor={classTheme}
+            />
+          ))}
+        </CardColumns>
+        {topics.length == 0 && (
+          <Card className="text-center" border="warning">
+            <Card.Body>
+              <Card.Text>{noTopicsMessage}</Card.Text>
+            </Card.Body>
+          </Card>
+        )}
       </div>
       <div>
-        <Link href={viewTopicsLink}>
-          <a className="page_link">Go see topics!</a>
-        </Link>
+        {userRole == UserRole.Instructor && (
+          <Button
+            variant={classTheme}
+            style={{ cursor: "pointer" }}
+            onClick={setShouldShowNewTopicModal}
+          >
+            Make a new topic!
+          </Button>
+        )}
+        <MakeTopicModal
+          shouldShow={shouldShowNewTopicModal}
+          setShouldShow={setShouldShowNewTopicModal}
+        ></MakeTopicModal>
       </div>
       {userRole == UserRole.Student && (
         <div
@@ -87,42 +222,41 @@ export default function ViewCourseHomepage(): JSX.Element {
             marginTop: 10
           }}
         >
-          <button style={{ cursor: "pointer" }} onClick={dropClassAsStudent}>
+          <Button
+            variant="danger"
+            style={{ cursor: "pointer" }}
+            onClick={dropClassAsStudent}
+          >
             Drop class
-          </button>
+          </Button>
         </div>
       )}
       {userRole == UserRole.Instructor && (
         <div>
           <div
             style={{
-              marginTop: 10
+              marginTop: 10,
+              marginBottom: 10
             }}
           >
-            <Link href={seeInteractionsLink}>
-              <a className="page_link">
-                See a visualization of student interactions!
-              </a>
-            </Link>
+            <Button
+              variant={classTheme}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setShouldShowRosterModal(true);
+              }}
+            >
+              See roster!
+            </Button>
+            <RosterModal
+              shouldShow={shouldShowRosterModal}
+              setShouldShow={setShouldShowRosterModal}
+              colorTheme={classTheme}
+            ></RosterModal>
           </div>
-          <div
-            style={{
-              marginTop: 10
-            }}
-          >
-            <Link href={viewRosterAsInstructorLink}>
-              <a className="page_link">See roster!</a>
-            </Link>
-          </div>
+          <InteractionGraphAccordion></InteractionGraphAccordion>
         </div>
       )}
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        Join Code: {joinCode}
-      </div>
       <div
         style={{
           marginTop: 10
@@ -132,6 +266,6 @@ export default function ViewCourseHomepage(): JSX.Element {
           <h2>Partner name: {partnerName}</h2>
         )}
       </div>
-    </div>
+    </ContentWrapper>
   );
 }

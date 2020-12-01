@@ -1,8 +1,11 @@
-import Graph from "react-graph-vis";
-import { useRouter } from "next/router";
+import Button from "react-bootstrap/Button";
+import Accordion from "react-bootstrap/Accordion";
+import Card from "react-bootstrap/Card";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Graph from "react-graph-vis";
 
-export default function ViewInteractionsPage(): JSX.Element {
+export default function InteractionGraphAccordion(): JSX.Element {
   // Derived from https://github.com/crubier/react-graph-vis
   const options = {
     layout: {
@@ -35,7 +38,9 @@ export default function ViewInteractionsPage(): JSX.Element {
         const raw_graph = data.graph;
         if (raw_graph.edges.length === 0 && raw_graph.nodes.length === 0) {
           setVisualization(
-            <h1>Users have not interacted with each other yet.</h1>
+            <Card.Text>
+              Users have not interacted with each other yet.
+            </Card.Text>
           );
         } else {
           setVisualization(<Graph graph={data.graph} options={options} />);
@@ -44,5 +49,18 @@ export default function ViewInteractionsPage(): JSX.Element {
       .catch(reason => console.log(reason));
   }, [query]);
 
-  return <div>{visualization}</div>;
+  return (
+    <Accordion>
+      <Card>
+        <Card.Header>
+          <Accordion.Toggle as={Button} variant="link" eventKey="0">
+            See a visualization of student interactions!
+          </Accordion.Toggle>
+        </Card.Header>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>{visualization}</Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
+  );
 }

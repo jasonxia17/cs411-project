@@ -21,10 +21,12 @@ export default async function searchPostKeywordsHandler(
   // or where the keywords match the users who created the posts
   // or where the keywords match the users who wrote a comment underneath the post
   const [matched_posts] = await connection.execute(
-    "SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)\
-     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)\
-     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)\
-     UNION SELECT PostId, UserId, Posts.TopicId, Posts.Title, PostTime, Body FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users, Comments WHERE Comments.PostId = Posts.PostId AND users.id = Comments.UserId AND users.Name LIKE ?)",
+    "SELECT * FROM PostsWithCommentCounts WHERE PostId IN (\
+            SELECT PostId FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND (Body LIKE ? OR Posts.Title LIKE ?)\
+      UNION SELECT PostId FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM Comments WHERE Comments.PostId = Posts.PostId AND Comments.Body LIKE ?)\
+      UNION SELECT PostId FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users WHERE users.id = Posts.UserId AND users.Name LIKE ?)\
+      UNION SELECT PostId FROM Posts JOIN Topics ON Topics.TopicId = Posts.TopicId WHERE CourseId = ? AND EXISTS (SELECT * FROM users, Comments WHERE Comments.PostId = Posts.PostId AND users.id = Comments.UserId AND users.Name LIKE ?)\
+    )",
     [
       courseId, // Post query
       `%${keywords}%`, // Post query
