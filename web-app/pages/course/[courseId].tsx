@@ -16,6 +16,7 @@ import {
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import MakeTopicModal from "../../components/MakeTopicModal";
+import RosterModal from "../../components/RosterModal";
 
 enum UserRole {
   Student = "Student",
@@ -37,6 +38,7 @@ export default function ViewCourseHomepage(): JSX.Element {
 
   const [shouldDisplayResults, setShouldDisplayResults] = useState(false);
   const [shouldShowNewTopicModal, setShouldShowNewTopicModal] = useState(false);
+  const [shouldShowRosterModal, setShouldShowRosterModal] = useState(false);
 
   const classTheme = "info";
   const [partnerName, setPartnerName] = useState("");
@@ -225,9 +227,20 @@ export default function ViewCourseHomepage(): JSX.Element {
               marginTop: 10
             }}
           >
-            <Link href={viewRosterAsInstructorLink}>
-              <a className="page_link">See roster!</a>
-            </Link>
+            <Button
+              variant={classTheme}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setShouldShowRosterModal(true);
+              }}
+            >
+              See roster!
+            </Button>
+            <RosterModal
+              shouldShow={shouldShowRosterModal}
+              setShouldShow={setShouldShowRosterModal}
+              colorTheme={classTheme}
+            ></RosterModal>
           </div>
         </div>
       )}

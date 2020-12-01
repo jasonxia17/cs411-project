@@ -1,10 +1,26 @@
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import useProtectedRoute from "../../../hooks/protected_route_hook";
-import ContentWrapper from "../../../components/ContentWrapper";
-import Student from "../../../components/Student";
+import { copyFileSync } from "fs";
+import Student from "./Student";
 
-export default function ViewRoster(): JSX.Element {
+interface RosterModalType {
+  shouldShow: boolean;
+  setShouldShow: (boolean) => void;
+  colorTheme: string;
+}
+
+export default function RosterModal({
+  shouldShow,
+  setShouldShow,
+  colorTheme
+}: RosterModalType): JSX.Element {
+  const hideModal = () => {
+    setShouldShow(false);
+  };
+
   const [courseId, setCourseId] = useState("");
   const [studentMatchingInfo, setStudentMatchingInfo] = useState(new Map());
   const [students, setStudents] = useState([]);
@@ -52,11 +68,6 @@ export default function ViewRoster(): JSX.Element {
       .catch(reason => console.log(reason));
   }, [query]);
 
-  const [session, loading] = useProtectedRoute();
-  if (loading || !session) {
-    return <div> Loading... </div>;
-  }
-
   async function removeStudentFromRoster(studentId: string): Promise<void> {
     console.log("here", studentId);
     await fetch(`/api/course/${courseId}/remove_from_course`, {
@@ -86,13 +97,25 @@ export default function ViewRoster(): JSX.Element {
   }
 
   return (
-    <ContentWrapper>
-      <div style={{ marginTop: 10 }}>
-        <button style={{ cursor: "pointer" }} onClick={matchStudents}>
+    <Modal show={shouldShow} onHide={hideModal} animation={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>Roster (Students Only)</Modal.Title>
+      </Modal.Header>
+      <div
+        style={{
+          marginTop: 10,
+          marginLeft: 10,
+          marginRight: 10,
+          marginBottom: 10
+        }}
+      >
+        <Button
+          variant={colorTheme}
+          style={{ cursor: "pointer" }}
+          onClick={matchStudents}
+        >
           Match students with partners!
-        </button>
-      </div>
-      <ul>
+        </Button>
         {students.map(student => (
           <Student
             key={student.id}
@@ -103,21 +126,7 @@ export default function ViewRoster(): JSX.Element {
             removeStudentFromRoster={removeStudentFromRoster}
           />
         ))}
-      </ul>
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        <button
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            window.location.href = `/course/${courseId}`;
-          }}
-        >
-          Go back to course forum
-        </button>
       </div>
-    </ContentWrapper>
+    </Modal>
   );
 }

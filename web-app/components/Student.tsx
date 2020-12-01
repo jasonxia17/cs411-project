@@ -1,4 +1,8 @@
 import React from "react";
+import Link from "next/link";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
 
 interface StudentData {
   key: string;
@@ -16,40 +20,45 @@ export default function Student({
   partner,
   removeStudentFromRoster
 }: StudentData): JSX.Element {
+  const partnerInfo =
+    partner == null ? "Not enough data to autogenerate partner" : partner;
+  let preferenceInfo;
+  if (preference_list == null) {
+    preferenceInfo = "No preferences";
+  } else {
+    preferenceInfo = (
+      <ListGroup>
+        {preference_list.map(user => (
+          <ListGroup.Item key={user} variant="info">
+            {user}
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
+    );
+  }
+
   return (
-    <div>
-      <div>
-        <h2>{name}</h2>
-      </div>
-      <div>
-        {partner != null ? (
-          <h2>Partner: {partner}</h2>
+    <Card style={{ marginTop: 30, marginBottom: 30 }}>
+      <Card.Body>
+        <Card.Title>StudentName: {name}</Card.Title>
+        <Card.Text>Partner: {partnerInfo}</Card.Text>
+        {preference_list != null && <Card.Text>Preferences: </Card.Text>}
+        {preference_list == null ? (
+          <Card.Text>Preferences: {preferenceInfo}</Card.Text>
         ) : (
-          <h2>Not enough data to autogenerate partner</h2>
+          preferenceInfo
         )}
-      </div>
-      <div>
-        <h2>Preference list:</h2>
-        {preference_list != null ? (
-          preference_list.map(user => <li key={user}>{user}</li>)
-        ) : (
-          <h2>Preference list not generated</h2>
-        )}
-      </div>
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        <button
+      </Card.Body>
+      <Card.Footer>
+        <Button
+          variant="danger"
+          size="sm"
           style={{ cursor: "pointer" }}
-          onClick={() => {
-            removeStudentFromRoster(id);
-          }}
+          onClick={() => removeStudentFromRoster(id)}
         >
-          Remove student from course
-        </button>
-      </div>
-    </div>
+          Remove student from Course
+        </Button>
+      </Card.Footer>
+    </Card>
   );
 }
