@@ -128,7 +128,7 @@ export default function ViewCourseHomepage(): JSX.Element {
       },
       body: JSON.stringify({ studentId: session.user["id"] })
     });
-    window.location.href = "/view_courses";
+    window.location.href = "/";
   }
 
   const [session, loading] = useProtectedRoute();

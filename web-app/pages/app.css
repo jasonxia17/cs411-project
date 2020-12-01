@@ -9,3 +9,11 @@ div.limit-width {
     flex: 1;
     max-width: 1000px;
 }
+
+.homepage-div p {
+    font-size: 22px;
+}
+
+.homepage-div * {
+    margin-bottom: 30px;
+}
