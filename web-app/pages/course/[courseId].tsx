@@ -208,22 +208,26 @@ export default function ViewCourseHomepage(): JSX.Element {
               marginTop: 10
             }}
           >
-            <Link href={seeInteractionsLink}>
-              <a className="page_link">
-                See a visualization of student interactions!
-              </a>
-            </Link>
+            <Button
+              variant={classTheme}
+              style={{ cursor: "pointer" }}
+              href={seeInteractionsLink}
+            >
+              See a visualization of student interactions!
+            </Button>
           </div>
           <div
             style={{
               marginTop: 10
             }}
           >
-            <Link href={viewRosterAsInstructorLink}>
-              <a className="page_link">
-                See roster (to remove students from course)!
-              </a>
-            </Link>
+            <Button
+              variant={classTheme}
+              style={{ cursor: "pointer" }}
+              href={viewRosterAsInstructorLink}
+            >
+              See roster (to remove students from course)!
+            </Button>
           </div>
         </div>
       )}
