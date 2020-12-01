@@ -38,7 +38,9 @@ export default function InteractionGraphAccordion(): JSX.Element {
         const raw_graph = data.graph;
         if (raw_graph.edges.length === 0 && raw_graph.nodes.length === 0) {
           setVisualization(
-            <h1>Users have not interacted with each other yet.</h1>
+            <Card.Text>
+              Users have not interacted with each other yet.
+            </Card.Text>
           );
         } else {
           setVisualization(<Graph graph={data.graph} options={options} />);
