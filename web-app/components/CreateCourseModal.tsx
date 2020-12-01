@@ -3,8 +3,6 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import React, { useState } from "react";
 
-type UserType = "Student" | "Instructor";
-
 interface CreateCourseModalData {
   shouldShow: boolean;
   setShouldShow: (boolean) => void;
