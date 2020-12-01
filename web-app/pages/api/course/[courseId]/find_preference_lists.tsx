@@ -3,23 +3,20 @@ import { getConnection } from "../../../../shared/sql_connection";
 import verifyAuthentication from "../../../../shared/authentication_middleware";
 import neo4j_driver from "../../../../shared/neo4j_connection";
 import assert from "assert";
-import { start } from "repl";
+
+import {
+  Preferences,
+  PreferenceList
+} from "../../../../generate-pairings/types";
 
 type AdjacentNodes = Map<number, number>; // <head node, weight>
 type AdjacencyList = Map<number, AdjacentNodes>; // <tail node, AdjacentNodes>
 type Nodes = Set<number>;
-type PreferenceList = Array<number>;
-type PreferenceListMapping = { Node: number; PreferenceList: PreferenceList };
 
 export default async function findPreferenceLists(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<void> {
-  if (req.method !== "GET") {
-    res.status(405).end(`Method ${req.method} not allowed.`);
-    return;
-  }
-
+): Promise<Preferences> {
   await verifyAuthentication(req, res);
   await getConnection();
 
@@ -27,9 +24,7 @@ export default async function findPreferenceLists(
 
   const graph = new Graph();
   await graph.buildGraph(course_id);
-  const preference_lists = await graph.findAllShortestPaths();
-
-  res.status(200).json({ preference_lists });
+  return await graph.findAllShortestPaths();
 }
 
 class Graph {
@@ -41,15 +36,15 @@ class Graph {
     this._nodes = new Set();
   }
 
-  findAllShortestPaths(): Array<PreferenceListMapping> {
-    const preference_lists = [];
+  findAllShortestPaths(): Preferences {
+    const preference_lists: Preferences = new Map();
     this._nodes.forEach(node =>
-      preference_lists.push(this.findShortestPaths(node))
+      preference_lists.set(node, this.findShortestPaths(node))
     );
     return preference_lists;
   }
 
-  findShortestPaths(start_node: number): PreferenceListMapping {
+  findShortestPaths(start_node: number): PreferenceList {
     const distances = new Map();
     const unvisited_nodes = new Set();
 
@@ -93,7 +88,7 @@ class Graph {
     }
 
     // Order nodes by distances
-    const nodes_by_distances = Array.from(this._nodes);
+    const nodes_by_distances: PreferenceList = Array.from(this._nodes);
     nodes_by_distances.sort(function(node_1, node_2) {
       const node_1_dist = distances.get(node_1);
       const node_2_dist = distances.get(node_2);
@@ -101,7 +96,7 @@ class Graph {
     });
     assert(nodes_by_distances[0] === start_node);
     nodes_by_distances.shift();
-    return { Node: start_node, PreferenceList: nodes_by_distances };
+    return nodes_by_distances;
   }
 
   async buildGraph(course_id: number): Promise<void> {
@@ -143,6 +138,20 @@ class Graph {
     }
 
     const neo4j_session = neo4j_driver.session();
+    const connection = await getConnection();
+
+    // Filter out all instructors to prevent student-instructor pairs, which would
+    // be awkward
+    const [
+      instructorRows
+    ] = await connection.query(
+      "SELECT InstructorId FROM Instructors WHERE CourseId = ?",
+      [course_id]
+    );
+    const instructors = new Set();
+    JSON.parse(JSON.stringify(instructorRows)).forEach(instructorId => {
+      instructors.add(instructorId.InstructorId as number);
+    });
 
     await neo4j_session
       .run(
@@ -158,15 +167,23 @@ class Graph {
           const viewer_id = record.get("viewer").properties.user_id;
           const poster_id = record.get("poster").properties.user_id;
 
-          nodes.add(viewer_id);
-          nodes.add(poster_id);
+          const isViewerInstructor = instructors.has(viewer_id as number);
+          const isPosterInstructor = instructors.has(poster_id as number);
 
-          const raw_edge_count = record.get("e").properties.weight.low;
-          const edge_type = record.get("e").type;
-          const edge_weight = getEdgeWeight(raw_edge_count, edge_type);
+          if (!isViewerInstructor) {
+            nodes.add(viewer_id);
+          }
+          if (!isPosterInstructor) {
+            nodes.add(poster_id);
+          }
+          if (!isViewerInstructor && !isPosterInstructor) {
+            const raw_edge_count = record.get("e").properties.weight.low;
+            const edge_type = record.get("e").type;
+            const edge_weight = getEdgeWeight(raw_edge_count, edge_type);
 
-          addEdge(viewer_id, poster_id, edge_weight);
-          addEdge(poster_id, viewer_id, edge_weight);
+            addEdge(viewer_id, poster_id, edge_weight);
+            addEdge(poster_id, viewer_id, edge_weight);
+          }
         });
       });
     neo4j_session.close();

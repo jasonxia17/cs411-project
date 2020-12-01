@@ -39,6 +39,7 @@ export default function ViewCourseHomepage(): JSX.Element {
   const [shouldShowNewTopicModal, setShouldShowNewTopicModal] = useState(false);
 
   const classTheme = "info";
+  const [partnerName, setPartnerName] = useState("");
 
   // Wrap courseId in hook to handle case where user refreshes
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function ViewCourseHomepage(): JSX.Element {
         } else if (data.isInstructor) {
           setUserRole(UserRole.Instructor);
         }
+        setPartnerName(data.studentPairing);
       })
       .catch(reason => console.log(reason));
   }, [query]);
@@ -221,16 +223,28 @@ export default function ViewCourseHomepage(): JSX.Element {
               marginTop: 10
             }}
           >
-            <Button
-              variant={classTheme}
-              style={{ cursor: "pointer" }}
-              href={viewRosterAsInstructorLink}
-            >
-              See roster (to remove students from course)!
-            </Button>
+            <Link href={viewRosterAsInstructorLink}>
+              <a className="page_link">See roster!</a>
+            </Link>
           </div>
         </div>
       )}
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        Join Code: {joinCode}
+      </div>
+      <div
+        style={{
+          marginTop: 10
+        }}
+      >
+        {userRole == UserRole.Student && partnerName && (
+          <h2>Partner name: {partnerName}</h2>
+        )}
+      </div>
     </ContentWrapper>
   );
 }
