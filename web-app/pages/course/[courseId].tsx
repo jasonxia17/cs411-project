@@ -176,13 +176,15 @@ export default function ViewCourseHomepage(): JSX.Element {
             />
           ))}
         </CardColumns>
-        <Button
-          variant={classTheme}
-          style={{ cursor: "pointer" }}
-          onClick={setShouldShowNewTopicModal}
-        >
-          Make a new topic!
-        </Button>
+        {userRole == UserRole.Instructor && (
+          <Button
+            variant={classTheme}
+            style={{ cursor: "pointer" }}
+            onClick={setShouldShowNewTopicModal}
+          >
+            Make a new topic!
+          </Button>
+        )}
         <MakeTopicModal
           shouldShow={shouldShowNewTopicModal}
           setShouldShow={setShouldShowNewTopicModal}
@@ -229,13 +231,6 @@ export default function ViewCourseHomepage(): JSX.Element {
           </div>
         </div>
       )}
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        Join Code: {joinCode}
-      </div>
       <div
         style={{
           marginTop: 10
