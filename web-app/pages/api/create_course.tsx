@@ -12,7 +12,8 @@ export default async function createCourseHandler(
   }
 
   const session = await verifyAuthentication(req, res);
-  const connection = await getConnection();
+  const pool = await getConnection();
+  const connection = await pool.getConnection();
 
   async function buildJoinCode() {
     const JOIN_CODE_LENGTH = 5;
@@ -50,6 +51,8 @@ export default async function createCourseHandler(
     "INSERT INTO Instructors(InstructorId, CourseId) VALUES (?, LAST_INSERT_ID())",
     [session.user["id"]]
   );
+
+  connection.release();
 
   res.status(200).end();
 }
