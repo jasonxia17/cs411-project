@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import EditPostModal from "./EditPostModal";
 
 interface PostData {
   PostId: string;
@@ -31,6 +32,8 @@ export default function Post({
     minute: "numeric"
   });
 
+  const [showEditPostModal, setShowEditPostModal] = useState(false);
+
   return (
     <Card style={{ marginTop: 30, marginBottom: 30 }}>
       <Card.Header className="text-muted">
@@ -44,7 +47,20 @@ export default function Post({
         </Card.Subtitle>
         <Card.Text>{Body}</Card.Text>
         {editable && (
-          <Button href={`/post/${PostId}/edit_post`}>Edit post!</Button>
+          <div>
+            <Button
+              onClick={() => {
+                setShowEditPostModal(true);
+              }}
+            >
+              Edit post!
+            </Button>
+            <EditPostModal
+              currentPostBody={Body}
+              shouldShow={showEditPostModal}
+              setShouldShow={setShowEditPostModal}
+            ></EditPostModal>
+          </div>
         )}
       </Card.Body>
       {clickable && <a href={`/post/${PostId}`} className="stretched-link"></a>}
