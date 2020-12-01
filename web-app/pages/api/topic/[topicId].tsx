@@ -48,7 +48,11 @@ async function viewTopicPostsHandler(
     num_posts_by_user[0]["COUNT(*)"] === 0 &&
     JSON.parse(JSON.stringify(instructor_rows)).length === 0
   ) {
-    res.status(200).json({ posts: null });
+    res.status(200).json({
+      posts: null,
+      courseId: topic_rows[0].CourseId,
+      topicTitle: topic_rows[0].Title
+    });
     return;
   }
 
