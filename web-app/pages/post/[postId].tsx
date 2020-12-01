@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import useProtectedRoute from "../../hooks/protected_route_hook";
 import Post from "../../components/Post";
 import Comment from "../../components/Comment";
+import MakeCommentModal from "../../components/MakeCommentModal";
 
 import Button from "react-bootstrap/Button";
 import { ArrowLeft } from "react-bootstrap-icons";
@@ -11,7 +12,9 @@ import ContentWrapper from "../../components/ContentWrapper";
 
 export default function SinglePostPage(): JSX.Element {
   const [data, setData] = useState(undefined);
-  const [newComment, setNewComment] = useState("");
+  const [shouldShowNewCommentModal, setShouldShowNewCommentModal] = useState(
+    false
+  );
   const { query } = useRouter();
 
   useEffect(() => {
@@ -33,24 +36,6 @@ export default function SinglePostPage(): JSX.Element {
       .then(res => res.json())
       .then(data => setData(data))
       .catch(reason => console.log(reason));
-  }
-
-  async function submitComment(): Promise<void> {
-    const postId = query.postId;
-    if (postId === undefined) {
-      alert("Failed to submit comment");
-      return;
-    }
-
-    await fetch("/api/make_comment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ postId, newComment })
-    });
-    setNewComment("");
-    fetchPost();
   }
 
   if (!data) {
@@ -77,21 +62,18 @@ export default function SinglePostPage(): JSX.Element {
           deletable={comment.UserId == session.user["id"]}
         />
       ))}
-      <h3 style={{ marginTop: 50 }}>Make a comment:</h3>
-      <textarea
-        style={{
-          width: "100%",
-          height: 150,
-          padding: 10,
-          resize: "none"
-        }}
-        value={newComment}
-        onChange={e => setNewComment(e.target.value)}
-      />
-      <div>
-        <button style={{ cursor: "pointer" }} onClick={submitComment}>
-          Comment!
-        </button>
+      <div style={{ marginTop: 30, marginBottom: 30 }}>
+        <Button
+          size="lg"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShouldShowNewCommentModal(true)}
+        >
+          Make a comment!
+        </Button>
+        <MakeCommentModal
+          shouldShow={shouldShowNewCommentModal}
+          setShouldShow={setShouldShowNewCommentModal}
+        ></MakeCommentModal>
       </div>
     </ContentWrapper>
   );
