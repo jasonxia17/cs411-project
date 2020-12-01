@@ -35,7 +35,7 @@ export default function MakePostModal({
   }
 
   return (
-    <Modal show={shouldShow} onHide={hideModal} animation={false}>
+    <Modal size="lg" show={shouldShow} onHide={hideModal} animation={false}>
       <Modal.Header closeButton>
         <Modal.Title>Write your post here!</Modal.Title>
       </Modal.Header>
