@@ -17,3 +17,7 @@ div.limit-width {
 .homepage-div * {
     margin-bottom: 30px;
 }
+
+.card-text {
+    white-space: pre-wrap;
+}
