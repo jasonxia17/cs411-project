@@ -5,12 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Graph from "react-graph-vis";
 
-interface InteractionGraphAccordionData {
-  currentPostBody: string;
-  shouldShow: boolean;
-  setShouldShow: (boolean) => void;
-}
-
 export default function InteractionGraphAccordion(): JSX.Element {
   // Derived from https://github.com/crubier/react-graph-vis
   const options = {

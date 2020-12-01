@@ -17,7 +17,6 @@ import {
 import Card from "react-bootstrap/Card";
 import MakeTopicModal from "../../components/MakeTopicModal";
 import RosterModal from "../../components/RosterModal";
-import Graph from "react-graph-vis";
 
 enum UserRole {
   Student = "Student",
@@ -64,8 +63,6 @@ export default function ViewCourseHomepage(): JSX.Element {
     fetch(`/api/course/${courseId}`)
       .then(res => res.json())
       .then(data => {
-        const raw_graph = data.graph;
-
         setJoinCode(data.courseData.JoinCode as string);
         setCourseTitle(data.courseData.Title);
         setCourseSemester(data.courseData.Semester);
@@ -77,13 +74,6 @@ export default function ViewCourseHomepage(): JSX.Element {
           setUserRole(UserRole.Instructor);
         }
         setPartnerName(data.studentPairing);
-        if (raw_graph.edges.length === 0 && raw_graph.nodes.length === 0) {
-          setVisualization(
-            <h1>Users have not interacted with each other yet.</h1>
-          );
-        } else {
-          setVisualization(<Graph graph={data.graph} options={options} />);
-        }
       })
       .catch(reason => console.log(reason));
   }, [query]);
