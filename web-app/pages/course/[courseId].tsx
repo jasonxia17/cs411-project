@@ -170,8 +170,7 @@ export default function ViewCourseHomepage(): JSX.Element {
       </div>
       <div
         style={{
-          marginTop: 10,
-          marginBottom: 30
+          marginTop: 10
         }}
       >
         <style jsx>{`
@@ -200,6 +199,19 @@ export default function ViewCourseHomepage(): JSX.Element {
           </Card>
         )}
       </div>
+      {userRole == UserRole.Student && partnerName && (
+        <div
+          style={{
+            marginTop: 10
+          }}
+        >
+          <Card className="text-center" border="info">
+            <Card.Footer>
+              <Card.Text>Partner name: {partnerName}</Card.Text>
+            </Card.Footer>
+          </Card>
+        </div>
+      )}
       <div>
         {userRole == UserRole.Instructor && (
           <Button
@@ -256,15 +268,6 @@ export default function ViewCourseHomepage(): JSX.Element {
           <InteractionGraphAccordion></InteractionGraphAccordion>
         </div>
       )}
-      <div
-        style={{
-          marginTop: 10
-        }}
-      >
-        {userRole == UserRole.Student && partnerName && (
-          <h2>Partner name: {partnerName}</h2>
-        )}
-      </div>
     </ContentWrapper>
   );
 }
